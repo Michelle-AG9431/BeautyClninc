@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBC湘南 美容皮膚科 ｜ 料金試算</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#b8965a;--gold-l:#d4b07a;--gold-p:#f5ecd8;--cream:#fdfaf5;--ink:#2a2016;--ink-m:#5a4e3a;--ink-l:#9a8e7a;--rose:#c97a7a;--bg:#fff;--br:#e8dcc8;--sh:rgba(90,60,20,.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--ink);font-family:'Noto Sans TC',sans-serif;font-weight:300;min-height:100vh;}
+header{background:var(--ink);padding:24px 0 16px;text-align:center;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;letter-spacing:.35em;color:var(--gold-l);text-transform:uppercase;display:block;margin-bottom:4px;}
+h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;letter-spacing:.12em;}
+.tbar{background:var(--bg);border-bottom:1px solid var(--br);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;top:76px;z-index:150;box-shadow:0 3px 12px var(--sh);}
+.tlhs .lbl{font-size:9px;letter-spacing:.15em;color:var(--ink-l);text-transform:uppercase;}
+.amounts{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.jpy{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);}
+.jpy .cy{font-size:14px;color:var(--ink-m);margin-right:1px;}
+.twd{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--ink-l);}
+.twd .cy{font-size:11px;}
+.rn{display:block;font-size:9px;color:var(--ink-l);margin-top:1px;}
+.trhs{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.scnt{font-size:10px;color:var(--ink-l);}
+.bsum{background:none;border:1px solid var(--gold-l);color:var(--gold);font-size:10px;letter-spacing:.08em;padding:5px 12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .2s;border-radius:2px;}
+.bsum:hover{background:var(--gold-p);}
+.bsum:disabled{opacity:.35;cursor:default;}
+.brst{background:none;border:1px solid var(--br);color:var(--ink-m);font-size:10px;letter-spacing:.08em;padding:5px 12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .2s;border-radius:2px;}
+.brst:hover{border-color:var(--rose);color:var(--rose);}
+.ov{display:none;position:fixed;inset:0;background:rgba(42,32,22,.45);z-index:500;}
+.ov.open{display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:var(--bg);width:100%;max-width:660px;max-height:76vh;border-radius:10px 10px 0 0;display:flex;flex-direction:column;animation:sup .22s ease;}
+@keyframes sup{from{transform:translateY(32px);opacity:0}to{transform:none;opacity:1}}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 11px;border-bottom:1px solid var(--br);}
+.mhd h3{font-family:'Noto Serif TC',serif;font-size:13px;letter-spacing:.1em;}
+.mcl{background:none;border:none;font-size:17px;color:var(--ink-l);cursor:pointer;}
+.mbody{overflow-y:auto;padding:10px 18px;flex:1;}
+.memp{text-align:center;padding:28px;color:var(--ink-l);font-size:13px;}
+.mrow{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--br);gap:10px;}
+.mrow:last-child{border-bottom:none;}
+.mn{font-size:12px;color:var(--ink);margin-bottom:2px;}
+.mo{font-size:10px;color:var(--ink-l);}
+.mp{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold);white-space:nowrap;flex-shrink:0;}
+.mft{padding:11px 18px;border-top:2px solid var(--br);display:flex;align-items:center;justify-content:space-between;}
+.mftot{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);}
+.tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tb{flex:0 0 auto;padding:11px 16px;font-size:11px;letter-spacing:.08em;color:var(--ink-l);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Noto Sans TC',sans-serif;white-space:nowrap;transition:all .2s;}
+.tb.on{color:var(--gold);border-bottom-color:var(--gold);}
+.tb:hover:not(.on){color:var(--ink-m);}
+.sp{display:none;}.sp.on{display:block;}
+.main{max-width:900px;margin:0 auto;padding:24px 16px 80px;}
+.cat{margin-bottom:24px;animation:fu .26s ease both;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chd{display:flex;align-items:center;gap:9px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--br);}
+.cbar{width:3px;height:16px;background:var(--gold);flex-shrink:0;}
+.ctit{font-family:'Noto Serif TC',serif;font-size:13px;font-weight:400;letter-spacing:.12em;}
+.ti{background:var(--bg);border:1px solid var(--br);border-radius:5px;margin-bottom:5px;transition:box-shadow .2s,border-color .2s;}
+.ti.on{border-color:var(--gold-l);box-shadow:0 2px 10px var(--sh);}
+.tim{display:flex;align-items:center;padding:10px 14px;gap:10px;cursor:pointer;user-select:none;}
+.ck{width:15px;height:15px;border:1.5px solid var(--br);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--cream);}
+.ti.on .ck{background:var(--gold);border-color:var(--gold);}
+.tk{opacity:0;transform:scale(.5);transition:all .15s;color:#fff;font-size:9px;}
+.ti.on .tk{opacity:1;transform:none;}
+.tn{font-size:12px;letter-spacing:.04em;flex:1;line-height:1.5;}
+.note{font-size:9px;color:var(--ink-l);display:block;margin-top:1px;}
+.pd{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink-m);white-space:nowrap;text-align:right;transition:color .2s;}
+.ti.on .pd{color:var(--gold);}
+.pd .y{font-size:10px;margin-right:1px;}
+.opts{display:none;padding:0 14px 10px 39px;}
+.ti.on .opts{display:block;animation:sd .16s ease;}
+@keyframes sd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.ol{font-size:9px;letter-spacing:.1em;color:var(--ink-l);text-transform:uppercase;margin-bottom:4px;margin-top:2px;}
+.os{background:var(--cream);border:1px solid var(--br);border-radius:4px;padding:6px 24px 6px 8px;font-size:11px;color:var(--ink);font-family:'Noto Sans TC',sans-serif;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23b8965a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;cursor:pointer;width:100%;max-width:500px;transition:border-color .2s;letter-spacing:.03em;}
+.os:focus{outline:none;border-color:var(--gold);}
+.odiv{height:7px;}
+.crow{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.ci{background:var(--cream);border:1px solid var(--br);border-radius:4px;padding:5px 9px;font-size:13px;color:var(--ink);font-family:'Cormorant Garamond',serif;width:85px;text-align:center;transition:border-color .2s;}
+.ci:focus{outline:none;border-color:var(--gold);}
+.cu{font-size:11px;color:var(--ink-m);}
+.hint{font-size:10px;color:var(--ink-l);line-height:1.6;}
+@media(max-width:600px){.jpy{font-size:22px;}.twd{font-size:15px;}.tn{font-size:11px;}}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">SBC Shonan Beauty Clinic</span>
+  <h1>美容皮膚科　療程料金試算</h1>
+</header>
+<div class="tbar">
+  <div class="tlhs">
+    <div class="lbl">預估總金額（含稅）</div>
+    <div class="amounts">
+      <div class="jpy"><span class="cy">¥</span><span id="jn">0</span></div>
+      <div class="twd"><span class="cy">≈ NT$</span><span id="tn">0</span></div>
+    </div>
+    <span class="rn" id="rn">匯率載入中…</span>
+  </div>
+  <div class="trhs">
+    <span class="scnt" id="sc">尚未選擇</span>
+    <button class="bsum" id="bsum" onclick="openM()" disabled>查看已選療程 ▲</button>
+    <button class="brst" onclick="resetAll()">清除全部</button>
+  </div>
+</div>
+<div class="ov" id="ov" onclick="closeM()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhd"><h3>已選療程清單</h3><button class="mcl" onclick="closeM()">✕</button></div>
+    <div class="mbody" id="mbody"></div>
+    <div class="mft"><span style="font-size:11px;letter-spacing:.1em;color:var(--ink-l)">合計（含稅）</span><span class="mftot">¥<span id="mtot">0</span></span></div>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tb on" onclick="sw(0,this)">✦ 雷射治療</button>
+  <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
+  <button class="tb" onclick="sw(2,this)">✦ 瘦身・能量療程</button>
+  <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
+</div>
+<div class="sp on" id="sh0"><div class="main">
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">拉提緊膚治療</div></div>
+  
+  <div class="ti" id="s0t0" data-name="鳳凰電波 FLX">
+    <div class="tim" onclick="tog('s0t0')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">鳳凰電波 FLX</div><div class="pd" id="ps0t0"><span class="y">¥</span>158,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t0','ps0t0',this)"><option value="158000">300發（臉或脖子）　1次　¥158,000</option><option value="258000">600發（臉＋脖子）　1次　¥258,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t1" data-name="黃金電波 CPT">
+    <div class="tim" onclick="tog('s0t1')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">黃金電波 CPT</div><div class="pd" id="ps0t1"><span class="y">¥</span>88,400</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t1','ps0t1',this)"><option value="88400">400發（臉頰・下巴・額頭或脖子）　1次　¥88,400</option><option value="120800">600發（臉頰・下巴・額頭・脖子）　1次　¥120,800</option><option value="178200">900發（臉頰・下巴・額頭・脖子）　1次　¥178,200</option></select></div>
+  </div>
+  <div class="ti" id="s0t2" data-name="眼周電波（鳳凰/黃金共用）">
+    <div class="tim" onclick="tog('s0t2')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">眼周電波（鳳凰/黃金共用）</div><div class="pd" id="ps0t2"><span class="y">¥</span>116,320</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t2','ps0t2',this)"><option value="116320">225發（上或下眼皮）　1次　¥116,320</option><option value="198000">450發（上＋下眼皮）　1次　¥198,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t3" data-name="DENSITY 電波">
+    <div class="tim" onclick="tog('s0t3')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DENSITY 電波</div><div class="pd" id="ps0t3"><span class="y">¥</span>19,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t3','ps0t3',this)"><option value="19800">100發（局部照射）　1次　¥19,800</option><option value="48000">300發（臉或脖子）　1次　¥48,000</option><option value="86000">600發（臉＋脖子全部）　1次　¥86,000</option><option value="47000">225發（上或下眼皮）　1次　¥47,000</option><option value="85000">450發（上＋下眼皮）　1次　¥85,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t4" data-name="索夫波">
+    <div class="tim" onclick="tog('s0t4')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">索夫波<span class="note">新宿特別方案限定</span></div><div class="pd" id="ps0t4"><span class="y">¥</span>95,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t4','ps0t4',this)"><option value="95000">臉頰・下巴 110發　1次　¥95,000</option><option value="127800">全臉（含下巴・眼周）200發　1次　¥127,800</option><option value="157800">全臉＋脖子 250發　1次　¥157,800</option><option value="80000">脖子 50發　1次　¥80,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t5" data-name="XERF 電波">
+    <div class="tim" onclick="tog('s0t5')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">XERF 電波<span class="note">部位：臉頰・下巴・額頭・脖子</span></div><div class="pd" id="ps0t5"><span class="y">¥</span>22,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t5','ps0t5',this)"><option value="22000">100發（淺層模式）　1次　¥22,000</option><option value="59800">300發　1次　¥59,800　※雙段價格</option><option value="99000">600發　1次　¥99,000</option><option value="135000">900發　1次　¥135,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t6" data-name="立線音波 Q+">
+    <div class="tim" onclick="tog('s0t6')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">立線音波 Q+</div><div class="pd" id="ps0t6"><span class="y">¥</span>22,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t6','ps0t6',this)"><option value="22000">臉頰/下顎線　410發　1次　¥22,000</option><option value="28800">全臉（含下顎線＋眼周）　650發　1次　¥28,800</option><option value="34800">全臉＋脖子　830發　1次　¥34,800</option><option value="29800">上胸　240發　1次　¥29,800</option><option value="19800">脖子　180發　1次　¥19,800</option><option value="22800">眼周　240發　1次　¥22,800</option></select></div>
+  </div>
+  <div class="ti" id="s0t7" data-name="海芙第四代媚必提">
+    <div class="tim" onclick="tog('s0t7')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">海芙第四代媚必提</div><div class="pd" id="ps0t7"><span class="y">¥</span>25,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t7','ps0t7',this)"><option value="25000">臉頰/顴骨/下顎線　460發　1次　¥25,000</option><option value="30800">全臉　650發　1次　¥30,800</option><option value="36800">全臉＋脖子　830發　1次　¥36,800</option></select></div>
+  </div>
+  <div class="ti" id="s0t8" data-name="SBC 淺層音波緊膚">
+    <div class="tim" onclick="tog('s0t8')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">SBC 淺層音波緊膚</div><div class="pd" id="ps0t8"><span class="y">¥</span>24,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t8','ps0t8',this)"><option value="24800">全臉　330發　1次　¥24,800</option><option value="29800">全臉＋脖子　450發　1次　¥29,800</option></select></div>
+  </div>
+  <div class="ti" id="s0t9" data-name="美國極線音波">
+    <div class="tim" onclick="tog('s0t9')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">美國極線音波</div><div class="pd" id="ps0t9"><span class="y">¥</span>130,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t9','ps0t9',this)"><option value="130000">臉（臉頰/顴骨/下顎線）　1次　¥130,000</option><option value="160000">臉＋眼周　1次　¥160,000</option><option value="210000">臉＋眼周＋脖子　1次　¥210,000</option><option value="176000">三探頭 臉　1次　¥176,000</option><option value="207000">三探頭 臉＋眼周　1次　¥207,000</option><option value="258000">三探頭 臉＋眼周＋脖子　1次　¥258,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t10" data-name="美國極線音波 第二代">
+    <div class="tim" onclick="tog('s0t10')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">美國極線音波 第二代</div><div class="pd" id="ps0t10"><span class="y">¥</span>140,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t10','ps0t10',this)"><option value="140000">臉（臉頰/顴骨/下顎線）　1次　¥140,000</option><option value="170000">臉＋眼周　1次　¥170,000</option><option value="220000">臉＋眼周＋脖子　1次　¥220,000</option><option value="186000">三探頭 臉　1次　¥186,000</option><option value="217000">三探頭 臉＋眼周　1次　¥217,000</option><option value="268000">三探頭 臉＋眼周＋脖子　1次　¥268,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">美肌・飛梭雷射</div></div>
+  
+  <div class="ti" id="s0t11" data-name="飛梭雷射 CO2 標準">
+    <div class="tim" onclick="tog('s0t11')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">飛梭雷射 CO2 標準<span class="note">附皮膚護理</span></div><div class="pd" id="ps0t11"><span class="y">¥</span>6,200</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t11','ps0t11',this)"><option value="6200">小（鼻・嘴・眼上下）　1次　¥6,200</option><option value="10600">中（臉・脖子・手背・足背等）　1次　¥10,600</option><option value="20100">大（鎖骨區・背部・腹部等）　1次　¥20,100</option></select></div>
+  </div>
+  <div class="ti" id="s0t12" data-name="飛梭雷射 CO2 頂級">
+    <div class="tim" onclick="tog('s0t12')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">飛梭雷射 CO2 頂級<span class="note">附面膜</span></div><div class="pd" id="ps0t12"><span class="y">¥</span>9,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t12','ps0t12',this)"><option value="9800">小（鼻・嘴・眼上下）　1次　¥9,800</option><option value="13500">中（臉・脖子・手背等）　1次　¥13,500</option><option value="26800">大（鎖骨區・背部・腹部等）　1次　¥26,800</option></select></div>
+  </div>
+  <div class="ti" id="s0t13" data-name="紅寶石飛梭雷射">
+    <div class="tim" onclick="tog('s0t13')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">紅寶石飛梭雷射</div><div class="pd" id="ps0t13"><span class="y">¥</span>22,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t13','ps0t13',this)"><option value="22000">1次　¥22,000</option><option value="66000">3次療程　¥66,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">淡斑・色調雷射</div></div>
+  
+  <div class="ti" id="s0t14" data-name="淨膚雷射　臉頰">
+    <div class="tim" onclick="tog('s0t14')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">淨膚雷射　臉頰</div><div class="pd" id="ps0t14"><span class="y">¥</span>5,500</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t14','ps0t14',this)"><option value="5500">1次　¥5,500</option><option value="26480">5次療程　¥26,480</option></select></div>
+  </div>
+  <div class="ti" id="s0t15" data-name="淨膚雷射　全臉">
+    <div class="tim" onclick="tog('s0t15')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">淨膚雷射　全臉</div><div class="pd" id="ps0t15"><span class="y">¥</span>8,750</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t15','ps0t15',this)"><option value="8750">1次　¥8,750</option><option value="40530">5次　¥40,530</option><option value="77000">10次　¥77,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t16" data-name="碳粉雷射　鼻">
+    <div class="tim" onclick="tog('s0t16')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">碳粉雷射　鼻</div><div class="pd" id="ps0t16"><span class="y">¥</span>4,950</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t16','ps0t16',this)"><option value="4950">1次　¥4,950</option><option value="19380">5次　¥19,380</option><option value="33820">10次　¥33,820</option></select></div>
+  </div>
+  <div class="ti" id="s0t17" data-name="碳粉雷射　臉頰">
+    <div class="tim" onclick="tog('s0t17')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">碳粉雷射　臉頰</div><div class="pd" id="ps0t17"><span class="y">¥</span>8,650</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t17','ps0t17',this)"><option value="8650">1次　¥8,650</option><option value="36300">5次　¥36,300</option><option value="63100">10次　¥63,100</option></select></div>
+  </div>
+  <div class="ti" id="s0t18" data-name="碳粉雷射　全臉">
+    <div class="tim" onclick="tog('s0t18')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">碳粉雷射　全臉</div><div class="pd" id="ps0t18"><span class="y">¥</span>15,070</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t18','ps0t18',this)"><option value="15070">1次　¥15,070</option><option value="66400">5次　¥66,400</option><option value="110130">10次　¥110,130</option></select></div>
+  </div>
+  <div class="ti" id="s0t19" data-name="淨膚＋碳粉 雙雷射　全臉">
+    <div class="tim" onclick="tog('s0t19')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">淨膚＋碳粉 雙雷射　全臉<span class="note">膚質改善＋色調改善</span></div><div class="pd" id="ps0t19"><span class="y">¥</span>19,250</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t19','ps0t19',this)"><option value="19250">1次　¥19,250</option><option value="86200">5次　¥86,200</option><option value="143130">10次　¥143,130</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">皮秒雷射（Pico Q / 星皮秒）</div></div>
+  
+  <div class="ti" id="s0t20" data-name="皮秒淨膚　臉">
+    <div class="tim" onclick="tog('s0t20')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　臉<span class="note">初次優惠價</span></div><div class="pd" id="ps0t20"><span class="y">¥</span>9,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t20','ps0t20',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select></div>
+  </div>
+  <div class="ti" id="s0t21" data-name="皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）">
+    <div class="tim" onclick="tog('s0t21')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）</div><div class="pd" id="ps0t21"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t21','ps0t21',this)"><option value="11000">1次　¥11,000</option><option value="49900">5次　¥49,900</option></select></div>
+  </div>
+  <div class="ti" id="s0t22" data-name="皮秒淨膚　背部上方・臀部（各1部位）">
+    <div class="tim" onclick="tog('s0t22')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　背部上方・臀部（各1部位）</div><div class="pd" id="ps0t22"><span class="y">¥</span>22,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t22','ps0t22',this)"><option value="22800">1次　¥22,800</option><option value="105000">5次　¥105,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t23" data-name="皮秒淨膚　臉（皮膚科專屬）">
+    <div class="tim" onclick="tog('s0t23')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　臉（皮膚科專屬）</div><div class="pd" id="ps0t23"><span class="y">¥</span>7,840</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s0t24" data-name="皮秒蜂巢　臉">
+    <div class="tim" onclick="tog('s0t24')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒蜂巢　臉<span class="note">初次優惠價</span></div><div class="pd" id="ps0t24"><span class="y">¥</span>9,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t24','ps0t24',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option></select></div>
+  </div>
+  <div class="ti" id="s0t25" data-name="皮秒淨膚＋蜂巢　臉">
+    <div class="tim" onclick="tog('s0t25')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚＋蜂巢　臉</div><div class="pd" id="ps0t25"><span class="y">¥</span>12,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t25','ps0t25',this)"><option value="12800">1次　¥12,800</option><option value="57600">5次　¥57,600</option></select></div>
+  </div>
+  <div class="ti" id="s0t26" data-name="皮秒淨膚＋蜂巢　臉（皮膚科專屬）">
+    <div class="tim" onclick="tog('s0t26')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚＋蜂巢　臉（皮膚科專屬）</div><div class="pd" id="ps0t26"><span class="y">¥</span>11,520</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">脈衝光 IPL</div></div>
+  
+  <div class="ti" id="s0t27" data-name="心動光/魔幻極光 雙模式">
+    <div class="tim" onclick="tog('s0t27')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">心動光/魔幻極光 雙模式<span class="note">暗沉/斑點/泛紅/毛孔</span></div><div class="pd" id="ps0t27"><span class="y">¥</span>7,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t27','ps0t27',this)"><option value="7800">全臉　初次　¥7,800</option><option value="12800">全臉　1次　¥12,800（皮膚科限定¥9,480）</option><option value="47400">全臉　5次療程　¥47,400</option></select></div>
+  </div>
+  <div class="ti" id="s0t28" data-name="心動光/魔幻極光 三模式（斑點加強）">
+    <div class="tim" onclick="tog('s0t28')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">心動光/魔幻極光 三模式（斑點加強）</div><div class="pd" id="ps0t28"><span class="y">¥</span>10,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t28','ps0t28',this)"><option value="10800">初次　¥10,800</option><option value="18800">1次　¥18,800（皮膚科限定¥14,000）</option><option value="49800">5次（含初次）　¥49,800</option><option value="70000">5次　¥70,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t29" data-name="心動光（客製療程）">
+    <div class="tim" onclick="tog('s0t29')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">心動光（客製療程）</div><div class="pd" id="ps0t29"><span class="y">¥</span>12,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t29','ps0t29',this)"><option value="12800">1次　¥12,800</option><option value="47400">5次　¥47,400</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">微針電波</div></div>
+  
+  <div class="ti" id="s0t30" data-name="矽谷電波">
+    <div class="tim" onclick="tog('s0t30')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">矽谷電波</div><div class="pd" id="ps0t30"><span class="y">¥</span>25,000</div></div>
+    <div class="opts">
+<div class="ol">選擇部位・次數</div>
+<select class="os" id="mrf-base" onchange="mrfU()">
+  <option value="25000">臉或脖子　1次　¥25,000（皮膚科¥22,000）</option>
+  <option value="110000">臉或脖子　5次　¥110,000</option>
+  <option value="31000">臉＋脖子　1次　¥31,000（皮膚科¥27,600）</option>
+  <option value="138000">臉＋脖子　5次　¥138,000</option>
+</select>
+<div class="odiv"></div>
+<div class="ol">選配導入液（可不加）</div>
+<select class="os" id="mrf-liq" onchange="mrfU()">
+  <option value="0">不加導入液</option>
+  <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
+  <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
+  <option value="4200">維他命C衍生物（抗氧化）　1次　+¥4,200</option>
+  <option value="18500">維他命C衍生物（抗氧化）　5次　+¥18,500</option>
+  <option value="5000">保妥適肉毒 Allergan　1次　+¥5,000</option>
+  <option value="22500">保妥適肉毒 Allergan　5次　+¥22,500</option>
+  <option value="7800">生長因子（促膠原蛋白再生）　1次　+¥7,800</option>
+  <option value="35000">生長因子（促膠原蛋白再生）　5次　+¥35,000</option>
+  <option value="12000">嬰兒肌精華（修護）　1次　+¥12,000</option>
+  <option value="54000">嬰兒肌精華（修護）　5次　+¥54,000</option>
+</select></div>
+  </div>
+  <div class="ti" id="s0t31" data-name="莫菲斯８">
+    <div class="tim" onclick="tog('s0t31')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">莫菲斯８</div><div class="pd" id="ps0t31"><span class="y">¥</span>90,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t31','ps0t31',this)"><option value="90000">臉頰＋下巴　1次　¥90,000</option><option value="160000">臉頰＋下巴　2次套組　¥160,000</option><option value="78000">眼下（醫師施打）　1次　¥78,000</option><option value="135000">眼下（醫師施打）　2次套組　¥135,000</option><option value="65000">眼下（護理師施打）　1次　¥65,000</option><option value="110000">眼下（護理師施打）　2次套組　¥110,000</option><option value="60000">僅臉頰　1次　¥60,000</option><option value="110000">僅臉頰　2次套組　¥110,000</option><option value="58000">僅下巴　1次　¥58,000</option><option value="106000">僅下巴　2次套組　¥106,000</option><option value="110000">臉頰＋下巴＋脖子　1次　¥110,000</option><option value="198000">臉頰＋下巴＋脖子　2次套組　¥198,000</option><option value="96000">身體 M部位（手臂/腹部/臀部/大腿等）　1次　¥96,000</option><option value="178000">身體 M部位　2次套組　¥178,000</option><option value="126000">身體 L部位（大腿前後內側）　1次　¥126,000</option><option value="234000">身體 L部位　2次套組　¥234,000</option></select></div>
+  </div>
+  <div class="ti" id="s0t32" data-name="莫菲斯８ 上眼皮追加選項">
+    <div class="tim" onclick="tog('s0t32')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">莫菲斯８ 上眼皮追加選項</div><div class="pd" id="ps0t32"><span class="y">¥</span>10,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t32','ps0t32',this)"><option value="10000">醫師　1次追加　+¥10,000</option><option value="8000">護理師　1次追加　+¥8,000</option></select></div>
+  </div>
+</div></div></div><div class="sp" id="sh1"><div class="main">
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">韓國製肉毒桿菌素</div></div>
+  
+  <div class="ti" id="s1t0" data-name="韓國製肉毒　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴">
+    <div class="tim" onclick="tog('s1t0')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴<span class="note">不可指定醫師</span></div><div class="pd" id="ps1t0"><span class="y">¥</span>3,500</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t0','ps1t0',this)"><option value="3500">1部位　1次　¥3,500</option><option value="6400">2部位　1次　¥6,400（每部位¥3,200）</option><option value="8400">3部位　1次　¥8,400（每部位¥2,800）</option><option value="2800">4部位以上（每增加1部位）¥2,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t1" data-name="韓國製肉毒　咀嚼肌（兩側）">
+    <div class="tim" onclick="tog('s1t1')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　咀嚼肌（兩側）</div><div class="pd" id="ps1t1"><span class="y">¥</span>8,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t1','ps1t1',this)"><option value="8800">兩側 40單位　1次　¥8,800</option><option value="16000">兩側 加倍80單位　1次　¥16,000</option></select></div>
+  </div>
+  <div class="ti" id="s1t2" data-name="韓國製肉毒　嘴角・鼻翼（各4單位）">
+    <div class="tim" onclick="tog('s1t2')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　嘴角・鼻翼（各4單位）</div><div class="pd" id="ps1t2"><span class="y">¥</span>5,500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t3" data-name="韓國製肉毒　唇上・唇下・縮短人中">
+    <div class="tim" onclick="tog('s1t3')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　唇上・唇下・縮短人中</div><div class="pd" id="ps1t3"><span class="y">¥</span>8,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t4" data-name="韓國製肉毒　下垂眼・法令紋・露齦笑・眼頭">
+    <div class="tim" onclick="tog('s1t4')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　下垂眼・法令紋・露齦笑・眼頭</div><div class="pd" id="ps1t4"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t5" data-name="韓國製肉毒　顳肌・頸部・肉毒拉提（40單位）">
+    <div class="tim" onclick="tog('s1t5')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　顳肌・頸部・肉毒拉提（40單位）</div><div class="pd" id="ps1t5"><span class="y">¥</span>24,200</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t6" data-name="韓國製肉毒　中臉部肉毒（20單位）">
+    <div class="tim" onclick="tog('s1t6')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　中臉部肉毒（20單位）</div><div class="pd" id="ps1t6"><span class="y">¥</span>14,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t7" data-name="韓國製肉毒　中臉部肉毒（40單位）">
+    <div class="tim" onclick="tog('s1t7')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　中臉部肉毒（40單位）</div><div class="pd" id="ps1t7"><span class="y">¥</span>24,200</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t8" data-name="韓國製肉毒　肩膀瘦身">
+    <div class="tim" onclick="tog('s1t8')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">韓國製肉毒　肩膀瘦身</div><div class="pd" id="ps1t8"><span class="y">¥</span>15,400</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t8','ps1t8',this)"><option value="15400">兩側 40單位　1次　¥15,400</option><option value="30800">兩側 加倍80單位　1次　¥30,800</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">保妥適 Allergan 肉毒桿菌素</div></div>
+  
+  <div class="ti" id="s1t9" data-name="保妥適　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴">
+    <div class="tim" onclick="tog('s1t9')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴<span class="note">附安心保障制度</span></div><div class="pd" id="ps1t9"><span class="y">¥</span>8,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t9','ps1t9',this)"><option value="8000">1部位　1次　¥8,000</option><option value="15200">2部位　1次　¥15,200（每部位¥7,600）</option><option value="21000">3部位　1次　¥21,000（每部位¥7,000）</option><option value="7000">4部位以上（每增加1部位）¥7,000</option></select></div>
+  </div>
+  <div class="ti" id="s1t10" data-name="保妥適　咀嚼肌（兩側）">
+    <div class="tim" onclick="tog('s1t10')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　咀嚼肌（兩側）<span class="note">1年內3次→贈送1次</span></div><div class="pd" id="ps1t10"><span class="y">¥</span>18,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t10','ps1t10',this)"><option value="18000">兩側 40單位　1次　¥18,000</option><option value="35800">兩側 加倍80單位　1次　¥35,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t11" data-name="保妥適　嘴角・鼻翼（各4單位）">
+    <div class="tim" onclick="tog('s1t11')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　嘴角・鼻翼（各4單位）</div><div class="pd" id="ps1t11"><span class="y">¥</span>8,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t12" data-name="保妥適　唇上・唇下・縮短人中">
+    <div class="tim" onclick="tog('s1t12')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　唇上・唇下・縮短人中</div><div class="pd" id="ps1t12"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t13" data-name="保妥適　下垂眼・法令紋・露齦笑・眼頭">
+    <div class="tim" onclick="tog('s1t13')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　下垂眼・法令紋・露齦笑・眼頭</div><div class="pd" id="ps1t13"><span class="y">¥</span>16,500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t14" data-name="保妥適　顳肌（40單位）">
+    <div class="tim" onclick="tog('s1t14')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　顳肌（40單位）</div><div class="pd" id="ps1t14"><span class="y">¥</span>40,530</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t15" data-name="保妥適　頸部・肉毒拉提（40單位）">
+    <div class="tim" onclick="tog('s1t15')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　頸部・肉毒拉提（40單位）</div><div class="pd" id="ps1t15"><span class="y">¥</span>33,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t16" data-name="保妥適　中臉部肉毒（20單位）">
+    <div class="tim" onclick="tog('s1t16')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　中臉部肉毒（20單位）</div><div class="pd" id="ps1t16"><span class="y">¥</span>20,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t17" data-name="保妥適　中臉部肉毒（40單位）">
+    <div class="tim" onclick="tog('s1t17')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　中臉部肉毒（40單位）</div><div class="pd" id="ps1t17"><span class="y">¥</span>33,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t18" data-name="保妥適　肩膀瘦身">
+    <div class="tim" onclick="tog('s1t18')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保妥適　肩膀瘦身</div><div class="pd" id="ps1t18"><span class="y">¥</span>22,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t18','ps1t18',this)"><option value="22000">兩側 40單位　1次　¥22,000</option><option value="44000">兩側 加倍80單位　1次　¥44,000</option></select></div>
+  </div>
+  <div class="ti" id="s1t19" data-name="自然型保妥適（臉部3部位套組）">
+    <div class="tim" onclick="tog('s1t19')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">自然型保妥適（臉部3部位套組）<span class="note">不適用安心保障制度</span></div><div class="pd" id="ps1t19"><span class="y">¥</span>19,800</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">PRP・成長因子注射</div></div>
+  
+  <div class="ti" id="s1t20" data-name="SBC Premium PRP 皮膚再生療法">
+    <div class="tim" onclick="tog('s1t20')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">SBC Premium PRP 皮膚再生療法<span class="note">2部位同時享9折・3部位以上享8折</span></div><div class="pd" id="ps1t20"><span class="y">¥</span>150,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t20','ps1t20',this)"><option value="150000">眉間～鼻根・上唇　1次　¥150,000</option><option value="220000">淚溝・法令紋・木偶紋　1次　¥220,000</option><option value="260000">眼上・太陽穴・臉頰　1次　¥260,000</option><option value="280000">額頭　1次　¥280,000</option><option value="340000">手背（含微導管）　1次　¥340,000</option><option value="70000">補充注射 1cc（初次後6〜12個月內）¥70,000</option><option value="100000">補充注射 2cc　¥100,000</option><option value="1000000">無限注入（僅限臉部）¥1,000,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">麗珠蘭（鮭魚針）</div></div>
+  
+  <div class="ti" id="s1t21" data-name="麗珠蘭ᵢ　1支">
+    <div class="tim" onclick="tog('s1t21')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">麗珠蘭ᵢ　1支</div><div class="pd" id="ps1t21"><span class="y">¥</span>30,350</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t22" data-name="麗珠蘭 HB　1支">
+    <div class="tim" onclick="tog('s1t22')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">麗珠蘭 HB　1支</div><div class="pd" id="ps1t22"><span class="y">¥</span>35,350</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t23" data-name="麗珠蘭 S　1支">
+    <div class="tim" onclick="tog('s1t23')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">麗珠蘭 S　1支</div><div class="pd" id="ps1t23"><span class="y">¥</span>35,350</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">女優注射・複合注射</div></div>
+  
+  <div class="ti" id="s1t24" data-name="女優注射®（麗珠蘭ᵢ＋肉毒）">
+    <div class="tim" onclick="tog('s1t24')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">女優注射®（麗珠蘭ᵢ＋肉毒）</div><div class="pd" id="ps1t24"><span class="y">¥</span>44,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t24','ps1t24',this)"><option value="44800">1支　¥44,800</option><option value="39800">2支以上（每支）¥39,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t25" data-name="女優注射®（麗珠蘭HB＋肉毒）">
+    <div class="tim" onclick="tog('s1t25')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">女優注射®（麗珠蘭HB＋肉毒）</div><div class="pd" id="ps1t25"><span class="y">¥</span>49,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t25','ps1t25',this)"><option value="49800">1支　¥49,800</option><option value="44800">2支以上（每支）¥44,800</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">其他注入（膠原蛋白再生）</div></div>
+  
+  <div class="ti" id="s1t26" data-name="Jalupro Superhydro　1支">
+    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Jalupro Superhydro　1支</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）　1支">
+    <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）　1支</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t28" data-name="逆時針　1支 2cc（臉/脖子/手背三選一）">
+    <div class="tim" onclick="tog('s1t28')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針　1支 2cc（臉/脖子/手背三選一）</div><div class="pd" id="ps1t28"><span class="y">¥</span>54,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t29" data-name="身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）">
+    <div class="tim" onclick="tog('s1t29')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）<span class="note">新宿本院限定</span></div><div class="pd" id="ps1t29"><span class="y">¥</span>56,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t30" data-name="逆時針 Structura 臉　1支 2cc">
+    <div class="tim" onclick="tog('s1t30')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針 Structura 臉　1支 2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">玻尿酸（Juvederm 喬雅登系列）</div></div>
+  
+  <div class="ti" id="s1t31" data-name="玻尿酸 RHA1（眼周/嘴唇/臥蠶）">
+    <div class="tim" onclick="tog('s1t31')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 RHA1（眼周/嘴唇/臥蠶）</div><div class="pd" id="ps1t31"><span class="y">¥</span>18,330</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t31','ps1t31',this)"><option value="18330">0.3cc　1支　¥18,330</option><option value="39180">1.0cc　1支　¥39,180</option></select></div>
+  </div>
+  <div class="ti" id="s1t32" data-name="玻尿酸 喬雅登 ウルトラプラスXC　1cc（太陽穴・臉頰・淚溝・法令紋等）">
+    <div class="tim" onclick="tog('s1t32')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 喬雅登 ウルトラプラスXC　1cc（太陽穴・臉頰・淚溝・法令紋等）</div><div class="pd" id="ps1t32"><span class="y">¥</span>34,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t33" data-name="玻尿酸 SKINVIVE（Volite XC）">
+    <div class="tim" onclick="tog('s1t33')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 SKINVIVE（Volite XC）</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t33','ps1t33',this)"><option value="45000">1.0cc　1支　¥45,000</option><option value="90000">2.0cc　2支　¥90,000（新宿模特活動）</option></select></div>
+  </div>
+  <div class="ti" id="s1t34" data-name="玻尿酸 喬雅登 Voluma XC　1cc（額頭/夫妻宮/臉頰等）">
+    <div class="tim" onclick="tog('s1t34')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 喬雅登 Voluma XC　1cc（額頭/夫妻宮/臉頰等）</div><div class="pd" id="ps1t34"><span class="y">¥</span>57,200</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t35" data-name="玻尿酸 喬雅登 Vobella XC　1cc（眼周/嘴唇/臥蠶）">
+    <div class="tim" onclick="tog('s1t35')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 喬雅登 Vobella XC　1cc（眼周/嘴唇/臥蠶）</div><div class="pd" id="ps1t35"><span class="y">¥</span>57,200</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t36" data-name="玻尿酸 喬雅登 Volift XC　1cc（額頭/夫妻宮/臉頰等）">
+    <div class="tim" onclick="tog('s1t36')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 喬雅登 Volift XC　1cc（額頭/夫妻宮/臉頰等）</div><div class="pd" id="ps1t36"><span class="y">¥</span>57,200</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t37" data-name="玻尿酸 喬雅登 Volux XC　1cc（鼻子/下巴/夫妻宮/臉頰等）">
+    <div class="tim" onclick="tog('s1t37')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 喬雅登 Volux XC　1cc（鼻子/下巴/夫妻宮/臉頰等）</div><div class="pd" id="ps1t37"><span class="y">¥</span>66,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t38" data-name="玻尿酸 Fineha Ultra　1cc（鼻子/下巴）">
+    <div class="tim" onclick="tog('s1t38')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸 Fineha Ultra　1cc（鼻子/下巴）</div><div class="pd" id="ps1t38"><span class="y">¥</span>81,270</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t39" data-name="玻尿酸溶解（HIRAX）">
+    <div class="tim" onclick="tog('s1t39')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玻尿酸溶解（HIRAX）</div><div class="pd" id="ps1t39"><span class="y">¥</span>19,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t39','ps1t39',this)"><option value="19800">本院施打的玻尿酸　1瓶　¥19,800</option><option value="39600">他院施打的玻尿酸　1瓶　¥39,600</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen・其他針治療</div></div>
+  
+  <div class="ti" id="s1t40" data-name="DermaPen4　臉">
+    <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4　臉<span class="note">皮膚科原始價格¥9,900</span></div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次　¥11,000</option><option value="49500">5次　¥49,500</option></select></div>
+  </div>
+  <div class="ti" id="s1t41" data-name="DermaPen4 身體（手臂上方・背部上下）">
+    <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（手臂上方・背部上下）</div><div class="pd" id="ps1t41"><span class="y">¥</span>29,700</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t41','ps1t41',this)"><option value="29700">1次　¥29,700</option><option value="126000">5次　¥126,000</option></select></div>
+  </div>
+  <div class="ti" id="s1t42" data-name="DermaPen4 身體（脖子・手背）">
+    <div class="tim" onclick="tog('s1t42')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（脖子・手背）</div><div class="pd" id="ps1t42"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t42','ps1t42',this)"><option value="11000">1次　¥11,000</option><option value="49500">5次　¥49,500</option></select></div>
+  </div>
+  <div class="ti" id="s1t43" data-name="天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）">
+    <div class="tim" onclick="tog('s1t43')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）</div><div class="pd" id="ps1t43"><span class="y">¥</span>16,500</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">脂肪溶解注射・瘦身注射</div></div>
+  
+  <div class="ti" id="s1t44" data-name="BNLS アルティメット 小臉溶脂注射">
+    <div class="tim" onclick="tog('s1t44')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">BNLS アルティメット 小臉溶脂注射</div><div class="pd" id="ps1t44"><span class="y">¥</span>1,980</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t44','ps1t44',this)"><option value="1980">10cc以上時（每cc）¥1,980</option><option value="3030">1〜9cc時（每cc）¥3,030　（需間隔1週以上）</option></select></div>
+  </div>
+  <div class="ti" id="s1t45" data-name="山參注射（高麗人參）">
+    <div class="tim" onclick="tog('s1t45')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">山參注射（高麗人參）</div><div class="pd" id="ps1t45"><span class="y">¥</span>8,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t45','ps1t45',this)"><option value="8000">1cc　1支　¥8,000</option><option value="7000">5cc以上（每cc）¥7,000</option><option value="6000">10cc以上（每cc）¥6,000　（需間隔1週以上）</option></select></div>
+  </div>
+  <div class="ti" id="s1t46" data-name="FatX Core 溶脂注射">
+    <div class="tim" onclick="tog('s1t46')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">FatX Core 溶脂注射</div><div class="pd" id="ps1t46"><span class="y">¥</span>0</div></div>
+    <div class="opts">
+<div class="ol">輸入注射量（cc數）—自動計算價格</div>
+<div class="crow">
+  <input type="number" class="ci" id="fatx-cc" min="1" max="100" step="0.5" placeholder="0" oninput="fatxU()">
+  <span class="cu">cc</span>
+</div>
+<div class="hint" id="fatx-hint">1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc</div></div>
+  </div>
+  <div class="ti" id="s1t47" data-name="肉毒瘦身　小腿">
+    <div class="tim" onclick="tog('s1t47')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">肉毒瘦身　小腿</div><div class="pd" id="ps1t47"><span class="y">¥</span>38,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t47','ps1t47',this)"><option value="38000">兩側全體 240單位（韓國製）¥38,000</option><option value="75000">兩側全體 240單位（Allergan）¥75,000</option><option value="20000">單側或內/外側 120單位（韓國製）¥20,000</option><option value="38500">單側或內/外側 120單位（Allergan）¥38,500</option></select></div>
+  </div>
+  <div class="ti" id="s1t48" data-name="肉毒瘦身　大腿">
+    <div class="tim" onclick="tog('s1t48')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">肉毒瘦身　大腿</div><div class="pd" id="ps1t48"><span class="y">¥</span>33,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t48','ps1t48',this)"><option value="33000">120單位（韓國製）¥33,000</option><option value="54800">120單位（Allergan）¥54,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t49" data-name="肉毒瘦身　手臂（Allergan 40單位・兩側）">
+    <div class="tim" onclick="tog('s1t49')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">肉毒瘦身　手臂（Allergan 40單位・兩側）</div><div class="pd" id="ps1t49"><span class="y">¥</span>54,000</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">水光注射・肌膚再生注射</div></div>
+  
+  <div class="ti" id="s1t50" data-name="喬雅露水光注射">
+    <div class="tim" onclick="tog('s1t50')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">喬雅露水光注射</div><div class="pd" id="ps1t50"><span class="y">¥</span>39,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t50','ps1t50',this)"><option value="39800">臉　1次　¥39,800</option><option value="39800">脖子　1次　¥39,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t51" data-name="喬雅露水光注射 選配 加打保妥適">
+    <div class="tim" onclick="tog('s1t51')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">喬雅露水光注射 選配 加打保妥適<span class="note">施打水光注射時可追加</span></div><div class="pd" id="ps1t51"><span class="y">¥</span>5,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t52" data-name="女優水光注射">
+    <div class="tim" onclick="tog('s1t52')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">女優水光注射</div><div class="pd" id="ps1t52"><span class="y">¥</span>42,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t52','ps1t52',this)"><option value="42800">臉　1次　¥42,800</option><option value="42800">脖子　1次　¥42,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t53" data-name="女優水光注射 選配 加打保妥適">
+    <div class="tim" onclick="tog('s1t53')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">女優水光注射 選配 加打保妥適<span class="note">施打女優水光時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t54" data-name="双美膠原蛋白針（Deusaderm）　1支">
+    <div class="tim" onclick="tog('s1t54')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">双美膠原蛋白針（Deusaderm）　1支<span class="note">促進膠原蛋白再生</span></div><div class="pd" id="ps1t54"><span class="y">¥</span>88,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t55" data-name="双美膠原蛋白針 Booster　1支">
+    <div class="tim" onclick="tog('s1t55')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">双美膠原蛋白針 Booster　1支</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光注射">
+    <div class="tim" onclick="tog('s1t56')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">双美膠原蛋白針水光注射</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t56','ps1t56',this)"><option value="79600">臉　1次　¥79,600</option><option value="79600">脖子　1次　¥79,600</option></select></div>
+  </div>
+  <div class="ti" id="s1t57" data-name="保柔緹 Revive">
+    <div class="tim" onclick="tog('s1t57')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">保柔緹 Revive</div><div class="pd" id="ps1t57"><span class="y">¥</span>48,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t57','ps1t57',this)"><option value="48000">1支（通常）¥48,000</option><option value="45000">1支（方案2）¥45,000</option><option value="42800">1支（方案3）¥42,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t58" data-name="玉の肌 DermaPen（ACRS 自己血細胞激素療法）">
+    <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t58','ps1t58',this)"><option value="88000">臉・脖子・手背三選一　1次　¥88,000</option><option value="149800">2次療程（有效期120天）¥149,800</option></select></div>
+  </div>
+  <div class="ti" id="s1t59" data-name="玉の肌 DermaPen 追加醫師注射選項">
+    <div class="tim" onclick="tog('s1t59')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玉の肌 DermaPen 追加醫師注射選項</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
+    <div class="opts"></div>
+  </div>
+</div></div></div><div class="sp" id="sh2"><div class="main">
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">TrueSculpt iD（高周波RF溶脂）</div></div>
+  
+  <div class="ti" id="s2t0" data-name="TrueSculpt iD">
+    <div class="tim" onclick="tog('s2t0')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">TrueSculpt iD</div><div class="pd" id="ps2t0"><span class="y">¥</span>35,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t0','ps2t0',this)"><option value="35000">1區（40㎠）/ 下巴（16㎠）　1次　¥35,000</option><option value="60000">2區同時　1次　¥60,000（每區¥30,000）</option><option value="75000">3區　1次　¥75,000（每區¥25,000）</option><option value="80000">4區　1次　¥80,000（每區¥20,000）</option><option value="85000">5區　1次　¥85,000（每區¥17,000）</option><option value="90000">6區　1次　¥90,000（每區¥15,000）</option><option value="15000">7區以上（每增加1區）¥15,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">TrueSculpt flex（EMS 肌肉刺激）</div></div>
+  
+  <div class="ti" id="s2t1" data-name="TrueSculpt flex">
+    <div class="tim" onclick="tog('s2t1')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">TrueSculpt flex<span class="note">部位：手臂・腹部・臀部・大腿前後・小腿</span></div><div class="pd" id="ps2t1"><span class="y">¥</span>29,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t1','ps2t1',this)"><option value="29800">體驗方案　1部位（每人限1次）¥29,800</option><option value="59800">定價　1部位　1次　¥59,800</option><option value="98000">1個月方案　1部位 每月4次　¥98,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">CoolSculpting® Elite（冷凍溶脂）</div></div>
+  
+  <div class="ti" id="s2t2" data-name="CoolSculpting® Elite">
+    <div class="tim" onclick="tog('s2t2')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">CoolSculpting® Elite</div><div class="pd" id="ps2t2"><span class="y">¥</span>29,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t2','ps2t2',this)"><option value="29800">1區　初次優惠　¥29,800</option><option value="54000">2區同時　1次　¥54,000</option><option value="139200">小試套組（2區×2次＋飲食管理App 2個月）¥139,200</option><option value="208800">小試套組（2區×3次＋飲食管理App 3個月）¥208,800</option><option value="258400">完整套組（4區×2次＋飲食管理App 2個月）¥258,400</option><option value="387600">完整套組（4區×3次＋飲食管理App 3個月）¥387,600</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">新・脂肪溶解立線音波（HIFU）</div></div>
+  
+  <div class="ti" id="s2t3" data-name="新・脂肪溶解立線音波">
+    <div class="tim" onclick="tog('s2t3')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">新・脂肪溶解立線音波</div><div class="pd" id="ps2t3"><span class="y">¥</span>25,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t3','ps2t3',this)"><option value="25000">180發　1次　¥25,000（皮膚科專屬¥20,000）</option><option value="60000">180發　3次　¥60,000</option><option value="29700">300發　1次　¥29,700（皮膚科專屬¥23,100）</option><option value="69300">300發　3次　¥69,300</option></select></div>
+  </div>
+  <div class="ti" id="s2t4" data-name="新・脂肪溶解立線音波＋音波拉提 套組">
+    <div class="tim" onclick="tog('s2t4')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">新・脂肪溶解立線音波＋音波拉提 套組</div><div class="pd" id="ps2t4"><span class="y">¥</span>49,700</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t4','ps2t4',this)"><option value="49700">300發＋音波拉提 臉頰・下巴　1次　¥49,700</option><option value="56500">300發＋音波拉提 全臉　1次　¥56,500</option><option value="62500">300發＋音波拉提 全臉＋脖子　1次　¥62,500（同日折¥2,000）</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（微波RF射頻）</div></div>
+  
+  <div class="ti" id="s2t5" data-name="Onda Pro　臉部">
+    <div class="tim" onclick="tog('s2t5')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Onda Pro　臉部</div><div class="pd" id="ps2t5"><span class="y">¥</span>27,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t5','ps2t5',this)"><option value="27000">臉頰　1次　¥27,000（皮膚科¥24,000）</option><option value="72000">臉頰　3次　¥72,000</option><option value="42000">臉頰＋下巴　1次　¥42,000（皮膚科¥38,000）</option><option value="114000">臉頰＋下巴　3次　¥114,000</option></select></div>
+  </div>
+  <div class="ti" id="s2t6" data-name="Onda Pro　身體">
+    <div class="tim" onclick="tog('s2t6')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Onda Pro　身體</div><div class="pd" id="ps2t6"><span class="y">¥</span>36,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t6','ps2t6',this)"><option value="36000">M部位（背部・手臂・腰・臀部・小腿・腹部・大腿）1次　¥36,000（皮膚科¥32,000）</option><option value="96000">M部位　3次　¥96,000</option><option value="56000">L部位（大腿前側・後側・內側）1次　¥56,000（皮膚科¥47,000）</option><option value="141000">L部位　3次　¥141,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">LipoFlat（超音波＋光療法）</div></div>
+  
+  <div class="ti" id="s2t7" data-name="LipoFlat　臉">
+    <div class="tim" onclick="tog('s2t7')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">LipoFlat　臉<span class="note">套組價格¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s2t8" data-name="LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）">
+    <div class="tim" onclick="tog('s2t8')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">套組價格¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s2t9" data-name="LipoFlat 身體 L部位（60分・大腿後側/前側/內側）">
+    <div class="tim" onclick="tog('s2t9')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">套組價格¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">InBody 體組成測量・INDIBA 溫熱療法</div></div>
+  
+  <div class="ti" id="s2t10" data-name="InBody 體組成測量（與瘦身治療同時進行）">
+    <div class="tim" onclick="tog('s2t10')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">InBody 體組成測量（與瘦身治療同時進行）</div><div class="pd" id="ps2t10"><span class="y">¥</span>500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s2t11" data-name="InBody 體組成測量（單獨進行）">
+    <div class="tim" onclick="tog('s2t11')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">InBody 體組成測量（單獨進行）</div><div class="pd" id="ps2t11"><span class="y">¥</span>1,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s2t12" data-name="INDIBA 高周波溫熱療法　各部位 30分">
+    <div class="tim" onclick="tog('s2t12')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">INDIBA 高周波溫熱療法　各部位 30分</div><div class="pd" id="ps2t12"><span class="y">¥</span>7,500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s2t13" data-name="INDIBA 高周波溫熱療法　各部位 60分">
+    <div class="tim" onclick="tog('s2t13')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">INDIBA 高周波溫熱療法　各部位 60分</div><div class="pd" id="ps2t13"><span class="y">¥</span>14,000</div></div>
+    <div class="opts"></div>
+  </div>
+</div></div></div><div class="sp" id="sh3"><div class="main">
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">麻醉選項</div></div>
+  
+  <div class="ti" id="s3t0" data-name="強力局部麻醉　¥980 / 部位">
+    <div class="tim" onclick="tog('s3t0')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">強力局部麻醉　¥980 / 部位</div><div class="pd" id="ps3t0"><span class="y">¥</span>980</div></div>
+    <div class="opts">
+<div class="ol">輸入施打部位數</div>
+<div class="crow">
+  <input type="number" class="ci" id="an-areas" min="1" max="30" step="1" value="1" oninput="anU()">
+  <span class="cu">部位　×　¥980</span>
+</div>
+<div class="hint" id="an-hint">1部位 × ¥980 = ¥980</div></div>
+  </div>
+  <div class="ti" id="s3t1" data-name="笑氣麻醉（吸入式）">
+    <div class="tim" onclick="tog('s3t1')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">笑氣麻醉（吸入式）</div><div class="pd" id="ps3t1"><span class="y">¥</span>3,300</div></div>
+    <div class="opts"></div>
+  </div>
+</div></div></div>
+<script>
+const P={}, O={}, C=new Set();
+let rate=0.2004;
+
+async function fetchRate(){
+  try{
+    const r=await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/jpy.json');
+    const d=await r.json();
+    if(d.jpy&&d.jpy.twd){rate=d.jpy.twd;document.getElementById('rn').textContent='即時匯率：1 JPY = NT$'+rate.toFixed(4);}
+  }catch(e){document.getElementById('rn').textContent='參考匯率：1 JPY ≈ NT$0.2004';}
+  upd();
+}
+fetchRate();
+
+function gu(id,pid,sel){
+  const v=parseInt(sel.value)||0;
+  P[id]=v; O[id]=sel.options[sel.selectedIndex]?.text||'';
+  setPD(pid,v); upd();
+}
+
+function setPD(pid,v){
+  const el=document.getElementById(pid);
+  if(!el)return;
+  el.innerHTML=v>0?'<span class="y">¥</span>'+v.toLocaleString():'<span class="y">¥</span>—';
+}
+
+function mrfU(){
+  const b=parseInt(document.getElementById('mrf-base').value)||0;
+  const l=parseInt(document.getElementById('mrf-liq').value)||0;
+  P['s0t30']=b+l;
+  const bs=document.getElementById('mrf-base');
+  const ls=document.getElementById('mrf-liq');
+  const bl=bs?bs.options[bs.selectedIndex]?.text:'';
+  const ll=ls?ls.options[ls.selectedIndex]?.text:'';
+  O['s0t30']=l>0?bl+' ＋ '+ll:bl;
+  setPD('ps0t30',b+l); upd();
+}
+
+function fatxU(){
+  const cc=parseFloat(document.getElementById('fatx-cc').value)||0;
+  let price=0;
+  if(cc>=10) price=Math.round(cc*6000);
+  else if(cc>=5) price=Math.round(cc*7000);
+  else if(cc>0) price=Math.round(cc*8000);
+  P['s1t46']=price;
+  O['s1t46']=cc>0?cc+'cc = ¥'+price.toLocaleString():'';
+  setPD('ps1t46',cc>0?price:0);
+  const h=document.getElementById('fatx-hint');
+  if(h){
+    if(cc>0){
+      const r2=cc>=10?6000:cc>=5?7000:8000;
+      h.textContent=cc+'cc × ¥'+r2.toLocaleString()+'/cc = ¥'+price.toLocaleString();
+      h.style.color='var(--gold)';
+    } else {
+      h.textContent='1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc';
+      h.style.color='';
+    }
+  }
+  upd();
+}
+
+function anU(){
+  const a=parseInt(document.getElementById('an-areas').value)||0;
+  const price=a*980;
+  P['s3t0']=price;
+  O['s3t0']=a+'部位 × ¥980 = ¥'+price.toLocaleString();
+  setPD('ps3t0',price);
+  const h=document.getElementById('an-hint');
+  if(h) h.textContent=(a||1)+'部位 × ¥980 = ¥'+((a||1)*980).toLocaleString();
+  upd();
+}
+
+function tog(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(C.has(id)){
+    C.delete(id); delete P[id]; delete O[id];
+    el.classList.remove('on');
+  } else {
+    C.add(id); el.classList.add('on');
+    if(id==='s0t30') mrfU();
+    else if(id==='s1t46') fatxU();
+    else if(id==='s3t0') anU();
+    else {
+      const sel=el.querySelector('.os');
+      if(sel){P[id]=parseInt(sel.value)||0; O[id]=sel.options[sel.selectedIndex]?.text||'';}
+      else {
+        const pd=el.querySelector('.pd');
+        if(pd){const t=pd.textContent.replace(/[¥,\s]/g,'').replace('—','');P[id]=parseInt(t)||0;}
+      }
+    }
+  }
+  upd();
+}
+
+function upd(){
+  let tot=0;
+  for(const id of C) tot+=P[id]||0;
+  document.getElementById('jn').textContent=tot.toLocaleString();
+  document.getElementById('tn').textContent=Math.round(tot*rate).toLocaleString();
+  const n=C.size;
+  document.getElementById('sc').textContent=n===0?'尚未選擇':'已選 '+n+' 項療程';
+  document.getElementById('bsum').disabled=n===0;
+}
+
+function openM(){
+  const body=document.getElementById('mbody');
+  const totEl=document.getElementById('mtot');
+  if(C.size===0){body.innerHTML='<div class="memp">尚未選擇任何療程</div>';totEl.textContent='0';return;}
+  let html='',sum=0;
+  for(const id of C){
+    const el=document.getElementById(id);
+    const name=el?el.dataset.name||(el.querySelector('.tn')?.textContent?.trim()||id):id;
+    const opt=O[id]||'';
+    const p=P[id]||0; sum+=p;
+    html+=`<div class="mrow"><div><div class="mn">${name}</div><div class="mo">${opt}</div></div><div class="mp">¥${p.toLocaleString()}</div></div>`;
+  }
+  body.innerHTML=html; totEl.textContent=sum.toLocaleString();
+  document.getElementById('ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeM(){document.getElementById('ov').classList.remove('open');document.body.style.overflow='';}
+
+function sw(i,btn){
+  document.querySelectorAll('.sp').forEach((p,j)=>p.classList.toggle('on',j===i));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function resetAll(){
+  C.clear();
+  Object.keys(P).forEach(k=>delete P[k]);
+  Object.keys(O).forEach(k=>delete O[k]);
+  document.querySelectorAll('.ti').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.os').forEach(sel=>{sel.selectedIndex=0;});
+  const fc=document.getElementById('fatx-cc'); if(fc)fc.value='';
+  const aa=document.getElementById('an-areas'); if(aa)aa.value=1;
+  const fh=document.getElementById('fatx-hint');
+  if(fh){fh.textContent='1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc';fh.style.color='';}
+  const ah=document.getElementById('an-hint'); if(ah)ah.textContent='1部位 × ¥980 = ¥980';
+  mrfU(); upd();
+}
+</script>
+</body></html>
