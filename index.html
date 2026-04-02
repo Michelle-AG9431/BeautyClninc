@@ -43,7 +43,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .mp{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold);white-space:nowrap;flex-shrink:0;}
 .mft{padding:11px 18px;border-top:2px solid var(--br);display:flex;align-items:center;justify-content:space-between;}
 .mftot{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);}
-.tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;}
+.tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;position:sticky;top:134px;z-index:140;box-shadow:0 2px 8px var(--sh);transition:top .1s;}
 .tabs::-webkit-scrollbar{display:none;}
 .tb{flex:0 0 auto;padding:11px 16px;font-size:11px;letter-spacing:.08em;color:var(--ink-l);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Noto Sans TC',sans-serif;white-space:nowrap;transition:all .2s;}
 .tb.on{color:var(--gold);border-bottom-color:var(--gold);}
@@ -114,6 +114,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
   <button class="tb" onclick="sw(2,this)">✦ 瘦身・能量療程</button>
   <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
+  <button class="tb" onclick="sw(4,this)">✦ 抽脂（美容外科）</button>
 </div>
 <div class="sp on" id="sh0"><div class="main">
 <div class="cat">
@@ -233,8 +234,13 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   
   <div class="ti" id="s0t20" data-name="皮秒淨膚　臉">
     <div class="tim" onclick="tog('s0t20')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">皮秒淨膚　臉<span class="note">初次優惠價</span></div><div class="pd" id="ps0t20"><span class="y">¥</span>9,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t20','ps0t20',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select></div>
+    <div class="tn">皮秒淨膚　臉<span class="note">初次優惠價</span></div><div class="pd" id="ps0t20"><span class="y">¥</span>7,800</div></div>
+    <div class="opts"></select></div>
+  </div>
+    <div class="tim" onclick="tog('s0t20')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　臉</div><div class="pd" id="ps0t20"><span class="y">¥</span>9,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t20','ps0t20',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select>
+    </div>
   </div>
   <div class="ti" id="s0t21" data-name="皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）">
     <div class="tim" onclick="tog('s0t21')"><div class="ck"><span class="tk">✓</span></div>
@@ -254,12 +260,42 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t24" data-name="皮秒蜂巢　臉">
     <div class="tim" onclick="tog('s0t24')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒蜂巢　臉<span class="note">初次優惠價</span></div><div class="pd" id="ps0t24"><span class="y">¥</span>9,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t24','ps0t24',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t24','ps0t24',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option></select>
+    <div class="odiv"></div>
+<div class="ol">選配導入液（可不加）</div>
+<select class="os" id="mrf-liq" onchange="mrfU()">
+  <option value="0">不加導入液</option>
+  <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
+  <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
+  <option value="4200">維他命C衍生物（抗氧化）　1次　+¥4,200</option>
+  <option value="18500">維他命C衍生物（抗氧化）　5次　+¥18,500</option>
+  <option value="5000">保妥適肉毒 Allergan　1次　+¥5,000</option>
+  <option value="22500">保妥適肉毒 Allergan　5次　+¥22,500</option>
+  <option value="7800">生長因子（促膠原蛋白再生）　1次　+¥7,800</option>
+  <option value="35000">生長因子（促膠原蛋白再生）　5次　+¥35,000</option>
+  <option value="12000">嬰兒肌精華（修護）　1次　+¥12,000</option>
+  <option value="54000">嬰兒肌精華（修護）　5次　+¥54,000</option>
+</select></div>
   </div>
   <div class="ti" id="s0t25" data-name="皮秒淨膚＋蜂巢　臉">
     <div class="tim" onclick="tog('s0t25')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚＋蜂巢　臉</div><div class="pd" id="ps0t25"><span class="y">¥</span>12,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t25','ps0t25',this)"><option value="12800">1次　¥12,800</option><option value="57600">5次　¥57,600</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t25','ps0t25',this)"><option value="12800">1次　¥12,800</option><option value="57600">5次　¥57,600</option></select>
+    <div class="odiv"></div>
+<div class="ol">選配導入液（可不加）</div>
+<select class="os" id="mrf-liq" onchange="mrfU()">
+  <option value="0">不加導入液</option>
+  <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
+  <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
+  <option value="4200">維他命C衍生物（抗氧化）　1次　+¥4,200</option>
+  <option value="18500">維他命C衍生物（抗氧化）　5次　+¥18,500</option>
+  <option value="5000">保妥適肉毒 Allergan　1次　+¥5,000</option>
+  <option value="22500">保妥適肉毒 Allergan　5次　+¥22,500</option>
+  <option value="7800">生長因子（促膠原蛋白再生）　1次　+¥7,800</option>
+  <option value="35000">生長因子（促膠原蛋白再生）　5次　+¥35,000</option>
+  <option value="12000">嬰兒肌精華（修護）　1次　+¥12,000</option>
+  <option value="54000">嬰兒肌精華（修護）　5次　+¥54,000</option>
+</select></div>
   </div>
   <div class="ti" id="s0t26" data-name="皮秒淨膚＋蜂巢　臉（皮膚科專屬）">
     <div class="tim" onclick="tog('s0t26')"><div class="ck"><span class="tk">✓</span></div>
@@ -478,35 +514,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">其他注入（膠原蛋白再生）</div></div>
-  
-  <div class="ti" id="s1t26" data-name="Jalupro Superhydro　1支">
-    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Jalupro Superhydro　1支</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）　1支">
-    <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）　1支</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t28" data-name="逆時針　1支 2cc（臉/脖子/手背三選一）">
-    <div class="tim" onclick="tog('s1t28')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">逆時針　1支 2cc（臉/脖子/手背三選一）</div><div class="pd" id="ps1t28"><span class="y">¥</span>54,800</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t29" data-name="身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）">
-    <div class="tim" onclick="tog('s1t29')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）<span class="note">新宿本院限定</span></div><div class="pd" id="ps1t29"><span class="y">¥</span>56,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t30" data-name="逆時針 Structura 臉　1支 2cc">
-    <div class="tim" onclick="tog('s1t30')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">逆時針 Structura 臉　1支 2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
-    <div class="opts"></div>
-  </div>
-</div>
-<div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">玻尿酸（Juvederm 喬雅登系列）</div></div>
   
   <div class="ti" id="s1t31" data-name="玻尿酸 RHA1（眼周/嘴唇/臥蠶）">
@@ -622,6 +629,31 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">水光注射・肌膚再生注射</div></div>
   
+  <div class="ti" id="s1t26" data-name="Jalupro Superhydro　1支">
+    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Jalupro Superhydro　1支</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）　1支">
+    <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）　1支</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t28" data-name="逆時針　1支 2cc（臉/脖子/手背三選一）">
+    <div class="tim" onclick="tog('s1t28')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針　1支 2cc（臉/脖子/手背三選一）</div><div class="pd" id="ps1t28"><span class="y">¥</span>54,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t29" data-name="身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）">
+    <div class="tim" onclick="tog('s1t29')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）<span class="note">新宿本院限定</span></div><div class="pd" id="ps1t29"><span class="y">¥</span>56,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t30" data-name="逆時針 Structura 臉　1支 2cc">
+    <div class="tim" onclick="tog('s1t30')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針 Structura 臉　1支 2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
+    <div class="opts"></div>
+  </div>
   <div class="ti" id="s1t50" data-name="喬雅露水光注射">
     <div class="tim" onclick="tog('s1t50')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">喬雅露水光注射</div><div class="pd" id="ps1t50"><span class="y">¥</span>39,800</div></div>
@@ -639,7 +671,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s1t53" data-name="女優水光注射 選配 加打保妥適">
     <div class="tim" onclick="tog('s1t53')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">女優水光注射 選配 加打保妥適<span class="note">施打女優水光時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
+    <div class="tn">女優水光注射 升級保妥適<span class="note">施打女優水光時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s1t54" data-name="双美膠原蛋白針（Deusaderm）　1支">
@@ -647,14 +679,14 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">双美膠原蛋白針（Deusaderm）　1支<span class="note">促進膠原蛋白再生</span></div><div class="pd" id="ps1t54"><span class="y">¥</span>88,000</div></div>
     <div class="opts"></div>
   </div>
-  <div class="ti" id="s1t55" data-name="双美膠原蛋白針 Booster　1支">
+  <div class="ti" id="s1t55" data-name="双美膠原蛋白水光(手打)　1支">
     <div class="tim" onclick="tog('s1t55')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">双美膠原蛋白針 Booster　1支</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
+    <div class="tn">双美膠原蛋白水光(手打)　1支</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
     <div class="opts"></div>
   </div>
-  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光注射">
+  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光(機打) 1支">
     <div class="tim" onclick="tog('s1t56')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">双美膠原蛋白針水光注射</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
+    <div class="tn">双美膠原蛋白針水光</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t56','ps1t56',this)"><option value="79600">臉　1次　¥79,600</option><option value="79600">脖子　1次　¥79,600</option></select></div>
   </div>
   <div class="ti" id="s1t57" data-name="保柔緹 Revive">
@@ -667,9 +699,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t58','ps1t58',this)"><option value="88000">臉・脖子・手背三選一　1次　¥88,000</option><option value="149800">2次療程（有效期120天）¥149,800</option></select></div>
   </div>
-  <div class="ti" id="s1t59" data-name="玉の肌 DermaPen 追加醫師注射選項">
+  <div class="ti" id="s1t59" data-name="玉の肌 DermaPen 升級醫師施術">
     <div class="tim" onclick="tog('s1t59')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">玉の肌 DermaPen 追加醫師注射選項</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
+    <div class="tn">玉の肌 DermaPen 升級醫師施術</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
     <div class="opts"></div>
   </div>
 </div></div></div><div class="sp" id="sh2"><div class="main">
@@ -715,7 +747,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（微波RF射頻）</div></div>
+  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（超微波）</div></div>
   
   <div class="ti" id="s2t5" data-name="Onda Pro　臉部">
     <div class="tim" onclick="tog('s2t5')"><div class="ck"><span class="tk">✓</span></div>
@@ -733,17 +765,17 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   
   <div class="ti" id="s2t7" data-name="LipoFlat　臉">
     <div class="tim" onclick="tog('s2t7')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat　臉<span class="note">套組價格¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
+    <div class="tn">LipoFlat　臉<span class="note">與其他瘦身機器治療同時施術組合價¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s2t8" data-name="LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）">
     <div class="tim" onclick="tog('s2t8')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">套組價格¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
+    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">與其他瘦身機器治療同時施術組合價¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s2t9" data-name="LipoFlat 身體 L部位（60分・大腿後側/前側/內側）">
     <div class="tim" onclick="tog('s2t9')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">套組價格¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
+    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">與其他瘦身機器治療同時施術組合價¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
     <div class="opts"></div>
   </div>
 </div>
@@ -791,7 +823,116 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="opts"></div>
   </div>
 </div></div></div>
+
+<div class="sp" id="sh4"><div class="main">
+
+<div style="background:var(--gold-p);border:1px solid var(--gold-l);border-radius:6px;padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--ink-m);line-height:1.7;letter-spacing:.04em;">
+  ⚠️ 以下為<strong>美容外科</strong>項目（非美容皮膚科），費用已含約10% OFF優惠價。括號內為原價供參考。
+</div>
+
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">抽脂　臉部</div></div>
+
+  <div class="ti" id="s4t0" data-name="抽脂　臉頰">
+    <div class="tim" onclick="tog('s4t0')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　臉頰</div><div class="pd" id="ps4t0"><span class="y">¥</span>81,000</div></div>
+    <div class="opts"><div class="hint">原價 ¥90,000　→　約10%OFF　¥81,000</div></div>
+  </div>
+
+  <div class="ti" id="s4t1" data-name="抽脂　下巴＋咀嚼肌下方">
+    <div class="tim" onclick="tog('s4t1')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　下巴＋咀嚼肌下方</div><div class="pd" id="ps4t1"><span class="y">¥</span>121,500</div></div>
+    <div class="opts"><div class="hint">原價 ¥135,000　→　約10%OFF　¥121,500</div></div>
+  </div>
+
+  <div class="ti" id="s4t2" data-name="抽脂　顴骨上方">
+    <div class="tim" onclick="tog('s4t2')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　顴骨上方</div><div class="pd" id="ps4t2"><span class="y">¥</span>81,000</div></div>
+    <div class="opts"><div class="hint">原價 ¥90,000　→　約10%OFF　¥81,000</div></div>
+  </div>
+
+  <div class="ti" id="s4t3" data-name="抽脂　法令脂肪（ジョールファット）">
+    <div class="tim" onclick="tog('s4t3')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　法令脂肪（ジョールファット）</div><div class="pd" id="ps4t3"><span class="y">¥</span>81,000</div></div>
+    <div class="opts"><div class="hint">原價 ¥90,000　→　約10%OFF　¥81,000</div></div>
+  </div>
+</div>
+
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">抽脂　身體</div></div>
+
+  <div class="ti" id="s4t4" data-name="抽脂　手臂根部套組（腋下＋肩胛骨旁）">
+    <div class="tim" onclick="tog('s4t4')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　手臂根部套組（腋下＋肩胛骨旁）</div><div class="pd" id="ps4t4"><span class="y">¥</span>162,000</div></div>
+    <div class="opts"><div class="hint">原價 ¥180,000　→　約10%OFF　¥162,000　｜　各部位從傷口向外約10cm範圍</div></div>
+  </div>
+
+  <div class="ti" id="s4t5" data-name="抽脂　手臂蝴蝶袖套組（腋下＋肩膀）">
+    <div class="tim" onclick="tog('s4t5')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　手臂蝴蝶袖套組（腋下＋肩膀）</div><div class="pd" id="ps4t5"><span class="y">¥</span>135,000</div></div>
+    <div class="opts"><div class="hint">原價 ¥150,000　→　約10%OFF　¥135,000　｜　各部位從傷口向外約10cm範圍</div></div>
+  </div>
+
+  <div class="ti" id="s4t6" data-name="抽脂　＋手臂加寬選項（比傷口寬10cm範圍）">
+    <div class="tim" onclick="tog('s4t6')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　＋手臂加寬選項（比一般範圍再寬10cm）</div><div class="pd" id="ps4t6"><span class="y">¥</span>27,000</div></div>
+    <div class="opts"><div class="hint">原價 +¥30,000　→　約10%OFF　+¥27,000</div></div>
+  </div>
+
+  <div class="ti" id="s4t7" data-name="抽脂　腰部整體（含部分背部）">
+    <div class="tim" onclick="tog('s4t7')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　腰部整體（含部分背部）</div><div class="pd" id="ps4t7"><span class="y">¥</span>218,160</div></div>
+    <div class="opts"><div class="hint">原價 ¥242,400　→　約10%OFF　¥218,160</div></div>
+  </div>
+
+  <div class="ti" id="s4t8" data-name="抽脂　上腹部或下腹部（擇一）">
+    <div class="tim" onclick="tog('s4t8')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　上腹部或下腹部（擇一）<span class="note">限定院所處理</span></div><div class="pd" id="ps4t8"><span class="y">¥</span>218,160</div></div>
+    <div class="opts"><div class="hint">原價 ¥242,400　→　約10%OFF　¥218,160</div></div>
+  </div>
+
+  <div class="ti" id="s4t9" data-name="抽脂　腰圍">
+    <div class="tim" onclick="tog('s4t9')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　腰圍</div><div class="pd" id="ps4t9"><span class="y">¥</span>218,160</div></div>
+    <div class="opts"><div class="hint">原價 ¥242,400　→　約10%OFF　¥218,160</div></div>
+  </div>
+
+  <div class="ti" id="s4t10" data-name="抽脂　上臀部或下臀部（擇一）">
+    <div class="tim" onclick="tog('s4t10')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　上臀部或下臀部（擇一）</div><div class="pd" id="ps4t10"><span class="y">¥</span>181,494</div></div>
+    <div class="opts"><div class="hint">原價 ¥201,660　→　約10%OFF　¥181,494</div></div>
+  </div>
+
+  <div class="ti" id="s4t11" data-name="抽脂　大腿（內側/外側/前側/後側擇一）">
+    <div class="tim" onclick="tog('s4t11')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">抽脂　大腿（內側/外側/前側/後側擇一）</div><div class="pd" id="ps4t11"><span class="y">¥</span>181,494</div></div>
+    <div class="opts"><div class="hint">原價 ¥201,660　→　約10%OFF　¥181,494</div></div>
+  </div>
+</div>
+
+</div></div>
 <script>
+
+// Init static-price items on load
+const staticPrices = {
+  's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
+  's4t4':162000,'s4t5':135000,'s4t6':27000,'s4t7':218160,
+  's4t8':218160,'s4t9':218160,'s4t10':181494,'s4t11':181494
+};
+
+// Dynamic sticky tabs positioning
+function fixTabsTop(){
+  const h = document.querySelector('header');
+  const tb = document.querySelector('.tbar');
+  const tabs = document.querySelector('.tabs');
+  if(h && tb && tabs){
+    const top = h.getBoundingClientRect().height + tb.getBoundingClientRect().height;
+    tabs.style.top = top + 'px';
+  }
+}
+window.addEventListener('load', fixTabsTop);
+window.addEventListener('resize', fixTabsTop);
+
 const P={}, O={}, C=new Set();
 let rate=0.2004;
 
@@ -875,11 +1016,15 @@ function tog(id){
     else if(id==='s1t46') fatxU();
     else if(id==='s3t0') anU();
     else {
-      const sel=el.querySelector('.os');
-      if(sel){P[id]=parseInt(sel.value)||0; O[id]=sel.options[sel.selectedIndex]?.text||'';}
-      else {
-        const pd=el.querySelector('.pd');
-        if(pd){const t=pd.textContent.replace(/[¥,\s]/g,'').replace('—','');P[id]=parseInt(t)||0;}
+      if(staticPrices[id]!==undefined){
+        P[id]=staticPrices[id]; O[id]='';
+      } else {
+        const sel=el.querySelector('.os');
+        if(sel){P[id]=parseInt(sel.value)||0; O[id]=sel.options[sel.selectedIndex]?.text||'';}
+        else {
+          const pd=el.querySelector('.pd');
+          if(pd){const t=pd.textContent.replace(/[¥,\s]/g,'').replace('—','');P[id]=parseInt(t)||0;}
+        }
       }
     }
   }
