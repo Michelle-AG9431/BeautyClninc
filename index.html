@@ -231,13 +231,13 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">皮秒雷射（Pico Q / 星皮秒）</div></div>
-  
+
   <div class="ti" id="s0t20" data-name="皮秒淨膚　臉體驗">
     <div class="tim" onclick="tog('s0t20')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚　臉<span class="note">體驗價</span></div><div class="pd" id="ps0t20"><span class="y">¥</span>7,800</div></div>
-    <div class="opts"></select></div>
+    <div class="opts"></div>
   </div>
-  <div class="ti" id="s0t33" data-name="皮秒淨膚　臉"> 
+  <div class="ti" id="s0t33" data-name="皮秒淨膚　臉">
     <div class="tim" onclick="tog('s0t33')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚　臉</div><div class="pd" id="ps0t33"><span class="y">¥</span>9,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t33','ps0t33',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select>
@@ -261,10 +261,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t24" data-name="皮秒蜂巢　臉體驗">
     <div class="tim" onclick="tog('s0t24')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒蜂巢　臉<span class="note">體驗價</span></div><div class="pd" id="ps0t24"><span class="y">¥</span>7,800</div></div>
-    <div class="opts"></select>
+    <div class="opts">
     <div class="odiv"></div>
 <div class="ol">選配導入液（可不加）</div>
-<select class="os" id="mrf-liq" onchange="mrfU()">
+<select class="os" id="pico24-liq" onchange="comboU('s0t24','ps0t24',7800,'pico24-liq')">
   <option value="0">不加導入液</option>
   <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
   <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
@@ -281,10 +281,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t34" data-name="皮秒蜂巢　臉">
     <div class="tim" onclick="tog('s0t34')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒蜂巢　臉</div><div class="pd" id="ps0t34"><span class="y">¥</span>9,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t34','ps0t34',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option></select>
+    <div class="opts"><div class="ol">選擇次數</div><select class="os" id="pico34-base" onchange="comboU('s0t34','ps0t34',null,'pico34-liq','pico34-base')"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option></select>
     <div class="odiv"></div>
 <div class="ol">選配導入液（可不加）</div>
-<select class="os" id="mrf-liq" onchange="mrfU()">
+<select class="os" id="pico34-liq" onchange="comboU('s0t34','ps0t34',null,'pico34-liq','pico34-base')">
   <option value="0">不加導入液</option>
   <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
   <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
@@ -301,10 +301,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t25" data-name="皮秒淨膚＋蜂巢　臉">
     <div class="tim" onclick="tog('s0t25')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚＋蜂巢　臉</div><div class="pd" id="ps0t25"><span class="y">¥</span>12,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t25','ps0t25',this)"><option value="12800">1次　¥12,800</option><option value="57600">5次　¥57,600</option></select>
+    <div class="opts"><div class="ol">選擇次數</div><select class="os" id="pico25-base" onchange="comboU('s0t25','ps0t25',null,'pico25-liq','pico25-base')"><option value="12800">1次　¥12,800</option><option value="57600">5次　¥57,600</option></select>
     <div class="odiv"></div>
 <div class="ol">選配導入液（可不加）</div>
-<select class="os" id="mrf-liq" onchange="mrfU()">
+<select class="os" id="pico25-liq" onchange="comboU('s0t25','ps0t25',null,'pico25-liq','pico25-base')">
   <option value="0">不加導入液</option>
   <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
   <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
@@ -322,7 +322,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tim" onclick="tog('s0t26')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚＋蜂巢　臉（皮膚科專屬）</div><div class="pd" id="ps0t26"><span class="y">¥</span>11,520</div></div>
     <div class="opts"><div class="ol">選配導入液（可不加）</div>
-<select class="os" id="mrf-liq" onchange="mrfU()">
+<select class="os" id="pico26-liq" onchange="comboU('s0t26','ps0t26',11520,'pico26-liq')">
   <option value="0">不加導入液</option>
   <option value="4400">傳明酸（美白/淡斑）　1次　+¥4,400</option>
   <option value="19500">傳明酸（美白/淡斑）　5次　+¥19,500</option>
@@ -396,7 +396,8 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">莫菲斯８ 上眼皮追加選項</div><div class="pd" id="ps0t32"><span class="y">¥</span>10,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t32','ps0t32',this)"><option value="10000">醫師　1次追加　+¥10,000</option><option value="8000">護理師　1次追加　+¥8,000</option></select></div>
   </div>
-</div></div></div><div class="sp" id="sh1"><div class="main">
+</div></div></div>
+<div class="sp" id="sh1"><div class="main">
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">韓國製肉毒桿菌素</div></div>
   
@@ -413,32 +414,32 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t2" data-name="韓國製肉毒　嘴角・鼻翼（各4單位）">
     <div class="tim" onclick="tog('s1t2')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　嘴角・鼻翼（各4單位）</div><div class="pd" id="ps1t2"><span class="y">¥</span>5,500</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t21" min="1" max="20" step="1" value="1" oninput="qtyU('s1t21','ps1t21',30350,'q-s1t21')"><span class="cu">支　×　¥30,350</span></div></div>
   </div>
   <div class="ti" id="s1t3" data-name="韓國製肉毒　唇上・唇下・縮短人中">
     <div class="tim" onclick="tog('s1t3')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　唇上・唇下・縮短人中</div><div class="pd" id="ps1t3"><span class="y">¥</span>8,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t22" min="1" max="20" step="1" value="1" oninput="qtyU('s1t22','ps1t22',35350,'q-s1t22')"><span class="cu">支　×　¥35,350</span></div></div>
   </div>
   <div class="ti" id="s1t4" data-name="韓國製肉毒　下垂眼・法令紋・露齦笑・眼頭">
     <div class="tim" onclick="tog('s1t4')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　下垂眼・法令紋・露齦笑・眼頭</div><div class="pd" id="ps1t4"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t23" min="1" max="20" step="1" value="1" oninput="qtyU('s1t23','ps1t23',35350,'q-s1t23')"><span class="cu">支　×　¥35,350</span></div></div>
   </div>
   <div class="ti" id="s1t5" data-name="韓國製肉毒　顳肌・頸部・肉毒拉提（40單位）">
     <div class="tim" onclick="tog('s1t5')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　顳肌・頸部・肉毒拉提（40單位）</div><div class="pd" id="ps1t5"><span class="y">¥</span>24,200</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1" oninput="qtyU('s1t26','ps1t26',55000,'q-s1t26')"><span class="cu">支　×　¥55,000</span></div></div>
   </div>
   <div class="ti" id="s1t6" data-name="韓國製肉毒　中臉部肉毒（20單位）">
     <div class="tim" onclick="tog('s1t6')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　中臉部肉毒（20單位）</div><div class="pd" id="ps1t6"><span class="y">¥</span>14,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t27" min="1" max="20" step="1" value="1" oninput="qtyU('s1t27','ps1t27',105000,'q-s1t27')"><span class="cu">支　×　¥105,000</span></div></div>
   </div>
   <div class="ti" id="s1t7" data-name="韓國製肉毒　中臉部肉毒（40單位）">
     <div class="tim" onclick="tog('s1t7')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">韓國製肉毒　中臉部肉毒（40單位）</div><div class="pd" id="ps1t7"><span class="y">¥</span>24,200</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t28" min="1" max="20" step="1" value="1" oninput="qtyU('s1t28','ps1t28',54800,'q-s1t28')"><span class="cu">支　×　¥54,800</span></div></div>
   </div>
   <div class="ti" id="s1t8" data-name="韓國製肉毒　肩膀瘦身">
     <div class="tim" onclick="tog('s1t8')"><div class="ck"><span class="tk">✓</span></div>
@@ -462,37 +463,37 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t11" data-name="保妥適　嘴角・鼻翼（各4單位）">
     <div class="tim" onclick="tog('s1t11')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　嘴角・鼻翼（各4單位）</div><div class="pd" id="ps1t11"><span class="y">¥</span>8,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t29" min="1" max="20" step="1" value="1" oninput="qtyU('s1t29','ps1t29',56000,'q-s1t29')"><span class="cu">支　×　¥56,000</span></div></div>
   </div>
   <div class="ti" id="s1t12" data-name="保妥適　唇上・唇下・縮短人中">
     <div class="tim" onclick="tog('s1t12')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　唇上・唇下・縮短人中</div><div class="pd" id="ps1t12"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t30" min="1" max="20" step="1" value="1" oninput="qtyU('s1t30','ps1t30',120000,'q-s1t30')"><span class="cu">支　×　¥120,000</span></div></div>
   </div>
   <div class="ti" id="s1t13" data-name="保妥適　下垂眼・法令紋・露齦笑・眼頭">
     <div class="tim" onclick="tog('s1t13')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　下垂眼・法令紋・露齦笑・眼頭</div><div class="pd" id="ps1t13"><span class="y">¥</span>16,500</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t32" min="1" max="20" step="1" value="1" oninput="qtyU('s1t32','ps1t32',34800,'q-s1t32')"><span class="cu">支　×　¥34,800</span></div></div>
   </div>
   <div class="ti" id="s1t14" data-name="保妥適　顳肌（40單位）">
     <div class="tim" onclick="tog('s1t14')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　顳肌（40單位）</div><div class="pd" id="ps1t14"><span class="y">¥</span>40,530</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t34" min="1" max="20" step="1" value="1" oninput="qtyU('s1t34','ps1t34',57200,'q-s1t34')"><span class="cu">支　×　¥57,200</span></div></div>
   </div>
   <div class="ti" id="s1t15" data-name="保妥適　頸部・肉毒拉提（40單位）">
     <div class="tim" onclick="tog('s1t15')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　頸部・肉毒拉提（40單位）</div><div class="pd" id="ps1t15"><span class="y">¥</span>33,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t35" min="1" max="20" step="1" value="1" oninput="qtyU('s1t35','ps1t35',57200,'q-s1t35')"><span class="cu">支　×　¥57,200</span></div></div>
   </div>
   <div class="ti" id="s1t16" data-name="保妥適　中臉部肉毒（20單位）">
     <div class="tim" onclick="tog('s1t16')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　中臉部肉毒（20單位）</div><div class="pd" id="ps1t16"><span class="y">¥</span>20,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t36" min="1" max="20" step="1" value="1" oninput="qtyU('s1t36','ps1t36',57200,'q-s1t36')"><span class="cu">支　×　¥57,200</span></div></div>
   </div>
   <div class="ti" id="s1t17" data-name="保妥適　中臉部肉毒（40單位）">
     <div class="tim" onclick="tog('s1t17')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">保妥適　中臉部肉毒（40單位）</div><div class="pd" id="ps1t17"><span class="y">¥</span>33,000</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t37" min="1" max="20" step="1" value="1" oninput="qtyU('s1t37','ps1t37',66000,'q-s1t37')"><span class="cu">支　×　¥66,000</span></div></div>
   </div>
   <div class="ti" id="s1t18" data-name="保妥適　肩膀瘦身">
     <div class="tim" onclick="tog('s1t18')"><div class="ck"><span class="tk">✓</span></div>
@@ -502,7 +503,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t19" data-name="自然型保妥適（臉部3部位套組）">
     <div class="tim" onclick="tog('s1t19')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">自然型保妥適（臉部3部位套組）<span class="note">不適用安心保障制度</span></div><div class="pd" id="ps1t19"><span class="y">¥</span>19,800</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t38" min="1" max="20" step="1" value="1" oninput="qtyU('s1t38','ps1t38',81270,'q-s1t38')"><span class="cu">支　×　¥81,270</span></div></div>
   </div>
 </div>
 <div class="cat">
@@ -520,12 +521,12 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t21" data-name="麗珠蘭ᵢ　1支">
     <div class="tim" onclick="tog('s1t21')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">麗珠蘭ᵢ　1支</div><div class="pd" id="ps1t21"><span class="y">¥</span>30,350</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t54" min="1" max="20" step="1" value="1" oninput="qtyU('s1t54','ps1t54',88000,'q-s1t54')"><span class="cu">支　×　¥88,000</span></div></div>
   </div>
   <div class="ti" id="s1t22" data-name="麗珠蘭 HB　1支">
     <div class="tim" onclick="tog('s1t22')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">麗珠蘭 HB　1支</div><div class="pd" id="ps1t22"><span class="y">¥</span>35,350</div></div>
-    <div class="opts"></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t55" min="1" max="20" step="1" value="1" oninput="qtyU('s1t55','ps1t55',88000,'q-s1t55')"><span class="cu">支　×　¥88,000</span></div></div>
   </div>
   <div class="ti" id="s1t23" data-name="麗珠蘭 S　1支">
     <div class="tim" onclick="tog('s1t23')"><div class="ck"><span class="tk">✓</span></div>
@@ -548,12 +549,41 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">其他注入（膠原蛋白再生）</div></div>
+  
+  <div class="ti" id="s1t26" data-name="Jalupro Superhydro　1支">
+    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Jalupro Superhydro　1支</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）　1支">
+    <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）　1支</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t28" data-name="逆時針　1支 2cc（臉/脖子/手背三選一）">
+    <div class="tim" onclick="tog('s1t28')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針　1支 2cc（臉/脖子/手背三選一）</div><div class="pd" id="ps1t28"><span class="y">¥</span>54,800</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t29" data-name="身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）">
+    <div class="tim" onclick="tog('s1t29')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）<span class="note">新宿本院限定</span></div><div class="pd" id="ps1t29"><span class="y">¥</span>56,000</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t30" data-name="逆時針 Structura 臉　1支 2cc">
+    <div class="tim" onclick="tog('s1t30')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">逆時針 Structura 臉　1支 2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
+    <div class="opts"></div>
+  </div>
+</div>
+<div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">玻尿酸（Juvederm 喬雅登系列）</div></div>
   
   <div class="ti" id="s1t31" data-name="玻尿酸 RHA1（眼周/嘴唇/臥蠶）">
     <div class="tim" onclick="tog('s1t31')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">玻尿酸 RHA1（眼周/嘴唇/臥蠶）</div><div class="pd" id="ps1t31"><span class="y">¥</span>18,330</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t31','ps1t31',this)"><option value="18330">0.3cc　1支　¥18,330</option><option value="39180">1.0cc　1支　¥39,180</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" id="sel-s1t31" onchange="qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31')"><option value="18330">0.3cc / 支　¥18,330</option><option value="39180">1.0cc / 支　¥39,180</option></select><div class="odiv"></div><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t31" min="1" max="20" step="1" value="1" oninput="qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31')"><span class="cu">支</span></div></div>
   </div>
   <div class="ti" id="s1t32" data-name="玻尿酸 喬雅登 ウルトラプラスXC　1cc（太陽穴・臉頰・淚溝・法令紋等）">
     <div class="tim" onclick="tog('s1t32')"><div class="ck"><span class="tk">✓</span></div>
@@ -563,7 +593,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t33" data-name="玻尿酸 SKINVIVE（Volite XC）">
     <div class="tim" onclick="tog('s1t33')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">玻尿酸 SKINVIVE（Volite XC）</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t33','ps1t33',this)"><option value="45000">1.0cc　1支　¥45,000</option><option value="90000">2.0cc　2支　¥90,000（新宿模特活動）</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" id="sel-s1t33" onchange="qtySelU('s1t33','ps1t33','sel-s1t33','q-s1t33')"><option value="45000">1.0cc / 支　¥45,000</option><option value="90000">2.0cc / 支　¥90,000（新宿模特活動）</option></select><div class="odiv"></div><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t33" min="1" max="20" step="1" value="1" oninput="qtySelU('s1t33','ps1t33','sel-s1t33','q-s1t33')"><span class="cu">支</span></div></div>
   </div>
   <div class="ti" id="s1t34" data-name="玻尿酸 喬雅登 Voluma XC　1cc（額頭/夫妻宮/臉頰等）">
     <div class="tim" onclick="tog('s1t34')"><div class="ck"><span class="tk">✓</span></div>
@@ -625,13 +655,25 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   
   <div class="ti" id="s1t44" data-name="BNLS アルティメット 小臉溶脂注射">
     <div class="tim" onclick="tog('s1t44')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">BNLS アルティメット 小臉溶脂注射</div><div class="pd" id="ps1t44"><span class="y">¥</span>1,980</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t44','ps1t44',this)"><option value="1980">10cc以上時（每cc）¥1,980</option><option value="3030">1〜9cc時（每cc）¥3,030　（需間隔1週以上）</option></select></div>
+    <div class="tn">BNLS アルティメット 小臉溶脂注射</div><div class="pd" id="ps1t44"><span class="y">¥</span>—</div></div>
+    <div class="opts">
+<div class="ol">輸入注射量（cc數）—自動計算價格</div>
+<div class="crow">
+  <input type="number" class="ci" id="bnls-cc" min="1" max="100" step="1" placeholder="0" oninput="bnlsU()">
+  <span class="cu">cc</span>
+</div>
+<div class="hint" id="bnls-hint">1〜9cc：¥3,030/cc　｜　10cc以上：¥1,980/cc　（需間隔1週以上）</div></div>
   </div>
   <div class="ti" id="s1t45" data-name="山參注射（高麗人參）">
     <div class="tim" onclick="tog('s1t45')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">山參注射（高麗人參）</div><div class="pd" id="ps1t45"><span class="y">¥</span>8,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t45','ps1t45',this)"><option value="8000">1cc　1支　¥8,000</option><option value="7000">5cc以上（每cc）¥7,000</option><option value="6000">10cc以上（每cc）¥6,000　（需間隔1週以上）</option></select></div>
+    <div class="tn">山參注射（高麗人參）</div><div class="pd" id="ps1t45"><span class="y">¥</span>—</div></div>
+    <div class="opts">
+<div class="ol">輸入注射量（cc數）—自動計算價格</div>
+<div class="crow">
+  <input type="number" class="ci" id="sansam-cc" min="1" max="100" step="1" placeholder="0" oninput="sansamU()">
+  <span class="cu">cc</span>
+</div>
+<div class="hint" id="sansam-hint">1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc　（需間隔1週以上）</div></div>
   </div>
   <div class="ti" id="s1t46" data-name="FatX Core 溶脂注射">
     <div class="tim" onclick="tog('s1t46')"><div class="ck"><span class="tk">✓</span></div>
@@ -663,31 +705,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">水光注射・肌膚再生注射</div></div>
   
-  <div class="ti" id="s1t26" data-name="Jalupro Superhydro　1支">
-    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Jalupro Superhydro　1支</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）　1支">
-    <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）　1支</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t28" data-name="逆時針　1支 2cc（臉/脖子/手背三選一）">
-    <div class="tim" onclick="tog('s1t28')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">逆時針　1支 2cc（臉/脖子/手背三選一）</div><div class="pd" id="ps1t28"><span class="y">¥</span>54,800</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t29" data-name="身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）">
-    <div class="tim" onclick="tog('s1t29')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">身體逆時針　1支 3cc（脖子/手背/手臂/腹部/大腿）<span class="note">新宿本院限定</span></div><div class="pd" id="ps1t29"><span class="y">¥</span>56,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t30" data-name="逆時針 Structura 臉　1支 2cc">
-    <div class="tim" onclick="tog('s1t30')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">逆時針 Structura 臉　1支 2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
-    <div class="opts"></div>
-  </div>
   <div class="ti" id="s1t50" data-name="喬雅露水光注射">
     <div class="tim" onclick="tog('s1t50')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">喬雅露水光注射</div><div class="pd" id="ps1t50"><span class="y">¥</span>39,800</div></div>
@@ -705,7 +722,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s1t53" data-name="女優水光注射 選配 加打保妥適">
     <div class="tim" onclick="tog('s1t53')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">女優水光注射 升級保妥適<span class="note">施打女優水光時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
+    <div class="tn">女優水光注射 選配 加打保妥適<span class="note">施打女優水光時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s1t54" data-name="双美膠原蛋白針（Deusaderm）　1支">
@@ -713,14 +730,14 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">双美膠原蛋白針（Deusaderm）　1支<span class="note">促進膠原蛋白再生</span></div><div class="pd" id="ps1t54"><span class="y">¥</span>88,000</div></div>
     <div class="opts"></div>
   </div>
-  <div class="ti" id="s1t55" data-name="双美膠原蛋白水光(手打)　1支">
+  <div class="ti" id="s1t55" data-name="双美膠原蛋白針 Booster　1支">
     <div class="tim" onclick="tog('s1t55')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">双美膠原蛋白水光(手打)　1支</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
+    <div class="tn">双美膠原蛋白針 Booster　1支</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
     <div class="opts"></div>
   </div>
-  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光(機打) 1支">
+  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光注射">
     <div class="tim" onclick="tog('s1t56')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">双美膠原蛋白針水光</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
+    <div class="tn">双美膠原蛋白針水光注射</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t56','ps1t56',this)"><option value="79600">臉　1次　¥79,600</option><option value="79600">脖子　1次　¥79,600</option></select></div>
   </div>
   <div class="ti" id="s1t57" data-name="保柔緹 Revive">
@@ -733,9 +750,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t58','ps1t58',this)"><option value="88000">臉・脖子・手背三選一　1次　¥88,000</option><option value="149800">2次療程（有效期120天）¥149,800</option></select></div>
   </div>
-  <div class="ti" id="s1t59" data-name="玉の肌 DermaPen 升級醫師施術">
+  <div class="ti" id="s1t59" data-name="玉の肌 DermaPen 追加醫師注射選項">
     <div class="tim" onclick="tog('s1t59')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">玉の肌 DermaPen 升級醫師施術</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
+    <div class="tn">玉の肌 DermaPen 追加醫師注射選項</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
     <div class="opts"></div>
   </div>
 </div></div></div><div class="sp" id="sh2"><div class="main">
@@ -781,7 +798,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（超微波）</div></div>
+  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（微波RF射頻）</div></div>
   
   <div class="ti" id="s2t5" data-name="Onda Pro　臉部">
     <div class="tim" onclick="tog('s2t5')"><div class="ck"><span class="tk">✓</span></div>
@@ -799,17 +816,17 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   
   <div class="ti" id="s2t7" data-name="LipoFlat　臉">
     <div class="tim" onclick="tog('s2t7')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat　臉<span class="note">與其他瘦身機器治療同時施術組合價¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
+    <div class="tn">LipoFlat　臉<span class="note">套組價格¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s2t8" data-name="LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）">
     <div class="tim" onclick="tog('s2t8')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">與其他瘦身機器治療同時施術組合價¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
+    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">套組價格¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
     <div class="opts"></div>
   </div>
   <div class="ti" id="s2t9" data-name="LipoFlat 身體 L部位（60分・大腿後側/前側/內側）">
     <div class="tim" onclick="tog('s2t9')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">與其他瘦身機器治療同時施術組合價¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
+    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">套組價格¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
     <div class="opts"></div>
   </div>
 </div>
@@ -946,15 +963,13 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 
 </div></div>
 <script>
-
-// Init static-price items on load
 const staticPrices = {
   's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
   's4t4':162000,'s4t5':135000,'s4t6':27000,'s4t7':218160,
-  's4t8':218160,'s4t9':218160,'s4t10':181494,'s4t11':181494
+  's4t8':218160,'s4t9':218160,'s4t10':181494,'s4t11':181494,
+  's0t20':7800,'s0t23':7840,'s0t26fix':11520
 };
 
-// Dynamic sticky tabs positioning
 function fixTabsTop(){
   const h = document.querySelector('header');
   const tb = document.querySelector('.tbar');
@@ -966,6 +981,22 @@ function fixTabsTop(){
 }
 window.addEventListener('load', fixTabsTop);
 window.addEventListener('resize', fixTabsTop);
+
+// Generic combo: fixedBase=null means read from baseSelId
+function comboU(itemId, priceElId, fixedBase, liqSelId, baseSelId){
+  const base = (fixedBase !== null && fixedBase !== undefined)
+    ? fixedBase
+    : (parseInt(document.getElementById(baseSelId)?.value) || 0);
+  const liq = parseInt(document.getElementById(liqSelId)?.value) || 0;
+  P[itemId] = base + liq;
+  const bs = baseSelId ? document.getElementById(baseSelId) : null;
+  const ls = document.getElementById(liqSelId);
+  const bl = bs ? (bs.options[bs.selectedIndex]?.text || '') : '';
+  const ll = ls ? (ls.options[ls.selectedIndex]?.text || '') : '';
+  O[itemId] = liq > 0 ? (bl ? bl + ' ＋ ' + ll : ll) : bl;
+  setPD(priceElId, base + liq);
+  upd();
+}
 
 const P={}, O={}, C=new Set();
 let rate=0.2004;
@@ -1002,6 +1033,54 @@ function mrfU(){
   const ll=ls?ls.options[ls.selectedIndex]?.text:'';
   O['s0t30']=l>0?bl+' ＋ '+ll:bl;
   setPD('ps0t30',b+l); upd();
+}
+
+
+function qtyU(itemId, priceElId, unitPrice, qtyElId){
+  const qty = parseInt(document.getElementById(qtyElId)?.value) || 0;
+  const total = qty * unitPrice;
+  P[itemId] = total;
+  O[itemId] = qty > 0 ? qty + '支 × ¥' + unitPrice.toLocaleString() + ' = ¥' + total.toLocaleString() : '';
+  setPD(priceElId, qty > 0 ? total : 0);
+  upd();
+}
+
+function qtySelU(itemId, priceElId, selId, qtyElId){
+  const unitPrice = parseInt(document.getElementById(selId)?.value) || 0;
+  const qty = parseInt(document.getElementById(qtyElId)?.value) || 1;
+  const total = qty * unitPrice;
+  P[itemId] = total;
+  const sel = document.getElementById(selId);
+  const label = sel ? sel.options[sel.selectedIndex]?.text : '';
+  O[itemId] = qty + '支 × ' + label;
+  setPD(priceElId, total);
+  upd();
+}
+
+function bnlsU(){
+  const cc = parseInt(document.getElementById('bnls-cc')?.value) || 0;
+  const rate = cc >= 10 ? 1980 : 3030;
+  const price = cc * rate;
+  P['s1t44'] = price;
+  O['s1t44'] = cc > 0 ? cc + 'cc × ¥' + rate.toLocaleString() + '/cc = ¥' + price.toLocaleString() : '';
+  setPD('ps1t44', cc > 0 ? price : 0);
+  const h = document.getElementById('bnls-hint');
+  if(h && cc > 0){ h.textContent = cc + 'cc × ¥' + rate.toLocaleString() + '/cc = ¥' + price.toLocaleString(); h.style.color='var(--gold)'; }
+  else if(h){ h.textContent='1〜9cc：¥3,030/cc　｜　10cc以上：¥1,980/cc　（需間隔1週以上）'; h.style.color=''; }
+  upd();
+}
+
+function sansamU(){
+  const cc = parseInt(document.getElementById('sansam-cc')?.value) || 0;
+  const rate = cc >= 10 ? 6000 : cc >= 5 ? 7000 : 8000;
+  const price = cc * rate;
+  P['s1t45'] = price;
+  O['s1t45'] = cc > 0 ? cc + 'cc × ¥' + rate.toLocaleString() + '/cc = ¥' + price.toLocaleString() : '';
+  setPD('ps1t45', cc > 0 ? price : 0);
+  const h = document.getElementById('sansam-hint');
+  if(h && cc > 0){ h.textContent = cc + 'cc × ¥' + rate.toLocaleString() + '/cc = ¥' + price.toLocaleString(); h.style.color='var(--gold)'; }
+  else if(h){ h.textContent='1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc'; h.style.color=''; }
+  upd();
 }
 
 function fatxU(){
@@ -1049,8 +1128,16 @@ function tog(id){
     if(id==='s0t30') mrfU();
     else if(id==='s1t46') fatxU();
     else if(id==='s3t0') anU();
+    else if(id==='s0t24') comboU('s0t24','ps0t24',7800,'pico24-liq');
+    else if(id==='s0t34') comboU('s0t34','ps0t34',null,'pico34-liq','pico34-base');
+    else if(id==='s0t25') comboU('s0t25','ps0t25',null,'pico25-liq','pico25-base');
+    else if(id==='s0t26') comboU('s0t26','ps0t26',11520,'pico26-liq');
+    else if(id==='s1t44') bnlsU();
+    else if(id==='s1t45') sansamU();
     else {
-      if(staticPrices[id]!==undefined){
+      if(id==='s1t31'){ qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31'); }
+      else if(id==='s1t33'){ qtySelU('s1t33','ps1t33','sel-s1t33','q-s1t33'); }
+      else if(staticPrices[id]!==undefined){
         P[id]=staticPrices[id]; O[id]='';
       } else {
         const sel=el.querySelector('.os');
@@ -1110,6 +1197,15 @@ function resetAll(){
   const fh=document.getElementById('fatx-hint');
   if(fh){fh.textContent='1〜4cc：¥8,000/cc　｜　5〜9cc：¥7,000/cc　｜　10cc以上：¥6,000/cc';fh.style.color='';}
   const ah=document.getElementById('an-hint'); if(ah)ah.textContent='1部位 × ¥980 = ¥980';
+  ['bnls-cc','sansam-cc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['bnls-hint','sansam-hint'].forEach(id=>{ const el=document.getElementById(id); if(el){el.style.color='';} });
+  // reset qty inputs
+  document.querySelectorAll('input.ci[id^="q-"]').forEach(el=>{ el.value=1; });
+  // reset sel+qty combos
+  ['sel-s1t31','sel-s1t33'].forEach(id=>{ const el=document.getElementById(id); if(el) el.selectedIndex=0; });
+  ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.selectedIndex=0;
+  });
   mrfU(); upd();
 }
 </script>
