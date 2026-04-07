@@ -63,7 +63,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .tk{opacity:0;transform:scale(.5);transition:all .15s;color:#fff;font-size:9px;}
 .ti.on .tk{opacity:1;transform:none;}
 .tn{font-size:12px;letter-spacing:.04em;flex:1;line-height:1.5;}
-.note{font-size:9px;color:var(--ink-l);display:block;margin-top:1px;}
+.note{font-size:10px;color:var(--ink-l);display:block;margin-top:1px;}
 .pd{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink-m);white-space:nowrap;text-align:right;transition:color .2s;}
 .ti.on .pd{color:var(--gold);}
 .pd .y{font-size:10px;margin-right:1px;}
@@ -403,7 +403,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">韓國肉毒</div></div>
 
-  <!-- ★ BUG1 FIX: 韓國肉毒 額頭等 — 拆成兩個下拉選單 -->
   <div class="ti" id="s1t0" data-name="韓國肉毒　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴">
     <div class="tim" onclick="tog('s1t0')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴<span class="note">不可指定醫師</span></div><div class="pd" id="ps1t0"><span class="y">¥</span>3,500</div></div>
@@ -483,7 +482,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">保妥適Botox</div></div>
 
-  <!-- ★ BUG1 FIX: 保妥適 額頭等 — 拆成兩個下拉選單 -->
   <div class="ti" id="s1t9" data-name="保妥適　額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴">
     <div class="tim" onclick="tog('s1t9')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">額頭・眉間・眼尾・眼下・鼻根・兔紋線・下巴<span class="note">附安心保障制度</span></div><div class="pd" id="ps1t9"><span class="y">¥</span>8,000</div></div>
@@ -559,7 +557,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">自然型保妥適（臉部3部位套組）<span class="note">不適用安心保障制度</span></div><div class="pd" id="ps1t19"><span class="y">¥</span>19,800</div></div>
     <div class="opts"></div>
   </div>
-  <!-- ★ BUG2 FIX: 原 s1t47/s1t48 改為 s1t60/s1t61 避免與韓國肉毒ID衝突 -->
   <div class="ti" id="s1t60" data-name="保妥適　小腿">
     <div class="tim" onclick="tog('s1t60')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">小腿</div><div class="pd" id="ps1t60"><span class="y">¥</span>75,000</div></div>
@@ -617,25 +614,26 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">水光針/膠原蛋白再生</div></div>
+
+  <!-- ★ 修正：Jalupro Superhydro — 煥膚選項移入 .opts，ID 改為唯一值，新增 jalu26U() -->
   <div class="ti" id="s1t26" data-name="Jalupro Superhydro">
-  <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-  <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
-  <div class="opts">
-    <div class="ol">輸入支數</div>
-    <div class="crow">
-      <input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1"
-        oninput="jalu26U()">
-      <span class="cu">支　×　¥55,000</span>
+    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
+    <div class="opts">
+      <div class="ol">輸入支數</div>
+      <div class="crow">
+        <input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1" oninput="jalu26U()">
+        <span class="cu">支　×　¥55,000</span>
+      </div>
+      <div class="odiv"></div>
+      <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
+      <select class="os" id="jalupro26-glow" onchange="jalu26U()">
+        <option value="0">不追加</option>
+        <option value="6000">加做煥膚　+¥6,000</option>
+      </select>
     </div>
-    <div class="odiv"></div>
-    <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
-    <select class="os" id="jalupro26-glow" onchange="jalu26U()">
-      <option value="0">不追加</option>
-      <option value="6000">加做煥膚　+¥6,000</option>
-    </select>
   </div>
-</div>
-  </div>
+
   <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）">
     <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
@@ -821,7 +819,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="chd"><div class="cbar"></div><div class="ctit">新・脂肪溶解立線音波（HIFU）</div></div>
   <div class="ti" id="s2t3" data-name="新・脂肪溶解線性音波">
     <div class="tim" onclick="tog('s2t3')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">新・脂肪溶解立線音波<span class="note">立線音波Q+/媚必提</div><div class="pd" id="ps2t3"><span class="y">¥</span>25,000</div></div>
+    <div class="tn">新・脂肪溶解立線音波<span class="note">立線音波Q+/媚必提</span></div><div class="pd" id="ps2t3"><span class="y">¥</span>25,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div>
       <select class="os" onchange="gu('s2t3','ps2t3',this)">
         <option value="25000">180發　1次　¥25,000</option>
@@ -1051,7 +1049,6 @@ function setPD(pid,v){
   el.innerHTML=v>0?'<span class="y">¥</span>'+v.toLocaleString():'<span class="y">¥</span>—';
 }
 
-// ★ BUG1 FIX: 韓國肉毒 部位計算（基本3段＋追加）
 function btoxKrU(){
   const b=parseInt(document.getElementById('kr-base')?.value)||0;
   const e=parseInt(document.getElementById('kr-extra')?.value)||0;
@@ -1066,7 +1063,6 @@ function btoxKrU(){
   upd();
 }
 
-// ★ BUG1 FIX: 保妥適 部位計算（基本3段＋追加）
 function btoxBtU(){
   const b=parseInt(document.getElementById('bt-base')?.value)||0;
   const e=parseInt(document.getElementById('bt-extra')?.value)||0;
@@ -1091,6 +1087,19 @@ function mrfU(){
   const ll=ls?ls.options[ls.selectedIndex]?.text:'';
   O['s0t30']=l>0?bl+' ＋ '+ll:bl;
   setPD('ps0t30',b+l);upd();
+}
+
+/* ★ 新增：Jalupro Superhydro — 支數 × 55,000 ＋ 煥膚加選 */
+function jalu26U(){
+  const qty=parseInt(document.getElementById('q-s1t26')?.value)||1;
+  const glow=parseInt(document.getElementById('jalupro26-glow')?.value)||0;
+  const total=qty*55000+glow;
+  P['s1t26']=total;
+  const gs=document.getElementById('jalupro26-glow');
+  const gl=gs?(gs.options[gs.selectedIndex]?.text||''):'';
+  O['s1t26']=qty+'支 × ¥55,000'+(glow>0?' ＋ '+gl:'');
+  setPD('ps1t26',total);
+  upd();
 }
 
 function qtyU(itemId,priceElId,unitPrice,qtyElId){
@@ -1167,19 +1176,7 @@ function anU(){
   if(h)h.textContent=(a||1)+'部位 × ¥980 = ¥'+((a||1)*980).toLocaleString();
   upd();
 }
-  
-function jalu26U(){
-  const qty = parseInt(document.getElementById('q-s1t26')?.value)||1;
-  const glow = parseInt(document.getElementById('jalupro26-glow')?.value)||0;
-  const total = qty * 55000 + glow;
-  P['s1t26'] = total;
-  const gs = document.getElementById('jalupro26-glow');
-  const gl = gs ? gs.options[gs.selectedIndex]?.text : '';
-  O['s1t26'] = qty + '支 × ¥55,000' + (glow > 0 ? ' ＋ ' + gl : '');
-  setPD('ps1t26', total);
-  upd();
-}
-  
+
 function tog(id){
   const el=document.getElementById(id);
   if(!el)return;
@@ -1188,7 +1185,6 @@ function tog(id){
     el.classList.remove('on');
   }else{
     C.add(id);el.classList.add('on');
-    // ★ BUG1 FIX: 專用初始化
     if(id==='s1t0') btoxKrU();
     else if(id==='s1t9') btoxBtU();
     else if(id==='s0t30') mrfU();
@@ -1200,7 +1196,7 @@ function tog(id){
     else if(id==='s0t26') comboU('s0t26','ps0t26',11520,'pico26-liq');
     else if(id==='s1t44') bnlsU();
     else if(id==='s1t45') sansamU();
-    else if(id==='s1t26') jalu26U();
+    else if(id==='s1t26') jalu26U();   /* ★ 新增 */
     else{
       if(id==='s1t31'){qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31');}
       else if(id==='s1t33'){qtySelU('s1t33','ps1t33','sel-s1t33','q-s1t33');}
@@ -1263,6 +1259,7 @@ function resetAll(){
   ['kr-base','kr-extra','bt-base','bt-extra'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.selectedIndex=0;
   });
+  const jg=document.getElementById('jalupro26-glow');if(jg)jg.selectedIndex=0;  /* ★ 新增 */
   const fc=document.getElementById('s1t46-cc');if(fc)fc.value='';
   const aa=document.getElementById('an-areas');if(aa)aa.value=1;
   const fh=document.getElementById('fatx-hint');
@@ -1274,7 +1271,6 @@ function resetAll(){
   ['sel-s1t31','sel-s1t33'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.selectedIndex=0;
-    const jg = document.getElementById('jalupro26-glow'); if(jg) jg.selectedIndex=0;
   });
   mrfU();upd();
 }
