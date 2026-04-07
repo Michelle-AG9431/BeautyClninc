@@ -618,15 +618,23 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">水光針/膠原蛋白再生</div></div>
   <div class="ti" id="s1t26" data-name="Jalupro Superhydro">
-    <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
-    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1" oninput="qtyU('s1t26','ps1t26',55000,'q-s1t26')"><span class="cu">支　×　¥55,000</span></div></div>
+  <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
+  <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
+  <div class="opts">
+    <div class="ol">輸入支數</div>
+    <div class="crow">
+      <input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1"
+        oninput="jalu26U()">
+      <span class="cu">支　×　¥55,000</span>
+    </div>
     <div class="odiv"></div>
-      <div class="ol">加做Jalupro Glow Peel煥膚</div>
-      <select class="os" id="bt-extra" onchange="btoxBtU()">
-        <option value="0">不追加</option>
-        <option value="6000">加做煥膚 +¥6,000</option>
-      </select>
+    <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
+    <select class="os" id="jalupro26-glow" onchange="jalu26U()">
+      <option value="0">不追加</option>
+      <option value="6000">加做煥膚　+¥6,000</option>
+    </select>
+  </div>
+</div>
   </div>
   <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）">
     <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
@@ -1159,7 +1167,19 @@ function anU(){
   if(h)h.textContent=(a||1)+'部位 × ¥980 = ¥'+((a||1)*980).toLocaleString();
   upd();
 }
-
+  
+function jalu26U(){
+  const qty = parseInt(document.getElementById('q-s1t26')?.value)||1;
+  const glow = parseInt(document.getElementById('jalupro26-glow')?.value)||0;
+  const total = qty * 55000 + glow;
+  P['s1t26'] = total;
+  const gs = document.getElementById('jalupro26-glow');
+  const gl = gs ? gs.options[gs.selectedIndex]?.text : '';
+  O['s1t26'] = qty + '支 × ¥55,000' + (glow > 0 ? ' ＋ ' + gl : '');
+  setPD('ps1t26', total);
+  upd();
+}
+  
 function tog(id){
   const el=document.getElementById(id);
   if(!el)return;
@@ -1180,6 +1200,7 @@ function tog(id){
     else if(id==='s0t26') comboU('s0t26','ps0t26',11520,'pico26-liq');
     else if(id==='s1t44') bnlsU();
     else if(id==='s1t45') sansamU();
+    else if(id==='s1t26') jalu26U();
     else{
       if(id==='s1t31'){qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31');}
       else if(id==='s1t33'){qtySelU('s1t33','ps1t33','sel-s1t33','q-s1t33');}
@@ -1253,6 +1274,7 @@ function resetAll(){
   ['sel-s1t31','sel-s1t33'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.selectedIndex=0;
+    const jg = document.getElementById('jalupro26-glow'); if(jg) jg.selectedIndex=0;
   });
   mrfU();upd();
 }
