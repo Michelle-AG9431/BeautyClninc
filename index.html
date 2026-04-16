@@ -471,12 +471,12 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s1t47" data-name="韓國肉毒　肉毒瘦身　小腿">
     <div class="tim" onclick="tog('s1t47')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">小腿</div><div class="pd" id="ps1t47"><span class="y">¥</span>38,000</div></div>
+    <div class="tn">肉毒瘦身　小腿</div><div class="pd" id="ps1t47"><span class="y">¥</span>38,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t47','ps1t47',this)"><option value="38000">兩側全體 240U　¥38,000</option><option value="20000">單側或內/外側 120U　¥20,000</option></select></div>
   </div>
   <div class="ti" id="s1t48" data-name="韓國肉毒　肉毒瘦身　大腿">
     <div class="tim" onclick="tog('s1t48')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">大腿</div><div class="pd" id="ps1t48"><span class="y">¥</span>33,000</div></div>
+    <div class="tn">肉毒瘦身　大腿</div><div class="pd" id="ps1t48"><span class="y">¥</span>33,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t48','ps1t48',this)"><option value="33000">120U　¥33,000</option></select></div>
   </div>
 </div>
@@ -568,7 +568,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s1t49" data-name="保妥適　肉毒瘦身　手臂（40U・兩側）">
     <div class="tim" onclick="tog('s1t49')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">手臂（40U・兩側）</div><div class="pd" id="ps1t49"><span class="y">¥</span>54,000</div></div>
+    <div class="tn">肉毒瘦身　手臂（40U・兩側）</div><div class="pd" id="ps1t49"><span class="y">¥</span>54,000</div></div>
     <div class="opts"></div>
   </div>
 </div>
@@ -1006,7 +1006,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOGBRaRKsmDRn-5Yoy3-mlZ7_T7TVKtw8uynP6MxNBXMW538GMYmYd-T47ksIwHNwd/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx19OL_0CcmcrWrPmcs6PKtUPX3XIA8ne_wrZja2SGzT91ajFTX4DLq6tbtVV2kaEm/exec';  // ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -1147,6 +1147,113 @@ function applySheetPrices(data) {
     // 麻醉部位費率
     if (id === 's3t0' && keys['area_rate'] !== undefined) { rates.areas.r=keys['area_rate']; setPD('ps3t0',keys['area_rate']); }
   }
+
+  // ── 渲染 extra_items 自訂新增項目 ──
+  if (data['__extra__'] && data['__extra__'].length > 0) {
+    renderExtraItems(data['__extra__']);
+  }
+}
+
+// 分類名稱 → 對應的既有 tab index
+const TAB_MAP = {
+  '音電波雷射': 0, '雷射': 0,
+  '注射': 1, '針劑': 1, '肉毒': 1, '玻尿酸': 1,
+  '瘦身': 2, '減脂': 2,
+  '麻醉': 3,
+  '抽脂': 4,
+};
+// 動態新增的 tab 記錄：tabName → shN 的 index
+const dynamicTabs = {};
+
+function getOrCreateTab(tabName) {
+  // 1. 先查現有 tab
+  for (const [key, idx] of Object.entries(TAB_MAP)) {
+    if (tabName.includes(key)) return idx;
+  }
+  // 2. 查已動態建立的 tab
+  if (dynamicTabs[tabName] !== undefined) return dynamicTabs[tabName];
+
+  // 3. 全新 tab：建立 .sp section 和 .tb 按鈕
+  const allSp = document.querySelectorAll('.sp');
+  const newIdx = allSp.length;               // 例如 5, 6, 7…
+
+  // 建立 section
+  const spDiv = document.createElement('div');
+  spDiv.className = 'sp';
+  spDiv.id = `sh${newIdx}`;
+  const mainDiv = document.createElement('div');
+  mainDiv.className = 'main';
+  spDiv.appendChild(mainDiv);
+  // 插在最後一個 .sp 之後
+  allSp[allSp.length - 1].insertAdjacentElement('afterend', spDiv);
+
+  // 建立 tab 按鈕
+  const tabsEl = document.querySelector('.tabs');
+  const btn = document.createElement('button');
+  btn.className = 'tb';
+  btn.textContent = `✦ ${tabName}`;
+  btn.onclick = function() { sw(newIdx, this); };
+  tabsEl.appendChild(btn);
+
+  dynamicTabs[tabName] = newIdx;
+  return newIdx;
+}
+
+function renderExtraItems(extras) {
+  // 先清除上次渲染的 extra 項目（避免重複）
+  document.querySelectorAll('[id^="extra-item-"]').forEach(el => el.remove());
+  document.querySelectorAll('[id^="extra-cat-"]').forEach(el => el.remove());
+
+  // 按 tab 分組
+  const groups = {};
+  extras.forEach((item, i) => {
+    const tab = item.tab || '其他';
+    if (!groups[tab]) groups[tab] = [];
+    groups[tab].push({ ...item, _i: i });
+  });
+
+  Object.entries(groups).forEach(([tabName, items]) => {
+    const tabIdx = getOrCreateTab(tabName);
+    const mainEl = document.querySelector(`#sh${tabIdx} .main`);
+    if (!mainEl) return;
+
+    // 建立一個「自訂新增」區塊
+    const catDiv = document.createElement('div');
+    catDiv.className = 'cat';
+    catDiv.id = `extra-cat-${tabName}`;
+    catDiv.innerHTML = `<div class="chd"><div class="cbar"></div><div class="ctit">✦ ${tabName}（自訂新增）</div></div>`;
+
+    items.forEach(item => {
+      const eid = `extra-item-${item._i}`;
+      const tiDiv = document.createElement('div');
+      tiDiv.className = 'ti';
+      tiDiv.id = eid;
+      tiDiv.dataset.name = item.name;
+      tiDiv.innerHTML = `
+        <div class="tim" onclick="togExtra('${eid}',${item.price})">
+          <div class="ck"><span class="tk">✓</span></div>
+          <div class="tn">${item.name}${item.note ? `<span class="note">${item.note}</span>` : ''}</div>
+          <div class="pd" id="p${eid}"><span class="y">¥</span>${Number(item.price).toLocaleString()}</div>
+        </div>
+        <div class="opts"></div>`;
+      catDiv.appendChild(tiDiv);
+    });
+
+    mainEl.appendChild(catDiv);
+  });
+}
+
+function togExtra(id, price) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (C.has(id)) {
+    C.delete(id); delete P[id]; delete O[id];
+    el.classList.remove('on');
+  } else {
+    C.add(id); P[id] = price; O[id] = '';
+    el.classList.add('on');
+  }
+  upd();
 }
 const staticPrices = {
   's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
