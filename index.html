@@ -1163,25 +1163,45 @@ const TAB_MAP = {
   '抽脂': 4,
   '煥膚': 5, '保養': 5,   // ← 你手動加的 tab，sw(5)
 };
-// 動態新增的 tab 記錄：tabName → shN 的 index
 const dynamicTabs = {};
 
+// 確保指定 section 有 .main div（找不到 section 就建立）
+function ensureMain(idx) {
+  let section = document.querySelector(`#sh${idx}`);
+  if (!section) {
+    section = document.createElement('div');
+    section.className = 'sp';
+    section.id = `sh${idx}`;
+    // 插在最後一個 .sp 後面
+    const allSp = document.querySelectorAll('.sp');
+    allSp[allSp.length - 1].insertAdjacentElement('afterend', section);
+  }
+  let main = section.querySelector('.main');
+  if (!main) {
+    main = document.createElement('div');
+    main.className = 'main';
+    section.appendChild(main);
+  }
+  return main;
+}
+
 function getOrCreateTab(tabName) {
-  // 1. 先查現有 tab（含關鍵字比對）
+  // 1. 查 TAB_MAP
   for (const [key, idx] of Object.entries(TAB_MAP)) {
-    if (tabName.includes(key) || key.includes(tabName)) return idx;
+    if (tabName.includes(key) || key.includes(tabName)) {
+      ensureMain(idx);
+      return idx;
+    }
   }
   // 2. 查已動態建立的 tab
   if (dynamicTabs[tabName] !== undefined) return dynamicTabs[tabName];
-  // 3. 查現有 .tb 按鈕文字（處理使用者手動加的 tab）
-  const allBtns = document.querySelectorAll('.tb');
-  for (let i = 0; i < allBtns.length; i++) {
-    const btnText = allBtns[i].textContent.replace('✦','').trim();
-    if (btnText.includes(tabName) || tabName.includes(btnText)) {
-      // 找對應的 sh index
-      const onclickStr = allBtns[i].getAttribute('onclick') || '';
+  // 3. 掃描現有按鈕文字（處理使用者手動加的 tab）
+  for (const btn of document.querySelectorAll('.tabs .tb')) {
+    const btnText = btn.textContent.replace(/✦/g,'').trim();
+    if (btnText === tabName || btnText.includes(tabName) || tabName.includes(btnText)) {
+      const onclickStr = btn.getAttribute('onclick') || '';
       const match = onclickStr.match(/sw\((\d+)/);
-      if (match) return parseInt(match[1]);
+      if (match) { const idx = parseInt(match[1]); ensureMain(idx); return idx; }
     }
   }
 
@@ -1201,7 +1221,7 @@ function getOrCreateTab(tabName) {
   const btn = document.createElement('button');
   btn.className = 'tb';
   btn.textContent = `✦ ${tabName}`;
-  btn.onclick = function() { sw(newIdx, this); };
+  btn.setAttribute('onclick', `sw(${newIdx},this)`);  // 用 setAttribute 讓步驟3能掃描到
   const anesthesiaBtn = Array.from(tabsEl.querySelectorAll('.tb')).find(b => b.textContent.includes('麻醉'));
   if (anesthesiaBtn) tabsEl.insertBefore(btn, anesthesiaBtn);
   else tabsEl.appendChild(btn);
