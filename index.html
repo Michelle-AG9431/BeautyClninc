@@ -84,12 +84,17 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .cu{font-size:11px;color:var(--ink-m);}
 .hint{font-size:10px;color:var(--ink-l);line-height:1.6;}
 @media(max-width:600px){.jpy{font-size:22px;}.twd{font-size:15px;}.tn{font-size:11px;}}
+.price-status{font-size:9px;letter-spacing:.08em;margin-top:5px;}
+.price-status.loading{color:#9a8e7a;}
+.price-status.ok{color:#7ab87a;}
+.price-status.err{color:#c97a7a;}
 </style>
 </head>
 <body>
 <header>
   <span class="logo">SBC Shonan Beauty Clinic</span>
   <h1>SBC湘南醫美診所　療程總價試算</h1>
+  <div class="price-status loading" id="price-status">價格載入中…</div>
 </header>
 <div class="tbar">
   <div class="tlhs">
@@ -610,18 +615,18 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="chd"><div class="cbar"></div><div class="ctit">水光針/膠原蛋白再生</div></div>
   <div class="ti" id="s1t26" data-name="Jalupro Superhydro">
     <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>53,000</div></div>
+    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
     <div class="opts">
       <div class="ol">輸入支數</div>
       <div class="crow">
         <input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1" oninput="jalu26U()">
-        <span class="cu">支　×　¥53,000</span>
+        <span class="cu">支　×　¥55,000</span>
       </div>
       <div class="odiv"></div>
       <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
       <select class="os" id="jalupro26-glow" onchange="jalu26U()">
         <option value="0">不追加</option>
-        <option value="7000">加做煥膚　+¥7,000</option>
+        <option value="6000">加做煥膚　+¥6,000</option>
       </select>
     </div>
   </div>
@@ -998,6 +1003,151 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 </div></div>
 
 <script>
+// ══════════════════════════════════════════════════════
+//  ★ 在這裡貼上你的 Apps Script URL
+// ══════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOGBRaRKsmDRn-5Yoy3-mlZ7_T7TVKtw8uynP6MxNBXMW538GMYmYd-T47ksIwHNwd/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+
+// 可被 Sheet 覆蓋的費率
+const rates = {
+  bnls:   {r1:3030, r2:1980},
+  sansam: {r1:8000, r2:7000, r3:6000},
+  fatx:   {r1:8000, r2:7000, r3:6000},
+  areas:  {r:980},
+  jalu26: {unit:55000, glow:6000}
+};
+
+async function loadSheetPrices() {
+  const st = document.getElementById('price-status');
+  if (!APPS_SCRIPT_URL) {
+    st.textContent = '使用內建價格（未設定 Sheet URL）';
+    st.className = 'price-status err';
+    return;
+  }
+  try {
+    st.textContent = '正在從 Google Sheets 同步價格…';
+    st.className = 'price-status loading';
+    const res = await fetch(APPS_SCRIPT_URL);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    applySheetPrices(data);
+    st.textContent = '✓ 價格已同步 Google Sheets';
+    st.className = 'price-status ok';
+  } catch(e) {
+    st.textContent = '⚠ Sheet 載入失敗，使用內建價格';
+    st.className = 'price-status err';
+  }
+}
+
+function applySheetPrices(data) {
+  // ── 共用導入液 ──
+  if (data.liquid) {
+    ['pico24-liq','pico34-liq','pico25-liq','pico26-liq','mrf-liq'].forEach(sid => {
+      const sel = document.getElementById(sid);
+      if (!sel) return;
+      Object.entries(data.liquid).forEach(([k,v]) => {
+        const i = parseInt(k);
+        if (!isNaN(i) && sel.options[i]) sel.options[i].value = v;
+      });
+    });
+  }
+
+  for (const [id, keys] of Object.entries(data)) {
+    if (id === 'liquid') continue;
+    const el = document.getElementById(id);
+
+    // 靜態固定價格
+    if (keys['static'] !== undefined) {
+      staticPrices[id] = keys['static'];
+      if (el) setPD('p'+id, keys['static']);
+    }
+
+    // 一般下拉選單（index 0,1,2…）
+    if (el) {
+      // 找主要 select（沒有特殊 id 的那個）
+      const mainSel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id="kr-"]):not([id="bt-"]):not([id="jalupro"]):not([id^="sel-"]):not([id^="pico"])');
+      if (mainSel) {
+        let first = true;
+        Object.entries(keys).forEach(([k,v]) => {
+          const i = parseInt(k);
+          if (!isNaN(i) && mainSel.options[i]) {
+            mainSel.options[i].value = v;
+            if (first) { setPD('p'+id, v); first = false; }
+          }
+        });
+      }
+    }
+
+    // qty 單位價格
+    if (keys['unit'] !== undefined && el) {
+      const cu = el.querySelector('.cu');
+      if (cu) cu.textContent = cu.textContent.replace(/¥[\d,]+/, '¥' + Number(keys['unit']).toLocaleString());
+      setPD('p'+id, keys['unit']);
+    }
+
+    // Jalupro 煥膚
+    if (id === 's1t26') {
+      if (keys['unit'] !== undefined) rates.jalu26.unit = keys['unit'];
+      if (keys['glow'] !== undefined) {
+        rates.jalu26.glow = keys['glow'];
+        const gs = document.getElementById('jalupro26-glow');
+        if (gs && gs.options[1]) gs.options[1].value = keys['glow'];
+      }
+      setPD('ps1t26', rates.jalu26.unit);
+    }
+
+    // 皮秒蜂巢體驗 & 皮膚科 combo_fixed base
+    if (id === 's0t24' && keys['base'] !== undefined) setPD('ps0t24', keys['base']);
+    if (id === 's0t26' && keys['base'] !== undefined) setPD('ps0t26', keys['base']);
+
+    // 皮秒蜂巢 / 皮秒淨膚+蜂巢 combo_select base
+    if (id === 's0t34' || id === 's0t25') {
+      const bid = id === 's0t34' ? 'pico34-base' : 'pico25-base';
+      const bs = document.getElementById(bid);
+      if (bs) {
+        Object.entries(keys).forEach(([k,v]) => { const i=parseInt(k); if(!isNaN(i)&&bs.options[i]) bs.options[i].value=v; });
+        if (keys['0'] !== undefined) setPD('p'+id, keys['0']);
+      }
+    }
+
+    // 矽谷電波 mrf-base
+    if (id === 's0t30') {
+      const bs = document.getElementById('mrf-base');
+      if (bs) {
+        Object.entries(keys).forEach(([k,v]) => { const i=parseInt(k); if(!isNaN(i)&&bs.options[i]) bs.options[i].value=v; });
+        if (keys['0'] !== undefined) setPD('ps0t30', keys['0']);
+      }
+    }
+
+    // qty_sel 項目
+    if (id === 's1t31') { const s=document.getElementById('sel-s1t31'); if(s){Object.entries(keys).forEach(([k,v])=>{const i=parseInt(k);if(!isNaN(i)&&s.options[i])s.options[i].value=v;}); if(keys['0']!==undefined)setPD('ps1t31',keys['0']);} }
+    if (id === 's1t56') { const s=document.getElementById('sel-s1t56'); if(s){Object.entries(keys).forEach(([k,v])=>{const i=parseInt(k);if(!isNaN(i)&&s.options[i])s.options[i].value=v;}); if(keys['0']!==undefined)setPD('ps1t56',keys['0']);} }
+
+    // 韓國肉毒 kr-base / kr-extra
+    if (id === 's1t0') {
+      const kb=document.getElementById('kr-base'), ke=document.getElementById('kr-extra');
+      if(kb) ['0','1','2'].forEach(k=>{if(keys['kr-base_'+k]!==undefined&&kb.options[parseInt(k)])kb.options[parseInt(k)].value=keys['kr-base_'+k];});
+      if(ke) ['1','2','3','4','5','6','7'].forEach(k=>{if(keys['kr-extra_'+k]!==undefined&&ke.options[parseInt(k)])ke.options[parseInt(k)].value=keys['kr-extra_'+k];});
+      if(keys['kr-base_0']!==undefined) setPD('ps1t0', keys['kr-base_0']);
+    }
+
+    // 保妥適 bt-base / bt-extra
+    if (id === 's1t9') {
+      const bb=document.getElementById('bt-base'), be=document.getElementById('bt-extra');
+      if(bb) ['0','1','2'].forEach(k=>{if(keys['bt-base_'+k]!==undefined&&bb.options[parseInt(k)])bb.options[parseInt(k)].value=keys['bt-base_'+k];});
+      if(be) ['1','2','3','4','5','6','7'].forEach(k=>{if(keys['bt-extra_'+k]!==undefined&&be.options[parseInt(k)])be.options[parseInt(k)].value=keys['bt-extra_'+k];});
+      if(keys['bt-base_0']!==undefined) setPD('ps1t9', keys['bt-base_0']);
+    }
+
+    // cc 費率
+    if (id === 's1t44') { if(keys['rate1']!==undefined){rates.bnls.r1=keys['rate1'];setPD('ps1t44',keys['rate1']);} if(keys['rate2']!==undefined)rates.bnls.r2=keys['rate2']; }
+    if (id === 's1t45') { if(keys['rate1']!==undefined){rates.sansam.r1=keys['rate1'];setPD('ps1t45',keys['rate1']);} if(keys['rate2']!==undefined)rates.sansam.r2=keys['rate2']; if(keys['rate3']!==undefined)rates.sansam.r3=keys['rate3']; }
+    if (id === 's1t46') { if(keys['rate1']!==undefined){rates.fatx.r1=keys['rate1'];setPD('ps1t46',keys['rate1']);} if(keys['rate2']!==undefined)rates.fatx.r2=keys['rate2']; if(keys['rate3']!==undefined)rates.fatx.r3=keys['rate3']; }
+
+    // 麻醉部位費率
+    if (id === 's3t0' && keys['area_rate'] !== undefined) { rates.areas.r=keys['area_rate']; setPD('ps3t0',keys['area_rate']); }
+  }
+}
 const staticPrices = {
   's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
   's4t4':162000,'s4t5':135000,'s4t6':27000,'s4t7':218160,
@@ -1029,6 +1179,7 @@ async function fetchRate(){
   upd();
 }
 fetchRate();
+loadSheetPrices();
 
 function gu(id,pid,sel){
   const v=parseInt(sel.value)||0;
@@ -1098,11 +1249,11 @@ function mrfU(){
 function jalu26U(){
   const qty=parseInt(document.getElementById('q-s1t26')?.value)||1;
   const glow=parseInt(document.getElementById('jalupro26-glow')?.value)||0;
-  const total=qty*53000+glow;
+  const total=qty*55000+glow;
   P['s1t26']=total;
   const gs=document.getElementById('jalupro26-glow');
   const gl=gs?(gs.options[gs.selectedIndex]?.text||''):'';
-  O['s1t26']=qty+'支 × ¥53,000'+(glow>0?' ＋ '+gl:'');
+  O['s1t26']=qty+'支 × ¥55,000'+(glow>0?' ＋ '+gl:'');
   setPD('ps1t26',total);upd();
 }
 
@@ -1128,43 +1279,40 @@ function qtySelU(itemId,priceElId,selId,qtyElId){
 /* ★ 修正：step=1, 預設1cc顯示價格 */
 function bnlsU(){
   const cc=parseInt(document.getElementById('s1t44-cc')?.value)||1;
-  const r=cc>=10?1980:3030;
+  const r=cc>=10?rates.bnls.r2:rates.bnls.r1;
   const price=cc*r;
-  P['s1t44']=price;
-  O['s1t44']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
+  P['s1t44']=price;O['s1t44']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
   setPD('ps1t44',price);
   const h=document.getElementById('bnls-hint');
-  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString()+'　｜　1〜9cc：¥3,030/cc　10cc以上：¥1,980/cc';h.style.color='var(--gold)';}
+  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString()+'　｜　1〜9cc：¥'+rates.bnls.r1.toLocaleString()+'　10cc以上：¥'+rates.bnls.r2.toLocaleString();h.style.color='var(--gold)';}
   upd();
 }
 
 function sansamU(){
   const cc=parseInt(document.getElementById('s1t45-cc')?.value)||1;
-  const r=cc>=10?6000:cc>=5?7000:8000;
+  const r=cc>=10?rates.sansam.r3:cc>=5?rates.sansam.r2:rates.sansam.r1;
   const price=cc*r;
-  P['s1t45']=price;
-  O['s1t45']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
+  P['s1t45']=price;O['s1t45']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
   setPD('ps1t45',price);
   const h=document.getElementById('sansam-hint');
-  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString()+'　｜　1〜4cc：¥8,000　5〜9cc：¥7,000　10cc以上：¥6,000';h.style.color='var(--gold)';}
+  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();h.style.color='var(--gold)';}
   upd();
 }
 
 function fatxU(){
   const cc=parseInt(document.getElementById('s1t46-cc')?.value)||1;
-  const r=cc>=10?6000:cc>=5?7000:8000;
+  const r=cc>=10?rates.fatx.r3:cc>=5?rates.fatx.r2:rates.fatx.r1;
   const price=cc*r;
-  P['s1t46']=price;
-  O['s1t46']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
+  P['s1t46']=price;O['s1t46']=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();
   setPD('ps1t46',price);
   const h=document.getElementById('fatx-hint');
-  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString()+'　｜　1〜4cc：¥8,000　5〜9cc：¥7,000　10cc以上：¥6,000';h.style.color='var(--gold)';}
+  if(h){h.textContent=cc+'cc × ¥'+r.toLocaleString()+'/cc = ¥'+price.toLocaleString();h.style.color='var(--gold)';}
   upd();
 }
 
 function anU(){
   const a=parseInt(document.getElementById('an-areas').value)||1;
-  const price=a*980;
+  const price=a*rates.areas.r;
   P['s3t0']=price;
   O['s3t0']=a+'部位 × ¥980 = ¥'+price.toLocaleString();
   setPD('ps3t0',price);
