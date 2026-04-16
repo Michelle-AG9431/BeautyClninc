@@ -12,7 +12,7 @@ body{background:var(--cream);color:var(--ink);font-family:'Noto Sans TC',sans-se
 header{background:var(--ink);padding:24px 0 16px;text-align:center;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.2);}
 .logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;letter-spacing:.35em;color:var(--gold-l);text-transform:uppercase;display:block;margin-bottom:4px;}
 h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;letter-spacing:.12em;}
-.tbar{background:var(--bg);border-bottom:1px solid var(--br);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;top:76px;z-index:150;box-shadow:0 3px 12px var(--sh);}
+.tbar{background:var(--bg);border-bottom:1px solid var(--br);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:150;box-shadow:0 3px 12px var(--sh);}
 .tlhs .lbl{font-size:9px;letter-spacing:.15em;color:var(--ink-l);text-transform:uppercase;}
 .amounts{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
 .jpy{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);}
@@ -122,9 +122,8 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <button class="tb on" onclick="sw(0,this)">✦ 音電波雷射</button>
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
   <button class="tb" onclick="sw(2,this)">✦ 瘦身・減脂</button>
-  <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
-  <button class="tb" onclick="sw(5,this)">✦ 煥膚・保養</button>
   <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
+  <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
 </div>
 <div class="sp on" id="sh0"><div class="main">
 <div class="cat">
@@ -1007,7 +1006,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx19OL_0CcmcrWrPmcs6PKtUPX3XIA8ne_wrZja2SGzT91ajFTX4DLq6tbtVV2kaEm/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = '';  // ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -1162,68 +1161,95 @@ const TAB_MAP = {
   '瘦身': 2, '減脂': 2,
   '麻醉': 3,
   '抽脂': 4,
+  '煥膚': 5, '保養': 5,   // ← 你手動加的 tab，sw(5)
 };
 // 動態新增的 tab 記錄：tabName → shN 的 index
 const dynamicTabs = {};
 
 function getOrCreateTab(tabName) {
-  // 1. 先查現有 tab
+  // 1. 先查現有 tab（含關鍵字比對）
   for (const [key, idx] of Object.entries(TAB_MAP)) {
-    if (tabName.includes(key)) return idx;
+    if (tabName.includes(key) || key.includes(tabName)) return idx;
   }
   // 2. 查已動態建立的 tab
   if (dynamicTabs[tabName] !== undefined) return dynamicTabs[tabName];
+  // 3. 查現有 .tb 按鈕文字（處理使用者手動加的 tab）
+  const allBtns = document.querySelectorAll('.tb');
+  for (let i = 0; i < allBtns.length; i++) {
+    const btnText = allBtns[i].textContent.replace('✦','').trim();
+    if (btnText.includes(tabName) || tabName.includes(btnText)) {
+      // 找對應的 sh index
+      const onclickStr = allBtns[i].getAttribute('onclick') || '';
+      const match = onclickStr.match(/sw\((\d+)/);
+      if (match) return parseInt(match[1]);
+    }
+  }
 
-  // 3. 全新 tab：建立 .sp section 和 .tb 按鈕
+  // 4. 全新 tab：建立 .sp section 和 .tb 按鈕
   const allSp = document.querySelectorAll('.sp');
-  const newIdx = allSp.length;               // 例如 5, 6, 7…
+  const newIdx = allSp.length;
 
-  // 建立 section
   const spDiv = document.createElement('div');
   spDiv.className = 'sp';
   spDiv.id = `sh${newIdx}`;
   const mainDiv = document.createElement('div');
   mainDiv.className = 'main';
   spDiv.appendChild(mainDiv);
-  // 插在最後一個 .sp 之後
   allSp[allSp.length - 1].insertAdjacentElement('afterend', spDiv);
 
-  // 建立 tab 按鈕
   const tabsEl = document.querySelector('.tabs');
   const btn = document.createElement('button');
   btn.className = 'tb';
   btn.textContent = `✦ ${tabName}`;
   btn.onclick = function() { sw(newIdx, this); };
-  tabsEl.appendChild(btn);
+  const anesthesiaBtn = Array.from(tabsEl.querySelectorAll('.tb')).find(b => b.textContent.includes('麻醉'));
+  if (anesthesiaBtn) tabsEl.insertBefore(btn, anesthesiaBtn);
+  else tabsEl.appendChild(btn);
 
   dynamicTabs[tabName] = newIdx;
   return newIdx;
 }
 
 function renderExtraItems(extras) {
-  // 先清除上次渲染的 extra 項目（避免重複）
+  // 清除上次渲染的 extra 項目
   document.querySelectorAll('[id^="extra-item-"]').forEach(el => el.remove());
   document.querySelectorAll('[id^="extra-cat-"]').forEach(el => el.remove());
 
-  // 按 tab 分組
+  // 按 tab 再按 cat 分組
   const groups = {};
   extras.forEach((item, i) => {
     const tab = item.tab || '其他';
-    if (!groups[tab]) groups[tab] = [];
-    groups[tab].push({ ...item, _i: i });
+    const cat = item.cat || '';
+    const groupKey = tab + '||' + cat;
+    if (!groups[groupKey]) groups[groupKey] = { tab, cat, items: [] };
+    groups[groupKey].items.push({ ...item, _i: i });
   });
 
-  Object.entries(groups).forEach(([tabName, items]) => {
+  Object.values(groups).forEach(({ tab: tabName, cat: catName, items }) => {
     const tabIdx = getOrCreateTab(tabName);
     const mainEl = document.querySelector(`#sh${tabIdx} .main`);
     if (!mainEl) return;
 
-    // 建立一個「自訂新增」區塊
-    const catDiv = document.createElement('div');
-    catDiv.className = 'cat';
-    catDiv.id = `extra-cat-${tabName}`;
-    catDiv.innerHTML = `<div class="chd"><div class="cbar"></div><div class="ctit">✦ ${tabName} </div></div>`;
+    // 如果有 catName，嘗試找現有的 .cat 區塊
+    let targetCat = null;
+    if (catName) {
+      mainEl.querySelectorAll('.cat').forEach(cat => {
+        const title = cat.querySelector('.ctit')?.textContent?.replace('✦','').trim() || '';
+        if (title.includes(catName) || catName.includes(title)) targetCat = cat;
+      });
+    }
 
+    // 找不到現有分類 → 建一個新的
+    if (!targetCat) {
+      targetCat = document.createElement('div');
+      targetCat.className = 'cat';
+      targetCat.id = `extra-cat-${tabName}-${catName}`;
+      const title = catName || tabName;
+      targetCat.innerHTML = `<div class="chd"><div class="cbar"></div><div class="ctit">✦ ${title}</div></div>`;
+      mainEl.appendChild(targetCat);
+    }
+
+    // 把項目加進分類
     items.forEach(item => {
       const eid = `extra-item-${item._i}`;
       const tiDiv = document.createElement('div');
@@ -1237,10 +1263,8 @@ function renderExtraItems(extras) {
           <div class="pd" id="p${eid}"><span class="y">¥</span>${Number(item.price).toLocaleString()}</div>
         </div>
         <div class="opts"></div>`;
-      catDiv.appendChild(tiDiv);
+      targetCat.appendChild(tiDiv);
     });
-
-    mainEl.appendChild(catDiv);
   });
 }
 
@@ -1268,8 +1292,9 @@ function fixTabsTop(){
   const tb=document.querySelector('.tbar');
   const tabs=document.querySelector('.tabs');
   if(h&&tb&&tabs){
-    const top=h.getBoundingClientRect().height+tb.getBoundingClientRect().height;
-    tabs.style.top=top+'px';
+    const hh=h.getBoundingClientRect().height;
+    tb.style.top=hh+'px';
+    tabs.style.top=(hh+tb.getBoundingClientRect().height)+'px';
   }
 }
 window.addEventListener('load',fixTabsTop);
