@@ -1007,7 +1007,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx19OL_0CcmcrWrPmcs6PKtUPX3XIA8ne_wrZja2SGzT91ajFTX4DLq6tbtVV2kaEm/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuZcBZb4NW16qilhLd-3p3YkMNfjmwPfv-7NSqlNASnJSRUekdHMLCHdoCXum_E8InvA/exec';  // ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -1236,7 +1236,7 @@ function renderExtraItems(extras) {
   document.querySelectorAll('[id^="extra-item-"]').forEach(el => el.remove());
   document.querySelectorAll('[id^="extra-cat-"]').forEach(el => el.remove());
 
-  // 按 tab 再按 cat 分組
+  // 按 tab + cat 分組
   const groups = {};
   extras.forEach((item, i) => {
     const tab = item.tab || '其他';
@@ -1251,7 +1251,7 @@ function renderExtraItems(extras) {
     const mainEl = document.querySelector(`#sh${tabIdx} .main`);
     if (!mainEl) return;
 
-    // 如果有 catName，嘗試找現有的 .cat 區塊
+    // 找現有分類區塊
     let targetCat = null;
     if (catName) {
       mainEl.querySelectorAll('.cat').forEach(cat => {
@@ -1259,37 +1259,63 @@ function renderExtraItems(extras) {
         if (title.includes(catName) || catName.includes(title)) targetCat = cat;
       });
     }
-
-    // 找不到現有分類 → 建一個新的
     if (!targetCat) {
       targetCat = document.createElement('div');
       targetCat.className = 'cat';
       targetCat.id = `extra-cat-${tabName}-${catName}`;
-      const title = catName || tabName;
-      targetCat.innerHTML = `<div class="chd"><div class="cbar"></div><div class="ctit">✦ ${title}</div></div>`;
+      targetCat.innerHTML = `<div class="chd"><div class="cbar"></div><div class="ctit">✦ ${catName || tabName}</div></div>`;
       mainEl.appendChild(targetCat);
     }
 
     // 把項目加進分類
     items.forEach(item => {
       const eid = `extra-item-${item._i}`;
+      const opts = item.options || [{ label: '', price: item.price }];
+      const firstPrice = opts[0].price;
+      const isSelect = opts.length > 1 || (opts.length === 1 && opts[0].label);
+
       const tiDiv = document.createElement('div');
       tiDiv.className = 'ti';
       tiDiv.id = eid;
       tiDiv.dataset.name = item.name;
-      tiDiv.innerHTML = `
-        <div class="tim" onclick="togExtra('${eid}',${item.price})">
-          <div class="ck"><span class="tk">✓</span></div>
-          <div class="tn">${item.name}${item.note ? `<span class="note">${item.note}</span>` : ''}</div>
-          <div class="pd" id="p${eid}"><span class="y">¥</span>${Number(item.price).toLocaleString()}</div>
-        </div>
-        <div class="opts"></div>`;
+      tiDiv.dataset.currentPrice = firstPrice;
+
+      if (!isSelect) {
+        // 固定價格
+        tiDiv.innerHTML = `
+          <div class="tim" onclick="togExtraSimple('${eid}',${firstPrice})">
+            <div class="ck"><span class="tk">✓</span></div>
+            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
+            </div>
+            <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
+          </div>
+          <div class="opts"></div>`;
+      } else {
+        // 下拉選單
+        const optionsHtml = opts.map(o =>
+          `<option value="${o.price}">${o.label ? o.label+'　' : ''}¥${o.price.toLocaleString()}</option>`
+        ).join('');
+        tiDiv.innerHTML = `
+          <div class="tim" onclick="togExtraSelect('${eid}')">
+            <div class="ck"><span class="tk">✓</span></div>
+            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
+            </div>
+            <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
+          </div>
+          <div class="opts">
+            <div class="ol">選擇方案</div>
+            <select class="os" onchange="extraSelU('${eid}',this)">
+              ${optionsHtml}
+            </select>
+          </div>`;
+      }
       targetCat.appendChild(tiDiv);
     });
   });
 }
 
-function togExtra(id, price) {
+// 固定價格 extra 項目的開關
+function togExtraSimple(id, price) {
   const el = document.getElementById(id);
   if (!el) return;
   if (C.has(id)) {
@@ -1301,6 +1327,37 @@ function togExtra(id, price) {
   }
   upd();
 }
+
+// 下拉選單 extra 項目的開關
+function togExtraSelect(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const price = parseInt(el.dataset.currentPrice) || 0;
+  const sel = el.querySelector('select.os');
+  const label = sel ? sel.options[sel.selectedIndex]?.text : '';
+  if (C.has(id)) {
+    C.delete(id); delete P[id]; delete O[id];
+    el.classList.remove('on');
+  } else {
+    C.add(id); P[id] = price; O[id] = label;
+    el.classList.add('on');
+  }
+  upd();
+}
+
+// 下拉選單變更時更新價格
+function extraSelU(id, sel) {
+  const price = parseInt(sel.value) || 0;
+  const label = sel.options[sel.selectedIndex]?.text || '';
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.dataset.currentPrice = price;
+  setPD('p' + id, price);
+  if (C.has(id)) { P[id] = price; O[id] = label; upd(); }
+}
+
+// 舊版相容（保留）
+function togExtra(id, price) { togExtraSimple(id, price); }
 const staticPrices = {
   's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
   's4t4':162000,'s4t5':135000,'s4t6':27000,'s4t7':218160,
