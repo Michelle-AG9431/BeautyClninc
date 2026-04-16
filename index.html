@@ -1272,15 +1272,39 @@ function renderExtraItems(extras) {
       const eid = `extra-item-${item._i}`;
       const opts = item.options || [{ label: '', price: item.price }];
       const firstPrice = opts[0].price;
-      const isSelect = opts.length > 1 || (opts.length === 1 && opts[0].label);
+      const firstLabel = opts[0].label || '';
+
+      // 判斷類型：[支] [瓶] [cc] 等 → 數量輸入；多選項 → 下拉；其他 → 固定
+      const qtyMatch = opts.length === 1 && firstLabel.match(/^\[(.+)\]$/);
+      const isQty = !!qtyMatch;
+      const isSelect = !isQty && (opts.length > 1 || (opts.length === 1 && firstLabel));
+      const unit = isQty ? qtyMatch[1] : '';
 
       const tiDiv = document.createElement('div');
       tiDiv.className = 'ti';
       tiDiv.id = eid;
       tiDiv.dataset.name = item.name;
       tiDiv.dataset.currentPrice = firstPrice;
+      tiDiv.dataset.unitPrice = firstPrice;
 
-      if (!isSelect) {
+      if (isQty) {
+        // 數量輸入（支/瓶/cc）
+        tiDiv.innerHTML = `
+          <div class="tim" onclick="togExtraQty('${eid}')">
+            <div class="ck"><span class="tk">✓</span></div>
+            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
+            </div>
+            <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
+          </div>
+          <div class="opts">
+            <div class="ol">輸入${unit}數</div>
+            <div class="crow">
+              <input type="number" class="ci" id="q-${eid}" min="1" max="50" step="1" value="1"
+                oninput="extraQtyU('${eid}',${firstPrice},'${unit}',this)">
+              <span class="cu">${unit}　×　¥${firstPrice.toLocaleString()}</span>
+            </div>
+          </div>`;
+      } else if (!isSelect) {
         // 固定價格
         tiDiv.innerHTML = `
           <div class="tim" onclick="togExtraSimple('${eid}',${firstPrice})">
@@ -1326,6 +1350,40 @@ function togExtraSimple(id, price) {
     el.classList.add('on');
   }
   upd();
+}
+
+// 數量輸入 extra 項目的開關（支/瓶/cc）
+function togExtraQty(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const unitPrice = parseInt(el.dataset.unitPrice) || 0;
+  const qtyEl = document.getElementById('q-' + id);
+  const qty = parseInt(qtyEl?.value) || 1;
+  const price = qty * unitPrice;
+  if (C.has(id)) {
+    C.delete(id); delete P[id]; delete O[id];
+    el.classList.remove('on');
+  } else {
+    C.add(id); P[id] = price;
+    O[id] = qty + (qtyEl?.nextElementSibling?.textContent?.split('×')[0]?.trim() || '') + ' × ¥' + unitPrice.toLocaleString();
+    el.classList.add('on');
+  }
+  upd();
+}
+
+// 數量輸入變更時更新價格
+function extraQtyU(id, unitPrice, unit, input) {
+  const qty = parseInt(input.value) || 1;
+  const price = qty * unitPrice;
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.dataset.currentPrice = price;
+  setPD('p' + id, price);
+  if (C.has(id)) {
+    P[id] = price;
+    O[id] = qty + unit + ' × ¥' + unitPrice.toLocaleString();
+    upd();
+  }
 }
 
 // 下拉選單 extra 項目的開關
