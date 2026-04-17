@@ -83,6 +83,8 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .ci:focus{outline:none;border-color:var(--gold);}
 .cu{font-size:11px;color:var(--ink-m);}
 .hint{font-size:10px;color:var(--ink-l);line-height:1.6;}
+.item-link{font-size:9px;color:var(--gold-l);text-decoration:none;margin-left:5px;opacity:.7;vertical-align:middle;transition:opacity .15s;}
+.item-link:hover{opacity:1;color:var(--gold);}
 @media(max-width:600px){.jpy{font-size:22px;}.twd{font-size:15px;}.tn{font-size:11px;}}
 .price-status{font-size:9px;letter-spacing:.08em;margin-top:5px;}
 .price-status.loading{color:#9a8e7a;}
@@ -122,9 +124,8 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <button class="tb on" onclick="sw(0,this)">✦ 音電波雷射</button>
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
   <button class="tb" onclick="sw(2,this)">✦ 瘦身・減脂</button>
-  <button class="tb" onclick="sw(5,this)">✦ 煥膚・保養</button>
-  <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
   <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
+  <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
 </div>
 <div class="sp on" id="sh0"><div class="main">
 <div class="cat">
@@ -1007,7 +1008,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwuZcBZb4NW16qilhLd-3p3YkMNfjmwPfv-7NSqlNASnJSRUekdHMLCHdoCXum_E8InvA/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = '';  // ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -1147,12 +1148,33 @@ function applySheetPrices(data) {
 
     // 麻醉部位費率
     if (id === 's3t0' && keys['area_rate'] !== undefined) { rates.areas.r=keys['area_rate']; setPD('ps3t0',keys['area_rate']); }
+
+    // 連結
+    if (keys['__link__']) addLinkToItem(id, keys['__link__']);
   }
 
   // ── 渲染 extra_items 自訂新增項目 ──
   if (data['__extra__'] && data['__extra__'].length > 0) {
     renderExtraItems(data['__extra__']);
   }
+}
+
+function addLinkToItem(id, url) {
+  const el = document.getElementById(id);
+  if (!el || !url) return;
+  // 避免重複加
+  if (el.querySelector('.item-link')) return;
+  const tn = el.querySelector('.tn');
+  if (!tn) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.className = 'item-link';
+  a.title = '查看官網';
+  a.textContent = '↗';
+  a.onclick = e => e.stopPropagation(); // 不觸發勾選
+  tn.appendChild(a);
 }
 
 // 分類名稱 → 對應的既有 tab index
@@ -1279,6 +1301,11 @@ function renderExtraItems(extras) {
       const isQty = !!qtyMatch;
       const isSelect = !isQty && (opts.length > 1 || (opts.length === 1 && firstLabel));
       const unit = isQty ? qtyMatch[1] : '';
+      // 連結小按鈕
+      const linkHtml = item.link
+        ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="item-link" title="查看官網" onclick="event.stopPropagation()">↗</a>`
+        : '';
+      const nameHtml = `${item.name}${item.note?`<span class="note">${item.note}</span>`:''}${linkHtml}`;
 
       const tiDiv = document.createElement('div');
       tiDiv.className = 'ti';
@@ -1292,8 +1319,7 @@ function renderExtraItems(extras) {
         tiDiv.innerHTML = `
           <div class="tim" onclick="togExtraQty('${eid}')">
             <div class="ck"><span class="tk">✓</span></div>
-            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
-            </div>
+            <div class="tn">${nameHtml}</div>
             <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
           </div>
           <div class="opts">
@@ -1309,8 +1335,7 @@ function renderExtraItems(extras) {
         tiDiv.innerHTML = `
           <div class="tim" onclick="togExtraSimple('${eid}',${firstPrice})">
             <div class="ck"><span class="tk">✓</span></div>
-            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
-            </div>
+            <div class="tn">${nameHtml}</div>
             <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
           </div>
           <div class="opts"></div>`;
@@ -1322,8 +1347,7 @@ function renderExtraItems(extras) {
         tiDiv.innerHTML = `
           <div class="tim" onclick="togExtraSelect('${eid}')">
             <div class="ck"><span class="tk">✓</span></div>
-            <div class="tn">${item.name}${item.note?`<span class="note">${item.note}</span>`:''}
-            </div>
+            <div class="tn">${nameHtml}</div>
             <div class="pd" id="p${eid}"><span class="y">¥</span>${firstPrice.toLocaleString()}</div>
           </div>
           <div class="opts">
