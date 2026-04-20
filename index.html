@@ -1155,7 +1155,10 @@ function applySheetPrices(data) {
     if (id === 's3t0' && keys['area_rate'] !== undefined) { rates.areas.r=keys['area_rate']; setPD('ps3t0',keys['area_rate']); }
 
     // 連結
-    if (keys['__link__']) addLinkToItem(id, keys['__link__']);
+    if (keys['__link__']) {
+      console.log('找到連結', id, keys['__link__']);
+      addLinkToItem(id, keys['__link__']);
+    }
   }
 
   // ── 渲染 extra_items 自訂新增項目 ──
