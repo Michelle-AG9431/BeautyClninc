@@ -1184,7 +1184,6 @@ function applySheetPrices(data) {
 function addLinkToItem(id, url) {
   const el = document.getElementById(id);
   if (!el || !url) return;
-  // 避免重複加
   if (el.querySelector('.item-link')) return;
   const tn = el.querySelector('.tn');
   if (!tn) return;
@@ -1195,8 +1194,11 @@ function addLinkToItem(id, url) {
   a.className = 'item-link';
   a.title = '查看官網';
   a.textContent = '↗';
-  a.onclick = e => e.stopPropagation(); // 不觸發勾選
-  tn.appendChild(a);
+  a.onclick = e => e.stopPropagation();
+  // 插在備註(.note)之前，讓連結跟名稱在同一行
+  const note = tn.querySelector('.note');
+  if (note) tn.insertBefore(a, note);
+  else tn.appendChild(a);
 }
 
 // 分類名稱 → 對應的既有 tab index
