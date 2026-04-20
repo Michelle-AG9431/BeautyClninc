@@ -622,18 +622,18 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="chd"><div class="cbar"></div><div class="ctit">水光針/膠原蛋白再生</div></div>
   <div class="ti" id="s1t26" data-name="Jalupro Superhydro">
     <div class="tim" onclick="tog('s1t26')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>53,000</div></div>
+    <div class="tn">Jalupro Superhydro</div><div class="pd" id="ps1t26"><span class="y">¥</span>55,000</div></div>
     <div class="opts">
       <div class="ol">輸入支數</div>
       <div class="crow">
         <input type="number" class="ci" id="q-s1t26" min="1" max="20" step="1" value="1" oninput="jalu26U()">
-        <span class="cu">支　×　¥53,000</span>
+        <span class="cu">支　×　¥55,000</span>
       </div>
       <div class="odiv"></div>
       <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
       <select class="os" id="jalupro26-glow" onchange="jalu26U()">
         <option value="0">不追加</option>
-        <option value="7000">加做煥膚</option>
+        <option value="6000">加做煥膚　+¥6,000</option>
       </select>
     </div>
   </div>
@@ -1024,6 +1024,18 @@ const rates = {
   jalu26: {unit:55000, glow:6000}
 };
 
+// 支/瓶計算項目的單位價格（Sheet 更新時會同步）
+const unitPrices = {
+  's1t21':30350, 's1t22':35350, 's1t23':35350,
+  's1t27':105000,
+  's1t28':54800, 's1t29':56000, 's1t30':120000,
+  's1t32':34800, 's1t33':45000,
+  's1t34':57200, 's1t35':57200, 's1t36':57200, 's1t37':66000,
+  's1t38':81270,
+  's1t54':88000, 's1t55':88000,
+  's1t57':48000,
+};
+
 async function loadSheetPrices() {
   const st = document.getElementById('price-status');
   if (!APPS_SCRIPT_URL) {
@@ -1038,8 +1050,12 @@ async function loadSheetPrices() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     applySheetPrices(data);
-    // DEBUG：印出 s0t0 的完整資料
-    console.log('s0t0 資料：', JSON.stringify(data['s0t0']));
+    // 連結：單獨處理，簡單可靠
+    Object.entries(data).forEach(([id, keys]) => {
+      if (keys && typeof keys === 'object' && !Array.isArray(keys) && keys['__link__']) {
+        addLinkToItem(id, keys['__link__']);
+      }
+    });
     st.textContent = '✓ 價格已同步 Google Sheets';
     st.className = 'price-status ok';
   } catch(e) {
@@ -1092,6 +1108,8 @@ function applySheetPrices(data) {
       const cu = el.querySelector('.cu');
       if (cu) cu.textContent = cu.textContent.replace(/¥[\d,]+/, '¥' + Number(keys['unit']).toLocaleString());
       setPD('p'+id, keys['unit']);
+      // 同步更新 unitPrices 字典
+      if (unitPrices[id] !== undefined) unitPrices[id] = keys['unit'];
     }
 
     // Jalupro 煥膚
@@ -1155,12 +1173,6 @@ function applySheetPrices(data) {
 
     // 麻醉部位費率
     if (id === 's3t0' && keys['area_rate'] !== undefined) { rates.areas.r=keys['area_rate']; setPD('ps3t0',keys['area_rate']); }
-
-    // 連結
-    if (keys['__link__']) {
-      console.log('找到連結', id, keys['__link__']);
-      addLinkToItem(id, keys['__link__']);
-    }
   }
 
   // ── 渲染 extra_items 自訂新增項目 ──
@@ -1552,15 +1564,17 @@ function mrfU(){
 function jalu26U(){
   const qty=parseInt(document.getElementById('q-s1t26')?.value)||1;
   const glow=parseInt(document.getElementById('jalupro26-glow')?.value)||0;
-  const total=qty*55000+glow;
+  const unit=rates.jalu26.unit;
+  const total=qty*unit+glow;
   P['s1t26']=total;
   const gs=document.getElementById('jalupro26-glow');
   const gl=gs?(gs.options[gs.selectedIndex]?.text||''):'';
-  O['s1t26']=qty+'支 × ¥55,000'+(glow>0?' ＋ '+gl:'');
+  O['s1t26']=qty+'支 × ¥'+unit.toLocaleString()+(glow>0?' ＋ '+gl:'');
   setPD('ps1t26',total);upd();
 }
 
-function qtyU(itemId,priceElId,unitPrice,qtyElId){
+function qtyU(itemId,priceElId,defaultUnit,qtyElId){
+  const unitPrice = unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit;
   const qty=parseInt(document.getElementById(qtyElId)?.value)||0;
   const total=qty*unitPrice;
   P[itemId]=total;
@@ -1617,10 +1631,10 @@ function anU(){
   const a=parseInt(document.getElementById('an-areas').value)||1;
   const price=a*rates.areas.r;
   P['s3t0']=price;
-  O['s3t0']=a+'部位 × ¥980 = ¥'+price.toLocaleString();
+  O['s3t0']=a+'部位 × ¥'+rates.areas.r.toLocaleString()+' = ¥'+price.toLocaleString();
   setPD('ps3t0',price);
   const h=document.getElementById('an-hint');
-  if(h)h.textContent=a+'部位 × ¥980 = ¥'+price.toLocaleString();
+  if(h)h.textContent=a+'部位 × ¥'+rates.areas.r.toLocaleString()+' = ¥'+price.toLocaleString();
   upd();
 }
 
