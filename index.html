@@ -1062,6 +1062,8 @@ const unitPrices = {
 let dealsData = {};
 let extraDealsData = {};
 let dealModeOn = false;
+// 群組折扣：groupId → { trigger, ids: [elemId,...], dealUnit per id }
+let groupDeals = {};
 
 // 標記有優惠的項目（加上紅色 badge）
 function applyDealBadges() {
@@ -1132,6 +1134,31 @@ function toggleDeals(on) {
   }
 }
 
+// 建立群組折扣對照表
+function buildGroupDeals() {
+  groupDeals = {};
+  // 處理一般項目
+  Object.entries(dealsData).forEach(([id, deal]) => {
+    if (!deal['__group__'] || !deal['unit'] || !deal['__trigger__']) return;
+    const gid = deal['__group__'];
+    if (!groupDeals[gid]) groupDeals[gid] = { trigger: deal['__trigger__'], items: {} };
+    groupDeals[gid].items[id] = { dealUnit: deal['unit'], normalUnit: unitPrices[id] || 0 };
+  });
+}
+
+// 取得同群組所有項目的總支數
+function getGroupQty(groupId, selfId) {
+  const group = groupDeals[groupId];
+  if (!group) return 0;
+  let total = 0;
+  Object.keys(group.items).forEach(id => {
+    const el = document.getElementById(id);
+    const inp = el?.querySelector('input[type="number"]');
+    total += parseInt(inp?.value || 0);
+  });
+  return total;
+}
+
 function applyDealToEl(el, id, deal, on) {
   if (!el) return;
   el.classList.toggle('deal-on', on);
@@ -1160,14 +1187,23 @@ function applyDealToEl(el, id, deal, on) {
 
   // qty 項目（unit）
   if (deal['unit'] !== undefined) {
+    const trigger = deal['__trigger__'] || 0;
+    const groupId = deal['__group__'] || '';
     if (on) {
-      el.dataset.normalUnit = el.dataset.normalUnit || unitPrices[id] || '';
-      unitPrices[id] = deal['unit'];
-      if (id === 's1t26') rates.jalu26.unit = deal['unit'];
+      // 記住原價
+      if (!el.dataset.normalUnit) el.dataset.normalUnit = unitPrices[id] || '';
+      // 有觸發數量時：先不套用折扣，讓 qtyU 依支數判斷
+      // 無觸發數量時：立即套用
+      if (!trigger) {
+        unitPrices[id] = deal['unit'];
+        if (id === 's1t26') rates.jalu26.unit = deal['unit'];
+      }
     } else {
+      // 關閉優惠：恢復原價
       if (el.dataset.normalUnit) {
         unitPrices[id] = Number(el.dataset.normalUnit);
         if (id === 's1t26') rates.jalu26.unit = Number(el.dataset.normalUnit);
+        delete el.dataset.normalUnit;
       }
     }
     const curUnit = unitPrices[id] || (id === 's1t26' ? rates.jalu26.unit : 0);
@@ -1176,8 +1212,13 @@ function applyDealToEl(el, id, deal, on) {
     if (cu) cu.textContent = cu.textContent.replace(/¥[\d,]+/, '¥' + curUnit.toLocaleString());
     if (C.has(id)) {
       const qty = parseInt(el.querySelector('input[type="number"]')?.value) || 1;
-      P[id] = qty * curUnit;
-      upd();
+      P[id] = qty * curUnit; upd();
+    }
+    // 有觸發數量：顯示提示
+    if (trigger) {
+      const effQty = groupId ? getGroupQty(groupId, id) : (parseInt(el.querySelector('input[type="number"]')?.value) || 1);
+      const normalUnit = Number(el.dataset.normalUnit) || curUnit;
+      updateQtyDealHint(id, effQty, trigger, deal['unit'], normalUnit, on, on && effQty >= trigger);
     }
   }
 
@@ -1221,6 +1262,7 @@ async function loadSheetPrices() {
     if (Object.keys(dealsData).length > 0 || Object.keys(extraDealsData).length > 0) {
       document.getElementById('deal-bar').style.display = 'flex';
       applyDealBadges();
+      buildGroupDeals();
     }
     st.textContent = '✓ 價格已同步 Google Sheets';
     st.className = 'price-status ok';
@@ -1744,18 +1786,44 @@ function jalu26U(){
 function qtyU(itemId,priceElId,defaultUnit,qtyElId){
   const qty = parseInt(document.getElementById(qtyElId)?.value)||0;
 
-  // 判斷有沒有數量折扣
   const deal = dealsData[itemId] || null;
   const trigger = deal ? (deal['__trigger__'] || 0) : 0;
   const dealUnit = deal ? (deal['unit'] || 0) : 0;
+  const groupId = deal ? (deal['__group__'] || '') : '';
   const dealModeActive = dealModeOn && deal && dealUnit;
+
+  // 計算有效支數（群組或單項）
+  let effQty = qty;
+  if (dealModeActive && groupId) {
+    effQty = getGroupQty(groupId, itemId);
+    // 群組有變化時刷新其他群組成員的提示
+    const group = groupDeals[groupId];
+    if (group) {
+      Object.keys(group.items).forEach(otherId => {
+        if (otherId === itemId) return;
+        const otherDeal = dealsData[otherId];
+        if (!otherDeal) return;
+        const otherEl = document.getElementById(otherId);
+        if (!otherEl) return;
+        const normalUnit = Number(otherEl.dataset.normalUnit) || group.items[otherId].normalUnit;
+        const discountNow = effQty >= trigger;
+        updateQtyDealHint(otherId, effQty, trigger, otherDeal['unit'], normalUnit, true, discountNow);
+        // 同步更新其他成員的價格
+        const otherQty = parseInt(otherEl.querySelector('input[type="number"]')?.value)||0;
+        const otherUnit = discountNow ? otherDeal['unit'] : (Number(otherEl.dataset.normalUnit) || unitPrices[otherId] || group.items[otherId].normalUnit);
+        if (C.has(otherId)) { P[otherId] = otherQty * otherUnit; }
+      });
+    }
+  }
 
   let unitPrice = unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit;
   let discountApplied = false;
 
-  if (dealModeActive && trigger && qty >= trigger) {
+  if (dealModeActive && trigger && effQty >= trigger) {
     unitPrice = dealUnit;
     discountApplied = true;
+  } else if (dealModeActive && !trigger) {
+    unitPrice = dealUnit;
   }
 
   const total = qty * unitPrice;
@@ -1763,8 +1831,8 @@ function qtyU(itemId,priceElId,defaultUnit,qtyElId){
   O[itemId] = qty > 0 ? qty+'支 × ¥'+unitPrice.toLocaleString()+' = ¥'+total.toLocaleString()+(discountApplied?' 🎉':'') : '';
   setPD(priceElId, qty > 0 ? total : 0);
 
-  // 更新折扣提示
-  updateQtyDealHint(itemId, qty, trigger, dealUnit, unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit, dealModeActive, discountApplied);
+  const normalUnit = deal ? (Number(document.getElementById(itemId)?.dataset.normalUnit) || (unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit)) : defaultUnit;
+  updateQtyDealHint(itemId, effQty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied);
 
   upd();
 }
@@ -1775,7 +1843,7 @@ function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeA
   let hint = el.querySelector('.qty-deal-hint');
 
   if (!dealModeActive || !trigger || !dealUnit) {
-    if (hint) hint.style.display = 'none';
+    if (hint) { hint.style.display = 'none'; hint.className = 'qty-deal-hint'; }
     return;
   }
 
@@ -1792,8 +1860,11 @@ function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeA
     hint.innerHTML = `🎉 折扣已套用！每支 <span class="qty-deal-price">¥${dealUnit.toLocaleString()}</span>（原價 ¥${normalUnit.toLocaleString()}）`;
   } else {
     const need = trigger - qty;
+    const deal = dealsData[id];
+    const groupId = deal ? (deal['__group__'] || '') : '';
+    const groupNote = groupId ? '（任意組合）' : '';
     hint.className = 'qty-deal-hint inactive';
-    hint.innerHTML = `再加 <strong>${need}</strong> 支（共${trigger}支以上）可享每支 <span style="color:var(--gold)">¥${dealUnit.toLocaleString()}</span>`;
+    hint.innerHTML = `再加 <strong>${need}</strong> 支${groupNote}（共${trigger}支以上）可享每支 <span style="color:var(--gold)">¥${dealUnit.toLocaleString()}</span>`;
   }
 }
 
