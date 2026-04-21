@@ -1134,24 +1134,30 @@ function toggleDeals(on) {
   }
 }
 
-// 建立群組折扣對照表
+// 建立群組折扣對照表（在 applySheetPrices 之後、任何 deal 套用之前呼叫）
 function buildGroupDeals() {
   groupDeals = {};
-  // 處理一般項目
   Object.entries(dealsData).forEach(([id, deal]) => {
     if (!deal['__group__'] || !deal['unit'] || !deal['__trigger__']) return;
     const gid = deal['__group__'];
     if (!groupDeals[gid]) groupDeals[gid] = { trigger: deal['__trigger__'], items: {} };
-    groupDeals[gid].items[id] = { dealUnit: deal['unit'], normalUnit: unitPrices[id] || 0 };
+    // 此時 unitPrices[id] 是原價（applySheetPrices 已更新，但 applyDealToEl 尚未執行）
+    groupDeals[gid].items[id] = {
+      dealUnit: deal['unit'],
+      normalUnit: unitPrices[id] || 0,
+      priceElId: 'p' + id,
+    };
   });
 }
 
-// 取得同群組所有項目的總支數
+// 取得同群組所有已勾選項目的總支數（未勾選不算）
 function getGroupQty(groupId, selfId) {
   const group = groupDeals[groupId];
   if (!group) return 0;
   let total = 0;
   Object.keys(group.items).forEach(id => {
+    // selfId 是目前正在更新的項目，一定要算；其他只算已勾選的
+    if (id !== selfId && !C.has(id)) return;
     const el = document.getElementById(id);
     const inp = el?.querySelector('input[type="number"]');
     total += parseInt(inp?.value || 0);
@@ -1783,56 +1789,58 @@ function jalu26U(){
   setPD('ps1t26',total);upd();
 }
 
-function qtyU(itemId,priceElId,defaultUnit,qtyElId){
-  const qty = parseInt(document.getElementById(qtyElId)?.value)||0;
+function qtyU(itemId, priceElId, defaultUnit, qtyElId){
+  const qty = parseInt(document.getElementById(qtyElId)?.value) || 0;
 
-  const deal = dealsData[itemId] || null;
-  const trigger = deal ? (deal['__trigger__'] || 0) : 0;
-  const dealUnit = deal ? (deal['unit'] || 0) : 0;
-  const groupId = deal ? (deal['__group__'] || '') : '';
-  const dealModeActive = dealModeOn && deal && dealUnit;
+  const deal      = dealsData[itemId] || null;
+  const trigger   = deal?.['__trigger__'] || 0;
+  const dealUnit  = deal?.['unit'] || 0;
+  const groupId   = deal?.['__group__'] || '';
+  const dealModeActive = dealModeOn && !!deal && !!dealUnit;
 
-  // 計算有效支數（群組或單項）
-  let effQty = qty;
-  if (dealModeActive && groupId) {
-    effQty = getGroupQty(groupId, itemId);
-    // 群組有變化時刷新其他群組成員的提示
-    const group = groupDeals[groupId];
-    if (group) {
-      Object.keys(group.items).forEach(otherId => {
-        if (otherId === itemId) return;
-        const otherDeal = dealsData[otherId];
-        if (!otherDeal) return;
-        const otherEl = document.getElementById(otherId);
-        if (!otherEl) return;
-        const normalUnit = Number(otherEl.dataset.normalUnit) || group.items[otherId].normalUnit;
-        const discountNow = effQty >= trigger;
-        updateQtyDealHint(otherId, effQty, trigger, otherDeal['unit'], normalUnit, true, discountNow);
-        // 同步更新其他成員的價格
-        const otherQty = parseInt(otherEl.querySelector('input[type="number"]')?.value)||0;
-        const otherUnit = discountNow ? otherDeal['unit'] : (Number(otherEl.dataset.normalUnit) || unitPrices[otherId] || group.items[otherId].normalUnit);
-        if (C.has(otherId)) { P[otherId] = otherQty * otherUnit; }
-      });
-    }
-  }
+  // 從 groupDeals 取正確的原價（buildGroupDeals 時記錄，不受 applyDealToEl 影響）
+  const group = groupId ? groupDeals[groupId] : null;
+  const normalUnit = group?.items[itemId]?.normalUnit || unitPrices[itemId] || defaultUnit;
 
-  let unitPrice = unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit;
+  // 有效支數：群組時合計已勾選成員支數，否則用自己的支數
+  const effQty = (dealModeActive && groupId)
+    ? getGroupQty(groupId, itemId)
+    : qty;
+
+  // 決定單價
+  let unitPrice = normalUnit;
   let discountApplied = false;
-
-  if (dealModeActive && trigger && effQty >= trigger) {
-    unitPrice = dealUnit;
-    discountApplied = true;
-  } else if (dealModeActive && !trigger) {
-    unitPrice = dealUnit;
+  if (dealModeActive) {
+    if (trigger) {
+      if (effQty >= trigger) { unitPrice = dealUnit; discountApplied = true; }
+    } else {
+      unitPrice = dealUnit; discountApplied = true;
+    }
   }
 
   const total = qty * unitPrice;
   P[itemId] = total;
-  O[itemId] = qty > 0 ? qty+'支 × ¥'+unitPrice.toLocaleString()+' = ¥'+total.toLocaleString()+(discountApplied?' 🎉':'') : '';
+  O[itemId] = qty > 0
+    ? qty + '支 × ¥' + unitPrice.toLocaleString() + ' = ¥' + total.toLocaleString() + (discountApplied ? ' 🎉' : '')
+    : '';
   setPD(priceElId, qty > 0 ? total : 0);
-
-  const normalUnit = deal ? (Number(document.getElementById(itemId)?.dataset.normalUnit) || (unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit)) : defaultUnit;
   updateQtyDealHint(itemId, effQty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied);
+
+  // 刷新其他已勾選的群組成員
+  if (dealModeActive && group) {
+    Object.entries(group.items).forEach(([otherId, info]) => {
+      if (otherId === itemId || !C.has(otherId)) return;
+      const otherEl = document.getElementById(otherId);
+      if (!otherEl) return;
+      const otherQty = parseInt(otherEl.querySelector('input[type="number"]')?.value) || 0;
+      const otherDiscounted = effQty >= group.trigger;
+      const otherUnit = otherDiscounted ? info.dealUnit : info.normalUnit;
+      P[otherId] = otherQty * otherUnit;
+      O[otherId] = otherQty + '支 × ¥' + otherUnit.toLocaleString() + ' = ¥' + P[otherId].toLocaleString() + (otherDiscounted ? ' 🎉' : '');
+      setPD(info.priceElId, otherQty > 0 ? P[otherId] : 0);
+      updateQtyDealHint(otherId, effQty, group.trigger, info.dealUnit, info.normalUnit, true, otherDiscounted);
+    });
+  }
 
   upd();
 }
@@ -1951,7 +1959,18 @@ function tog(id){
       else{
         const sel=el.querySelector('.os');
         if(sel){P[id]=parseInt(sel.value)||0;O[id]=sel.options[sel.selectedIndex]?.text||'';}
-        else{const pd=el.querySelector('.pd');if(pd){const t=pd.textContent.replace(/[¥,\s]/g,'').replace('—','');P[id]=parseInt(t)||0;}}
+        else{
+          // 有 number input 的項目（支數計算）
+          const numInp = el.querySelector('input[type="number"][id^="q-"]');
+          if(numInp){
+            const pdEl = el.querySelector('.pd');
+            const pdId = pdEl?.id;
+            if(pdId) qtyU(id, pdId, unitPrices[id] || 0, numInp.id);
+          } else {
+            const pd=el.querySelector('.pd');
+            if(pd){const t=pd.textContent.replace(/[¥,\s]/g,'').replace('—','');P[id]=parseInt(t)||0;}
+          }
+        }
       }
     }
   }
