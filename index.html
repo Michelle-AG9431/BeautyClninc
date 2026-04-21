@@ -100,6 +100,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .deal-toggle input:checked + .deal-slider:before{transform:translateX(16px);}
 .deal-badge{font-size:8px;background:var(--rose);color:#fff;border-radius:2px;padding:1px 4px;margin-left:4px;letter-spacing:.04em;vertical-align:middle;display:none;}
 .ti.deal-on .deal-badge{display:inline;}
+.qty-deal-hint{font-size:10px;margin-top:4px;padding:4px 8px;border-radius:3px;display:none;}
+.qty-deal-hint.active{display:block;background:#f0faf0;color:#27ae60;border:1px solid #a8d5a8;}
+.qty-deal-hint.inactive{display:block;background:#fafafa;color:var(--ink-l);border:1px solid var(--br);}
+.qty-deal-price{font-family:'Cormorant Garamond',serif;font-size:15px;color:#27ae60;font-weight:bold;}
 .ti.has-deal.deal-on{border-color:#c97a7a;}
 </style>
 </head>
@@ -1110,6 +1114,11 @@ function toggleDeals(on) {
     if (!el) return;
     applyDealToEl(el, el.id, deal, on);
   });
+
+  // 關閉時清除所有 qty hint
+  if (!on) {
+    document.querySelectorAll('.qty-deal-hint').forEach(h => h.style.display='none');
+  }
 }
 
 function applyDealToEl(el, id, deal, on) {
@@ -1722,12 +1731,59 @@ function jalu26U(){
 }
 
 function qtyU(itemId,priceElId,defaultUnit,qtyElId){
-  const unitPrice = unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit;
-  const qty=parseInt(document.getElementById(qtyElId)?.value)||0;
-  const total=qty*unitPrice;
-  P[itemId]=total;
-  O[itemId]=qty>0?qty+'支 × ¥'+unitPrice.toLocaleString()+' = ¥'+total.toLocaleString():'';
-  setPD(priceElId,qty>0?total:0);upd();
+  const qty = parseInt(document.getElementById(qtyElId)?.value)||0;
+
+  // 判斷有沒有數量折扣
+  const deal = dealsData[itemId] || null;
+  const trigger = deal ? (deal['__trigger__'] || 0) : 0;
+  const dealUnit = deal ? (deal['unit'] || 0) : 0;
+  const dealModeActive = dealModeOn && deal && dealUnit;
+
+  let unitPrice = unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit;
+  let discountApplied = false;
+
+  if (dealModeActive && trigger && qty >= trigger) {
+    unitPrice = dealUnit;
+    discountApplied = true;
+  }
+
+  const total = qty * unitPrice;
+  P[itemId] = total;
+  O[itemId] = qty > 0 ? qty+'支 × ¥'+unitPrice.toLocaleString()+' = ¥'+total.toLocaleString()+(discountApplied?' 🎉':'') : '';
+  setPD(priceElId, qty > 0 ? total : 0);
+
+  // 更新折扣提示
+  updateQtyDealHint(itemId, qty, trigger, dealUnit, unitPrices[itemId] !== undefined ? unitPrices[itemId] : defaultUnit, dealModeActive, discountApplied);
+
+  upd();
+}
+
+function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied) {
+  const el = document.getElementById(itemId);
+  if (!el) return;
+  let hint = el.querySelector('.qty-deal-hint');
+
+  if (!dealModeActive || !trigger || !dealUnit) {
+    if (hint) hint.style.display = 'none';
+    return;
+  }
+
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.className = 'qty-deal-hint';
+    const crow = el.querySelector('.crow');
+    if (crow) crow.insertAdjacentElement('afterend', hint);
+    else el.querySelector('.opts')?.appendChild(hint);
+  }
+
+  if (discountApplied) {
+    hint.className = 'qty-deal-hint active';
+    hint.innerHTML = `🎉 折扣已套用！每支 <span class="qty-deal-price">¥${dealUnit.toLocaleString()}</span>（原價 ¥${normalUnit.toLocaleString()}）`;
+  } else {
+    const need = trigger - qty;
+    hint.className = 'qty-deal-hint inactive';
+    hint.innerHTML = `再加 <strong>${need}</strong> 支（共${trigger}支以上）可享每支 <span style="color:var(--gold)">¥${dealUnit.toLocaleString()}</span>`;
+  }
 }
 
 function qtySelU(itemId,priceElId,selId,qtyElId){
