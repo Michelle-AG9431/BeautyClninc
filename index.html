@@ -90,6 +90,16 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .price-status.loading{color:#9a8e7a;}
 .price-status.ok{color:#7ab87a;}
 .price-status.err{color:#c97a7a;}
+.deal-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
+.deal-label{font-size:9px;letter-spacing:.1em;color:var(--gold-l);}
+.deal-toggle{position:relative;width:34px;height:18px;cursor:pointer;}
+.deal-toggle input{opacity:0;width:0;height:0;}
+.deal-slider{position:absolute;inset:0;background:#555;border-radius:18px;transition:.2s;}
+.deal-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s;}
+.deal-toggle input:checked + .deal-slider{background:var(--gold);}
+.deal-toggle input:checked + .deal-slider:before{transform:translateX(16px);}
+.deal-badge{font-size:8px;background:var(--rose);color:#fff;border-radius:2px;padding:1px 4px;margin-left:4px;letter-spacing:.04em;vertical-align:middle;}
+.ti.has-deal.deal-on{border-color:#c97a7a;}
 </style>
 </head>
 <body>
@@ -97,6 +107,13 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <span class="logo">SBC Shonan Beauty Clinic</span>
   <h1>SBC湘南醫美診所　療程總價試算</h1>
   <div class="price-status loading" id="price-status">價格載入中…</div>
+  <div class="deal-bar" id="deal-bar" style="display:none">
+    <span class="deal-label">當月優惠價</span>
+    <label class="deal-toggle">
+      <input type="checkbox" id="deal-toggle-cb" onchange="toggleDeals(this.checked)">
+      <span class="deal-slider"></span>
+    </label>
+  </div>
 </header>
 <div class="tbar">
   <div class="tlhs">
@@ -633,7 +650,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
       <div class="ol">加做 Jalupro Glow Peel 煥膚（可不加）</div>
       <select class="os" id="jalupro26-glow" onchange="jalu26U()">
         <option value="0">不追加</option>
-        <option value="6000">加做煥膚　+¥6,000</option>
+        <option value="6000">加做煥膚</option>
       </select>
     </div>
   </div>
@@ -939,7 +956,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 
 <div class="sp" id="sh4"><div class="main">
 <div style="background:var(--gold-p);border:1px solid var(--gold-l);border-radius:6px;padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--ink-m);line-height:1.7;letter-spacing:.04em;">
-  ⚠️ 以下為<strong>美容外科</strong>項目，費用已含約10% OFF優惠價。括號內為原價供參考。抽脂注射係指使用1.6mm細針頭將脂肪抽出的微整形手術,術後修復期較短。
+  ⚠️ 以下為<strong>美容外科</strong>項目，費用已含約10% OFF優惠價。括號內為原價供參考。
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">抽脂　臉部</div></div>
@@ -1036,6 +1053,123 @@ const unitPrices = {
   's1t57':48000,
 };
 
+// 當月優惠資料（從 Sheet 載入）
+let dealsData = {};
+let extraDealsData = {};
+let dealModeOn = false;
+
+// 標記有優惠的項目（加上紅色 badge）
+function applyDealBadges() {
+  // 一般項目
+  Object.keys(dealsData).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.querySelector('.deal-badge')) return;
+    const tn = el.querySelector('.tn');
+    if (!tn) return;
+    const badge = document.createElement('span');
+    badge.className = 'deal-badge';
+    badge.textContent = dealsData[id]['__note__'] || '優惠';
+    const note = tn.querySelector('.note');
+    if (note) tn.insertBefore(badge, note);
+    else tn.appendChild(badge);
+    el.classList.add('has-deal');
+  });
+  // extra_items 用名稱對應
+  Object.keys(extraDealsData).forEach(name => {
+    const el = document.querySelector(`[data-name="${name}"]`);
+    if (!el) return;
+    if (el.querySelector('.deal-badge')) return;
+    const tn = el.querySelector('.tn');
+    if (!tn) return;
+    const badge = document.createElement('span');
+    badge.className = 'deal-badge';
+    badge.textContent = extraDealsData[name]['__note__'] || '優惠';
+    const note = tn.querySelector('.note');
+    if (note) tn.insertBefore(badge, note);
+    else tn.appendChild(badge);
+    el.classList.add('has-deal');
+    el.dataset.extraDealName = name;
+  });
+}
+
+// 切換優惠模式
+function toggleDeals(on) {
+  dealModeOn = on;
+
+  // ── 一般項目（by ID）──
+  Object.entries(dealsData).forEach(([id, deal]) => {
+    applyDealToEl(document.getElementById(id), id, deal, on);
+  });
+
+  // ── extra_items（by 名稱）──
+  Object.entries(extraDealsData).forEach(([name, deal]) => {
+    const el = document.querySelector(`[data-extra-deal-name="${name}"]`)
+            || document.querySelector(`[data-name="${name}"]`);
+    if (!el) return;
+    applyDealToEl(el, el.id, deal, on);
+  });
+}
+
+function applyDealToEl(el, id, deal, on) {
+  if (!el) return;
+  el.classList.toggle('deal-on', on);
+
+  // 下拉選單
+  const sel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
+  if (sel) {
+    sel.querySelectorAll('option').forEach((opt, i) => {
+      const key = String(i);
+      if (on && deal[key] !== undefined) {
+        opt.dataset.normalValue = opt.dataset.normalValue || opt.value;
+        opt.dataset.normalText  = opt.dataset.normalText  || opt.text;
+        opt.value = deal[key];
+        opt.text  = '⭐ ' + opt.dataset.normalText;
+      } else if (!on && opt.dataset.normalValue) {
+        opt.value = opt.dataset.normalValue;
+        opt.text  = opt.dataset.normalText;
+        delete opt.dataset.normalValue;
+        delete opt.dataset.normalText;
+      }
+    });
+    const curVal = parseInt(sel.options[sel.selectedIndex]?.value) || 0;
+    setPD('p' + id, curVal);
+    if (C.has(id)) { P[id] = curVal; O[id] = sel.options[sel.selectedIndex]?.text || ''; upd(); }
+  }
+
+  // qty 項目（unit）
+  if (deal['unit'] !== undefined) {
+    if (on) {
+      el.dataset.normalUnit = el.dataset.normalUnit || unitPrices[id] || '';
+      unitPrices[id] = deal['unit'];
+      if (id === 's1t26') rates.jalu26.unit = deal['unit'];
+    } else {
+      if (el.dataset.normalUnit) {
+        unitPrices[id] = Number(el.dataset.normalUnit);
+        if (id === 's1t26') rates.jalu26.unit = Number(el.dataset.normalUnit);
+      }
+    }
+    const curUnit = unitPrices[id] || (id === 's1t26' ? rates.jalu26.unit : 0);
+    setPD('p' + id, curUnit);
+    const cu = el.querySelector('.cu');
+    if (cu) cu.textContent = cu.textContent.replace(/¥[\d,]+/, '¥' + curUnit.toLocaleString());
+    if (C.has(id)) {
+      const qty = parseInt(el.querySelector('input[type="number"]')?.value) || 1;
+      P[id] = qty * curUnit;
+      upd();
+    }
+  }
+
+  // 固定價格
+  if (deal['static'] !== undefined) {
+    const normalVal = on ? null : (staticPrices[id] || 0);
+    const displayVal = on ? deal['static'] : normalVal;
+    if (on) el.dataset.normalStatic = el.dataset.normalStatic || (staticPrices[id] || 0);
+    setPD('p' + id, displayVal);
+    if (C.has(id)) { P[id] = displayVal; upd(); }
+  }
+}
+
 async function loadSheetPrices() {
   const st = document.getElementById('price-status');
   if (!APPS_SCRIPT_URL) {
@@ -1056,6 +1190,17 @@ async function loadSheetPrices() {
         addLinkToItem(id, keys['__link__']);
       }
     });
+    // 當月優惠
+    if (data['__deals__'] && Object.keys(data['__deals__']).length > 0) {
+      dealsData = data['__deals__'];
+    }
+    if (data['__extra_deals__'] && Object.keys(data['__extra_deals__']).length > 0) {
+      extraDealsData = data['__extra_deals__'];
+    }
+    if (Object.keys(dealsData).length > 0 || Object.keys(extraDealsData).length > 0) {
+      document.getElementById('deal-bar').style.display = 'flex';
+      applyDealBadges();
+    }
     st.textContent = '✓ 價格已同步 Google Sheets';
     st.className = 'price-status ok';
   } catch(e) {
