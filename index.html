@@ -1035,7 +1035,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCMv57HhjHEd8-uJYPu0m8eUAOporS030JSvbKzhUt_34R8iJi_igPLcMzEpWz_pxeXg/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = '';  /https://script.google.com/macros/s/AKfycbyCMv57HhjHEd8-uJYPu0m8eUAOporS030JSvbKzhUt_34R8iJi_igPLcMzEpWz_pxeXg/exec/ ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -1128,9 +1128,18 @@ function toggleDeals(on) {
     applyDealToEl(el, el.id, deal, on);
   });
 
-  // 關閉時清除所有 qty hint
+  // 關閉時清除所有 qty hint 和 select 群組
   if (!on) {
     document.querySelectorAll('.qty-deal-hint').forEach(h => h.style.display='none');
+    // 還原 select 型群組
+    Object.entries(groupDeals).forEach(([gid, group]) => {
+      if (group.type === 'select') refreshSelectGroup(gid, false);
+    });
+  } else {
+    // 開啟時刷新 select 型群組
+    Object.keys(groupDeals).forEach(gid => {
+      if (groupDeals[gid].type === 'select') refreshSelectGroup(gid, false);
+    });
   }
 }
 
@@ -1138,16 +1147,70 @@ function toggleDeals(on) {
 function buildGroupDeals() {
   groupDeals = {};
   Object.entries(dealsData).forEach(([id, deal]) => {
-    if (!deal['__group__'] || !deal['unit'] || !deal['__trigger__']) return;
+    if (!deal['__group__'] || !deal['__trigger__']) return;
     const gid = deal['__group__'];
-    if (!groupDeals[gid]) groupDeals[gid] = { trigger: deal['__trigger__'], items: {} };
-    // 此時 unitPrices[id] 是原價（applySheetPrices 已更新，但 applyDealToEl 尚未執行）
-    groupDeals[gid].items[id] = {
-      dealUnit: deal['unit'],
-      normalUnit: unitPrices[id] || 0,
-      priceElId: 'p' + id,
-    };
+
+    if (deal['unit']) {
+      // 支數計算型（unit）
+      if (!groupDeals[gid]) groupDeals[gid] = { trigger: deal['__trigger__'], type: 'unit', items: {} };
+      groupDeals[gid].items[id] = {
+        dealUnit: deal['unit'],
+        normalUnit: unitPrices[id] || 0,
+        priceElId: 'p' + id,
+      };
+    } else {
+      // 下拉選單型（select）：觸發條件 = 群組內勾選數量 >= trigger
+      const optionKeys = Object.keys(deal).filter(k => !k.startsWith('__'));
+      if (optionKeys.length > 0) {
+        if (!groupDeals[gid]) groupDeals[gid] = { trigger: deal['__trigger__'], type: 'select', items: {} };
+        const options = {};
+        optionKeys.forEach(k => { options[k] = deal[k]; });
+        groupDeals[gid].items[id] = { options, priceElId: 'p' + id };
+      }
+    }
   });
+}
+
+// 重新整理下拉選單型群組（勾選/取消時呼叫）
+function refreshSelectGroup(groupId, selfChecked) {
+  const group = groupDeals[groupId];
+  if (!group || group.type !== 'select') return;
+  if (!dealModeOn) return;
+
+  // 計算已勾選成員數（含 selfChecked 調整）
+  const checkedCount = Object.keys(group.items).filter(id => C.has(id)).length;
+  const triggered = checkedCount >= group.trigger;
+
+  Object.entries(group.items).forEach(([id, info]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('deal-on', triggered && C.has(id));
+
+    const sel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
+    if (!sel) return;
+
+    sel.querySelectorAll('option').forEach((opt, i) => {
+      const key = String(i);
+      if (triggered && info.options[key] !== undefined) {
+        opt.dataset.normalValue = opt.dataset.normalValue || opt.value;
+        opt.dataset.normalText  = opt.dataset.normalText  || opt.text;
+        opt.value = info.options[key];
+        opt.text  = '⭐ ' + opt.dataset.normalText;
+      } else if (!triggered && opt.dataset.normalValue) {
+        opt.value = opt.dataset.normalValue;
+        opt.text  = opt.dataset.normalText;
+        delete opt.dataset.normalValue;
+        delete opt.dataset.normalText;
+      }
+    });
+
+    if (!C.has(id)) return;
+    const curVal = parseInt(sel.options[sel.selectedIndex]?.value) || 0;
+    setPD(info.priceElId, curVal);
+    P[id] = curVal;
+    O[id] = sel.options[sel.selectedIndex]?.text || '';
+  });
+  upd();
 }
 
 // 取得同群組所有已勾選項目的總支數（未勾選不算）
@@ -1156,7 +1219,6 @@ function getGroupQty(groupId, selfId) {
   if (!group) return 0;
   let total = 0;
   Object.keys(group.items).forEach(id => {
-    // selfId 是目前正在更新的項目，一定要算；其他只算已勾選的
     if (id !== selfId && !C.has(id)) return;
     const el = document.getElementById(id);
     const inp = el?.querySelector('input[type="number"]');
@@ -1975,6 +2037,12 @@ function tog(id){
     }
   }
   upd();
+  // 勾選/取消後刷新 select 型群組
+  Object.keys(groupDeals).forEach(gid => {
+    if (groupDeals[gid].type === 'select' && groupDeals[gid].items[id]) {
+      refreshSelectGroup(gid, false);
+    }
+  });
 }
 
 function upd(){
@@ -1995,7 +2063,12 @@ function delFromM(id){
   const el=document.getElementById(id);
   if(el) el.classList.remove('on');
   upd();
-  /* 重新渲染 Modal；若清空則關閉 */
+  // 刷新 select 型群組
+  Object.keys(groupDeals).forEach(gid => {
+    if (groupDeals[gid].type === 'select' && groupDeals[gid].items[id]) {
+      refreshSelectGroup(gid, false);
+    }
+  });
   if(C.size===0){closeM();}
   else{openM();}
 }
