@@ -1080,21 +1080,32 @@ function applyDealBadges() {
     else tn.appendChild(badge);
     el.classList.add('has-deal');
   });
-  // extra_items 用名稱對應
-  Object.keys(extraDealsData).forEach(name => {
-    const el = document.querySelector(`[data-name="${name}"]`);
+  // extra_items 用「名稱||類別」對應
+  Object.entries(extraDealsData).forEach(([extraKey, deal]) => {
+    const name = deal['__name__'] || extraKey;
+    const cat  = deal['__cat__']  || '';
+    // 找到名稱相符、類別也相符的元素
+    let el = null;
+    document.querySelectorAll(`[data-name="${name}"]`).forEach(candidate => {
+      if (el) return;
+      if (!cat) { el = candidate; return; }
+      // 比對類別：往上找最近的 .cat，看標題有沒有包含 cat 字串
+      const catEl = candidate.closest('.cat') || candidate.parentElement?.closest('.cat');
+      const catTitle = catEl?.querySelector('.ctit')?.textContent?.trim() || '';
+      if (catTitle.includes(cat) || cat.includes(catTitle)) el = candidate;
+    });
     if (!el) return;
     if (el.querySelector('.deal-badge')) return;
     const tn = el.querySelector('.tn');
     if (!tn) return;
     const badge = document.createElement('span');
     badge.className = 'deal-badge';
-    badge.textContent = extraDealsData[name]['__note__'] || '優惠';
+    badge.textContent = deal['__note__'] || '優惠';
     const note = tn.querySelector('.note');
     if (note) tn.insertBefore(badge, note);
     else tn.appendChild(badge);
     el.classList.add('has-deal');
-    el.dataset.extraDealName = name;
+    el.dataset.extraDealKey = extraKey; // 存 key 供 toggleDeals 用
   });
 }
 
@@ -1107,11 +1118,11 @@ function toggleDeals(on) {
     applyDealToEl(document.getElementById(id), id, deal, on);
   });
 
-  // ── extra_items（by 名稱）──
-  Object.entries(extraDealsData).forEach(([name, deal]) => {
-    const el = document.querySelector(`[data-extra-deal-name="${name}"]`)
-            || document.querySelector(`[data-name="${name}"]`);
-    if (!el) return;
+  // ── extra_items（by 名稱＋類別）──
+  document.querySelectorAll('[data-extra-deal-key]').forEach(el => {
+    const extraKey = el.dataset.extraDealKey;
+    const deal = extraDealsData[extraKey];
+    if (!deal) return;
     applyDealToEl(el, el.id, deal, on);
   });
 
