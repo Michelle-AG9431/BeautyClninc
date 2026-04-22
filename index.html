@@ -103,6 +103,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .qty-deal-hint{font-size:10px;margin-top:4px;padding:4px 8px;border-radius:3px;display:none;}
 .qty-deal-hint.active{display:block;background:#f0faf0;color:#27ae60;border:1px solid #a8d5a8;}
 .qty-deal-hint.inactive{display:block;background:#fafafa;color:var(--ink-l);border:1px solid var(--br);}
+.ti:not(.on) .qty-deal-hint{display:none !important;}
 .qty-deal-price{font-family:'Cormorant Garamond',serif;font-size:15px;color:#27ae60;font-weight:bold;}
 .ti.has-deal.deal-on{border-color:#c97a7a;}
 </style>
@@ -221,6 +222,24 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">飛梭雷射 CO2 頂級<span class="note">附面膜</span></div><div class="pd" id="ps0t12"><span class="y">¥</span>9,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t12','ps0t12',this)"><option value="9800">小（鼻・嘴・眼上下）　1次　¥9,800</option><option value="13500">中（臉・脖子・手背等）　1次　¥13,500</option><option value="26800">大（鎖骨區・背部・腹部等）　1次　¥26,800</option></select></div>
   </div>
+  <div class="ti" id="s0t13" data-name="紅寶石飛梭雷射">
+    <div class="tim" onclick="tog('s0t13')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">紅寶石飛梭雷射</div><div class="pd" id="ps0t13"><span class="y">¥</span>22,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t13','ps0t13',this)"><option value="22000">1次　¥22,000</option><option value="66000">3次療程　¥66,000</option></select></div>
+  </div>
+</div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">美肌・飛梭雷射</div></div>
+  <div class="ti" id="s0t11" data-name="飛梭雷射 CO2 標準">
+    <div class="tim" onclick="tog('s0t11')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">飛梭雷射 CO2 標準<span class="note">附皮膚護理</span></div><div class="pd" id="ps0t11"><span class="y">¥</span>6,200</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t11','ps0t11',this)"><option value="6200">小（鼻・嘴・眼上下）　1次　¥6,200</option><option value="10600">中（臉・脖子・手背・足背等）　1次　¥10,600</option><option value="20100">大（鎖骨區・背部・腹部等）　1次　¥20,100</option></select></div>
+  </div>
+  <div class="ti" id="s0t12" data-name="飛梭雷射 CO2 頂級">
+    <div class="tim" onclick="tog('s0t12')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">飛梭雷射 CO2 頂級<span class="note">附面膜</span></div><div class="pd" id="ps0t12"><span class="y">¥</span>9,800</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t12','ps0t12',this)"><option value="9800">小（鼻・嘴・眼上下）　1次　¥9,800</option><option value="13500">中（臉・脖子・手背等）　1次　¥13,500</option><option value="26800">大（鎖骨區・背部・腹部等）　1次　¥26,800</option></select></div>
+  </div>
   <div class="ti" id="s0t13" data-name="紅寶石雷射">
     <div class="tim" onclick="tog('s0t13')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">紅寶石雷射</div><div class="pd" id="ps0t13"><span class="y">¥</span>22,000</div></div>
@@ -261,10 +280,16 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">皮秒雷射（Pico Q / 星皮秒）</div></div>
+  <div class="ti" id="s0t20" data-name="皮秒淨膚　臉體驗">
+    <div class="tim" onclick="tog('s0t20')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">皮秒淨膚　臉<span class="note">體驗價</span></div><div class="pd" id="ps0t20"><span class="y">¥</span>7,800</div></div>
+    <div class="opts"></div>
+  </div>
   <div class="ti" id="s0t33" data-name="皮秒淨膚　臉">
     <div class="tim" onclick="tog('s0t33')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚　臉</div><div class="pd" id="ps0t33"><span class="y">¥</span>9,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t33','ps0t33',this)"><option value="7800">體驗價　¥7,800</option><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t33','ps0t33',this)"><option value="9800">1次　¥9,800</option><option value="41650">5次　¥41,650</option><option value="78400">10次　¥78,400</option></select></div>
   </div>
   <div class="ti" id="s0t21" data-name="皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）">
     <div class="tim" onclick="tog('s0t21')"><div class="ck"><span class="tk">✓</span></div>
@@ -608,7 +633,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="chd"><div class="cbar"></div><div class="ctit">麗珠蘭（鮭魚針）</div></div>
   <div class="ti" id="s1t21" data-name="麗珠蘭 i">
     <div class="tim" onclick="tog('s1t21')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">麗珠蘭 i</div><div class="pd" id="ps1t21"><span class="y">¥</span>30,350</div></div>
+    <div class="tn">麗珠蘭ᵢ</div><div class="pd" id="ps1t21"><span class="y">¥</span>30,350</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t21" min="1" max="20" step="1" value="1" oninput="qtyU('s1t21','ps1t21',30350,'q-s1t21')"><span class="cu">支　×　¥30,350</span></div></div>
   </div>
   <div class="ti" id="s1t22" data-name="麗珠蘭 HB">
@@ -654,9 +679,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
       </select>
     </div>
   </div>
-  <div class="ti" id="s1t27" data-name="Baby膠原蛋白（Humalagen / Baby Derm）">
+  <div class="ti" id="s1t27" data-name="嬰兒膠原蛋白（Humalagen / Baby Derm）">
     <div class="tim" onclick="tog('s1t27')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Baby膠原蛋白（Humalagen / Baby Derm）</div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
+    <div class="tn">嬰兒膠原蛋白針（Humalagen/Baby Derm）<span class="note">人類胎盤萃取膠原蛋白，注射後無法捐血，請斟酌</span></div><div class="pd" id="ps1t27"><span class="y">¥</span>105,000</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t27" min="1" max="20" step="1" value="1" oninput="qtyU('s1t27','ps1t27',105000,'q-s1t27')"><span class="cu">支　×　¥105,000</span></div></div>
   </div>
   <div class="ti" id="s1t28" data-name="逆時針　2cc（臉/脖子/手背三選一）">
@@ -684,9 +709,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">女優水光(海庫斯)</div><div class="pd" id="ps1t52"><span class="y">¥</span>42,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t52','ps1t52',this)"><option value="42800">臉　1次　¥42,800</option><option value="42800">脖子　1次　¥42,800</option></select></div>
   </div>
-  <div class="ti" id="s1t56" data-name="双美膠原蛋白針水光(海庫斯)">
+  <div class="ti" id="s1t56" data-name="熊貓針水光(海庫斯)">
     <div class="tim" onclick="tog('s1t56')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">双美膠原蛋白針水光（機打）</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
+    <div class="tn">熊貓針水光（海庫斯）</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
     <div class="opts"><div class="ol">選擇規格</div><select class="os" id="sel-s1t56" onchange="qtySelU('s1t56','ps1t56','sel-s1t56','q-s1t56')"><option value="79600">臉　¥79,600 / 支</option><option value="79600">脖子　¥79,600 / 支</option></select><div class="odiv"></div><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t56" min="1" max="20" step="1" value="1" oninput="qtySelU('s1t56','ps1t56','sel-s1t56','q-s1t56')"><span class="cu">支</span></div></div>
   </div>
   <div class="ti" id="s1t53" data-name="水光針加打保妥適">
@@ -719,9 +744,14 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">玉の肌 DermaPen 升級醫師注射</div><div class="pd" id="ps1t59"><span class="y">¥</span>30,000</div></div>
     <div class="opts"></div>
   </div>
+  <div class="ti" id="s1t33" data-name="喬雅登 SKINVIVE（Volite XC）">
+    <div class="tim" onclick="tog('s1t33')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">喬雅登 SKINVIVE（Volite XC）</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
+    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t33" min="1" max="20" step="1" value="1" oninput="qtyU('s1t33','ps1t33',45000,'q-s1t33')"><span class="cu">支　×　¥45,000</span></div></div>
+  </div>
 </div>
 <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">玻尿酸</div></div>
+  <div class="chd"><div class="cbar"></div><div class="ctit">玻尿酸填充</div></div>
   <div class="ti" id="s1t31" data-name="緹奧希隱形玻尿酸（眼周/嘴唇/臥蠶）">
     <div class="tim" onclick="tog('s1t31')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">緹奧希隱形玻尿酸（眼周/嘴唇/臥蠶）</div><div class="pd" id="ps1t31"><span class="y">¥</span>18,330</div></div>
@@ -737,11 +767,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">喬雅登 Ultra PlusXC　1cc（太陽穴・臉頰・淚溝・法令紋等）</div><div class="pd" id="ps1t32"><span class="y">¥</span>34,800</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t32" min="1" max="20" step="1" value="1" oninput="qtyU('s1t32','ps1t32',34800,'q-s1t32')"><span class="cu">支　×　¥34,800</span></div></div>
   </div>
-  <div class="ti" id="s1t33" data-name="喬雅登 SKINVIVE（Volite XC）">
-    <div class="tim" onclick="tog('s1t33')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">喬雅登 SKINVIVE（Volite XC）</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
-    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t33" min="1" max="20" step="1" value="1" oninput="qtyU('s1t33','ps1t33',45000,'q-s1t33')"><span class="cu">支　×　¥45,000</span></div></div>
-  </div>
+  
   <div class="ti" id="s1t34" data-name="喬雅登 Voluma XC　1cc">
     <div class="tim" onclick="tog('s1t34')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">喬雅登 Voluma XC　1cc（額頭/夫妻宮/臉頰等）</div><div class="pd" id="ps1t34"><span class="y">¥</span>57,200</div></div>
@@ -1220,6 +1246,30 @@ function getGroupQty(groupId, selfId) {
     total += parseInt(inp?.value || 0);
   });
   return total;
+}
+
+// 某個群組成員被取消勾選後，重新計算其他已勾選成員的價格
+function refreshUnitGroup(groupId) {
+  const group = groupDeals[groupId];
+  if (!group || group.type !== 'unit') return;
+  const effQty = Object.keys(group.items)
+    .filter(id => C.has(id))
+    .reduce((sum, id) => {
+      const inp = document.getElementById(id)?.querySelector('input[type="number"]');
+      return sum + (parseInt(inp?.value) || 0);
+    }, 0);
+  const triggered = effQty >= group.trigger;
+  Object.entries(group.items).forEach(([id, info]) => {
+    if (!C.has(id)) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const qty = parseInt(el.querySelector('input[type="number"]')?.value) || 0;
+    const unit = triggered ? info.dealUnit : info.normalUnit;
+    P[id] = qty * unit;
+    O[id] = qty + '支 × ¥' + unit.toLocaleString() + ' = ¥' + P[id].toLocaleString() + (triggered ? ' 🎉' : '');
+    setPD(info.priceElId, qty > 0 ? P[id] : 0);
+    updateQtyDealHint(id, effQty, group.trigger, info.dealUnit, info.normalUnit, dealModeOn, triggered);
+  });
 }
 
 function applyDealToEl(el, id, deal, on) {
@@ -1856,58 +1906,48 @@ function jalu26U(){
 
 function qtyU(itemId, priceElId, defaultUnit, qtyElId){
   const qty = parseInt(document.getElementById(qtyElId)?.value) || 0;
-
-  const deal      = dealsData[itemId] || null;
-  const trigger   = deal?.['__trigger__'] || 0;
-  const dealUnit  = deal?.['unit'] || 0;
-  const groupId   = deal?.['__group__'] || '';
-  const dealModeActive = dealModeOn && !!deal && !!dealUnit;
-
-  // 從 groupDeals 取正確的原價（buildGroupDeals 時記錄，不受 applyDealToEl 影響）
-  const group = groupId ? groupDeals[groupId] : null;
-  const normalUnit = group?.items[itemId]?.normalUnit || unitPrices[itemId] || defaultUnit;
-
-  // 有效支數：群組時合計已勾選成員支數，否則用自己的支數
-  const effQty = (dealModeActive && groupId)
-    ? getGroupQty(groupId, itemId)
-    : qty;
-
-  // 決定單價
-  let unitPrice = normalUnit;
+  const baseUnit = unitPrices[itemId] ?? defaultUnit;
+  let unitPrice = baseUnit;
   let discountApplied = false;
-  if (dealModeActive) {
-    if (trigger) {
-      if (effQty >= trigger) { unitPrice = dealUnit; discountApplied = true; }
-    } else {
-      unitPrice = dealUnit; discountApplied = true;
+
+  if (dealModeOn) {
+    const deal = dealsData[itemId];
+    if (deal?.unit) {
+      const trigger = deal.__trigger__ || 0;
+      const groupId  = deal.__group__  || '';
+      if (trigger) {
+        const effQty = groupId ? getGroupQty(groupId, itemId) : qty;
+        if (effQty >= trigger) { unitPrice = deal.unit; discountApplied = true; }
+        updateQtyDealHint(itemId, effQty, trigger, deal.unit, baseUnit, true, discountApplied);
+        if (groupId) refreshGroupOthers(groupId, itemId, effQty);
+      } else {
+        unitPrice = deal.unit; discountApplied = true;
+      }
     }
   }
 
   const total = qty * unitPrice;
   P[itemId] = total;
-  O[itemId] = qty > 0
-    ? qty + '支 × ¥' + unitPrice.toLocaleString() + ' = ¥' + total.toLocaleString() + (discountApplied ? ' 🎉' : '')
-    : '';
+  O[itemId] = qty > 0 ? qty+'支 × ¥'+unitPrice.toLocaleString()+' = ¥'+total.toLocaleString()+(discountApplied?' 🎉':'') : '';
   setPD(priceElId, qty > 0 ? total : 0);
-  updateQtyDealHint(itemId, effQty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied);
-
-  // 刷新其他已勾選的群組成員
-  if (dealModeActive && group) {
-    Object.entries(group.items).forEach(([otherId, info]) => {
-      if (otherId === itemId || !C.has(otherId)) return;
-      const otherEl = document.getElementById(otherId);
-      if (!otherEl) return;
-      const otherQty = parseInt(otherEl.querySelector('input[type="number"]')?.value) || 0;
-      const otherDiscounted = effQty >= group.trigger;
-      const otherUnit = otherDiscounted ? info.dealUnit : info.normalUnit;
-      P[otherId] = otherQty * otherUnit;
-      O[otherId] = otherQty + '支 × ¥' + otherUnit.toLocaleString() + ' = ¥' + P[otherId].toLocaleString() + (otherDiscounted ? ' 🎉' : '');
-      setPD(info.priceElId, otherQty > 0 ? P[otherId] : 0);
-      updateQtyDealHint(otherId, effQty, group.trigger, info.dealUnit, info.normalUnit, true, otherDiscounted);
-    });
-  }
-
   upd();
+}
+
+function refreshGroupOthers(groupId, selfId, effQty) {
+  const group = groupDeals[groupId];
+  if (!group) return;
+  const triggered = effQty >= group.trigger;
+  Object.entries(group.items).forEach(([id, info]) => {
+    if (id === selfId || !C.has(id)) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const q = parseInt(el.querySelector('input[type="number"]')?.value) || 0;
+    const unit = triggered ? info.dealUnit : info.normalUnit;
+    P[id] = q * unit;
+    O[id] = q+'支 × ¥'+unit.toLocaleString()+' = ¥'+P[id].toLocaleString()+(triggered?' 🎉':'');
+    setPD(info.priceElId, q > 0 ? P[id] : 0);
+    updateQtyDealHint(id, effQty, group.trigger, info.dealUnit, info.normalUnit, true, triggered);
+  });
 }
 
 function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied) {
@@ -2003,6 +2043,15 @@ function tog(id){
   if(C.has(id)){
     C.delete(id);delete P[id];delete O[id];
     el.classList.remove('on');
+    // 若屬於 unit 群組，取消勾選後重算所有已勾選成員
+    if (dealModeOn) {
+      Object.entries(groupDeals).forEach(([gid, group]) => {
+        if (group.type === 'unit' && group.items[id]) {
+          setPD('p' + id, group.items[id].normalUnit); // 自己回到原價顯示
+          refreshUnitGroup(gid);
+        }
+      });
+    }
   }else{
     C.add(id);el.classList.add('on');
     if(id==='s1t0') btoxKrU();
@@ -2066,6 +2115,15 @@ function delFromM(id){
   const el=document.getElementById(id);
   if(el) el.classList.remove('on');
   upd();
+  // 刷新 unit 群組
+  if (dealModeOn) {
+    Object.entries(groupDeals).forEach(([gid, group]) => {
+      if (group.type === 'unit' && group.items[id]) {
+        setPD('p' + id, group.items[id].normalUnit);
+        refreshUnitGroup(gid);
+      }
+    });
+  }
   // 刷新 select 型群組
   Object.keys(groupDeals).forEach(gid => {
     if (groupDeals[gid].type === 'select' && groupDeals[gid].items[id]) {
