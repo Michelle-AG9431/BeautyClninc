@@ -1973,7 +1973,7 @@ function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeA
     hint.innerHTML = `🎉 折扣已套用！每支 <span class="qty-deal-price">¥${dealUnit.toLocaleString()}</span>（原價 ¥${normalUnit.toLocaleString()}）`;
   } else {
     const need = trigger - qty;
-    const deal = dealsData[id];
+    const deal = dealsData[itemId];
     const groupId = deal ? (deal['__group__'] || '') : '';
     const groupNote = groupId ? '（任意組合）' : '';
     hint.className = 'qty-deal-hint inactive';
