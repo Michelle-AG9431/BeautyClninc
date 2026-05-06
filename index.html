@@ -769,15 +769,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen・其他針治療</div></div>
-  
-  
-  
-  
-  
-
-</div>
-<div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">消脂針</div></div>
   <div class="ti" id="s1t44" data-name="BNLS溶脂針">
     <div class="tim" onclick="tog('s1t44')"><div class="ck"><span class="tk">✓</span></div>
@@ -1070,7 +1061,29 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s1t40" data-name="DermaPen4　臉">
     <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">DermaPen4　臉</div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次</option><option value="49500">5次</option><option value="9900">1次 皮膚科限定</option></select></div>
+    <div class="opts">
+      <div class="ol">選擇次數</div>
+      <select class="os" id="dp40-base" onchange="dp40U()">
+        <option value="11000">1次</option>
+        <option value="49500">5次</option>
+        <option value="9900">1次 皮膚科限定</option>
+      </select>
+      <div class="odiv"></div>
+      <div class="ol">選配導入液（可不加）</div>
+      <select class="os" id="dp40-liq" onchange="dp40U()">
+        <option value="0">不加導入液</option>
+        <option value="4400">傳明酸（美白/淡斑）　1次</option>
+        <option value="19500">傳明酸（美白/淡斑）　5次</option>
+        <option value="4200">維他命C衍生物（抗氧化）　1次</option>
+        <option value="18500">維他命C衍生物（抗氧化）　5次</option>
+        <option value="5000">保妥適肉毒 Allergan　1次</option>
+        <option value="22500">保妥適肉毒 Allergan　5次</option>
+        <option value="7800">生長因子（促膠原蛋白再生）　1次</option>
+        <option value="35000">生長因子（促膠原蛋白再生）　5次</option>
+        <option value="12000">嬰兒肌精華（修護）　1次</option>
+        <option value="54000">嬰兒肌精華（修護）　5次</option>
+      </select>
+    </div>
   </div>
   <div class="ti" id="s1t41" data-name="DermaPen4 身體">
     <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
@@ -1088,6 +1101,21 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
       <div class="pill-group" id="pg-s1t41-time">
         <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s1t41-time');dermaPenBodyU()">1次</span>
         <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s1t41-time');dermaPenBodyU()">5次</span>
+        <div class="odiv"></div>
+      <div class="ol">選配導入液（可不加）</div>
+      <select class="os" id="dp41-liq" onchange="dermaPenBodyU()">
+        <option value="0">不加導入液</option>
+        <option value="4400">傳明酸（美白/淡斑）　1次</option>
+        <option value="19500">傳明酸（美白/淡斑）　5次</option>
+        <option value="4200">維他命C衍生物（抗氧化）　1次</option>
+        <option value="18500">維他命C衍生物（抗氧化）　5次</option>
+        <option value="5000">保妥適肉毒 Allergan　1次</option>
+        <option value="22500">保妥適肉毒 Allergan　5次</option>
+        <option value="7800">生長因子（促膠原蛋白再生）　1次</option>
+        <option value="35000">生長因子（促膠原蛋白再生）　5次</option>
+        <option value="12000">嬰兒肌精華（修護）　1次</option>
+        <option value="54000">嬰兒肌精華（修護）　5次</option>
+      </select>
       </div>
     </div>
   </div>
@@ -1518,7 +1546,7 @@ async function loadSheetPrices() {
 function applySheetPrices(data) {
   // ── 共用導入液 ──
   if (data.liquid) {
-    ['pico24-liq','pico34-liq','pico25-liq','pico26-liq','mrf-liq'].forEach(sid => {
+    ['pico24-liq','pico34-liq','pico25-liq','pico26-liq','mrf-liq','dp40-liq','dp41-liq'].forEach(sid => {
       const sel = document.getElementById(sid);
       if (!sel) return;
       Object.entries(data.liquid).forEach(([k,v]) => {
@@ -2326,12 +2354,29 @@ function dermaPenBodyU(){
   const pg=document.getElementById('pg-s1t41-part');
   const at=document.getElementById('pg-s1t41-time')?.querySelector('.pill.active');
   const t=parseInt(at?.dataset.val)||1;
+  const liq=parseInt(document.getElementById('dp41-liq')?.value)||0;
   const ap=pg?.querySelectorAll('.pill.active')||[];
-  let total=0,labels=[];
-  ap.forEach(p=>{total+=parseInt(p.dataset['val'+t])||0;labels.push(p.textContent);});
-  P['s1t41']=total;O['s1t41']=[labels.join('・'),at?.textContent||''].filter(Boolean).join('　');
+  let partTotal=0,labels=[];
+  ap.forEach(p=>{partTotal+=parseInt(p.dataset['val'+t])||0;labels.push(p.textContent);});
+  const total=partTotal+liq;
+  const ls=document.getElementById('dp41-liq');
+  const ll=ls&&liq>0?ls.options[ls.selectedIndex]?.text:'';
+  P['s1t41']=total;
+  O['s1t41']=[labels.join('・'),at?.textContent||'',ll].filter(Boolean).join('　');
   setPD('ps1t41',total>0?total:29700);
   if(C.has('s1t41'))upd();
+}
+  function dp40U(){
+  const base=parseInt(document.getElementById('dp40-base')?.value)||0;
+  const liq=parseInt(document.getElementById('dp40-liq')?.value)||0;
+  const total=base+liq;
+  P['s1t40']=total;
+  const bs=document.getElementById('dp40-base');
+  const ls=document.getElementById('dp40-liq');
+  const bl=bs?bs.options[bs.selectedIndex]?.text:'';
+  const ll=ls&&liq>0?ls.options[ls.selectedIndex]?.text:'';
+  O['s1t40']=ll?bl+' ＋ '+ll:bl;
+  setPD('ps1t40',total);upd();
 }
 function tog(id){
   const el=document.getElementById(id);
@@ -2365,6 +2410,7 @@ function tog(id){
     else if(id==='s0t22') pillAreaTimesU('s0t22','ps0t22');
     else if(id==='s0t31') morpheusFaceU();
     else if(id==='s0t31b') morpheusBodyU();
+    else if(id==='s1t40') dp40U();
     else if(id==='s1t41') dermaPenBodyU();
     else if(id==='s2t6') ondaBodyU();
     else if(id==='s3t0') anU();
@@ -2492,7 +2538,7 @@ function resetAll(){
   const fh=document.getElementById('fatx-hint');if(fh){fh.textContent='1cc × ¥'+rates.fatx.r1.toLocaleString()+'/cc = ¥'+rates.fatx.r1.toLocaleString()+'　｜　1〜4cc：¥'+rates.fatx.r1.toLocaleString()+'　5〜9cc：¥'+rates.fatx.r2.toLocaleString()+'　10cc以上：¥'+rates.fatx.r3.toLocaleString();fh.style.color='';}
   document.querySelectorAll('input.ci[id^="q-"]').forEach(el=>{el.value=1;});
   ['sel-s1t31'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
-  ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq','dp40-base','dp40-liq','dp41-liq'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   mrfU();upd();
 }
 </script>
