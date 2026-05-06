@@ -106,6 +106,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .ti:not(.on) .qty-deal-hint{display:none !important;}
 .qty-deal-price{font-family:'Cormorant Garamond',serif;font-size:15px;color:#27ae60;font-weight:bold;}
 .ti.has-deal.deal-on{border-color:#c97a7a;}
+.pill-group{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.pill{padding:4px 12px;border:1px solid var(--br);border-radius:20px;font-size:11px;color:var(--ink-m);background:var(--cream);cursor:pointer;user-select:none;transition:all .15s;white-space:nowrap;line-height:1.6;}
+.pill.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.pill:hover:not(.active){border-color:var(--gold-l);color:var(--ink);}
 </style>
 </head>
 <body>
@@ -182,7 +186,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t5" data-name="XERF 電波">
     <div class="tim" onclick="tog('s0t5')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">XERF 電波<span class="note">部位：臉頰・下巴・額頭・脖子</span></div><div class="pd" id="ps0t5"><span class="y">¥</span>22,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t5','ps0t5',this)"><option value="59800">300發　1次</option><option value="99000">600發　1次</option><option value="135000">900發　1次</option></select></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t5','ps0t5',this)"><option value="22000">100發（淺層模式）　1次</option><option value="59800">300發　1次　※雙段價格</option><option value="99000">600發　1次</option><option value="135000">900發　1次</option></select></div>
   </div>
   <div class="ti" id="s0t6" data-name="音波拉提(Q+/媚必提)">
     <div class="tim" onclick="tog('s0t6')"><div class="ck"><span class="tk">✓</span></div>
@@ -255,9 +259,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">毛孔凈膚雷射　全臉<span class="note">新宿總院無此療程</span></div><div class="pd" id="ps0t18"><span class="y">¥</span>15,070</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t18','ps0t18',this)"><option value="15070">1次</option><option value="66400">5次</option><option value="110130">10次</option></select></div>
   </div>
-  <div class="ti" id="s0t19" data-name="肝斑+毛孔凈膚雷射　全臉">
+  <div class="ti" id="s0t19" data-name="除斑+毛孔凈膚雷射　全臉">
     <div class="tim" onclick="tog('s0t19')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">除斑+毛孔凈膚雷射　全臉</div><div class="pd" id="ps0t19"><span class="y">¥</span>19,250</div></div>
+    <div class="tn">除斑+毛孔凈膚雷射　全臉<span class="note">膚質改善＋色調改善</span></div><div class="pd" id="ps0t19"><span class="y">¥</span>19,250</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t19','ps0t19',this)"><option value="19250">1次</option><option value="86200">5次</option><option value="143130">10次</option></select></div>
   </div>
 </div>
@@ -276,12 +280,37 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t21" data-name="皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）">
     <div class="tim" onclick="tog('s0t21')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚　脖子・手背・腋下・乳暈・鼠蹊部（各1部位）</div><div class="pd" id="ps0t21"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t21','ps0t21',this)"><option value="11000">1次</option><option value="49900">5次</option></select></div>
+    <div class="opts">
+      <div class="ol">選擇部位（可複選）</div>
+      <div class="pill-group" id="pg-s0t21-a">
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t21','ps0t21')">脖子</span>
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t21','ps0t21')">手背</span>
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t21','ps0t21')">腋下</span>
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t21','ps0t21')">乳暈</span>
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t21','ps0t21')">鼠蹊部</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s0t21-t">
+        <span class="pill active" data-val="11000" onclick="pillRadio(this,'pg-s0t21-t');pillAreaTimesU('s0t21','ps0t21')">1次</span>
+        <span class="pill" data-val="49900" onclick="pillRadio(this,'pg-s0t21-t');pillAreaTimesU('s0t21','ps0t21')">5次</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s0t22" data-name="皮秒淨膚　背部上方・臀部（各1部位）">
     <div class="tim" onclick="tog('s0t22')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">皮秒淨膚　背部上方・臀部（各1部位）</div><div class="pd" id="ps0t22"><span class="y">¥</span>22,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t22','ps0t22',this)"><option value="22800">1次</option><option value="105000">5次</option></select></div>
+    <div class="opts">
+      <div class="ol">選擇部位（可複選）</div>
+      <div class="pill-group" id="pg-s0t22-a">
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t22','ps0t22')">背部上方</span>
+        <span class="pill" onclick="pillToggle(this);pillAreaTimesU('s0t22','ps0t22')">臀部</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s0t22-t">
+        <span class="pill active" data-val="22800" onclick="pillRadio(this,'pg-s0t22-t');pillAreaTimesU('s0t22','ps0t22')">1次</span>
+        <span class="pill" data-val="105000" onclick="pillRadio(this,'pg-s0t22-t');pillAreaTimesU('s0t22','ps0t22')">5次</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s0t23" data-name="皮秒淨膚　臉（皮膚科診所限定）">
     <div class="tim" onclick="tog('s0t23')"><div class="ck"><span class="tk">✓</span></div>
@@ -379,7 +408,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">心動光/魔幻極光 三模式（斑點加強）</div><div class="pd" id="ps0t28"><span class="y">¥</span>10,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t28','ps0t28',this)"><option value="10800">初次</option><option value="18800">1次</option><option value="14000">1次　皮膚科診所限定</option><option value="49800">5次（含初次）</option><option value="70000">5次</option></select></div>
   </div>
-  <div class="ti" id="s0t29" data-name="心動光Photogenesis（客製療程）">
+  <div class="ti" id="s0t29" data-name="心動光（客製療程）">
     <div class="tim" onclick="tog('s0t29')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">心動光Photogenesis（客製療程）</div><div class="pd" id="ps0t29"><span class="y">¥</span>12,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t29','ps0t29',this)"><option value="12800">1次</option><option value="47400">5次</option></select></div>
@@ -419,12 +448,42 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s0t31" data-name="墨菲斯８　臉">
     <div class="tim" onclick="tog('s0t31')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">墨菲斯８　臉</div><div class="pd" id="ps0t31"><span class="y">¥</span>90,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t31','ps0t31',this)"><option value="90000">臉頰＋下巴　1次</option><option value="160000">臉頰＋下巴　2次套組</option><option value="78000">眼下（醫師施打）　1次</option><option value="135000">眼下（醫師施打）　2次套組</option><option value="65000">眼下（護理師施打）　1次</option><option value="110000">眼下（護理師施打）　2次套組</option><option value="60000">僅臉頰　1次</option><option value="110000">僅臉頰　2次套組</option><option value="58000">僅下巴　1次</option><option value="106000">僅下巴　2次套組</option><option value="110000">臉頰＋下巴＋脖子　1次</option><option value="198000">臉頰＋下巴＋脖子　2次套組</option></select></div>
+    <div class="opts">
+      <div class="ol">臉部部位（擇一）</div>
+      <div class="pill-group" id="pg-s0t31-face">
+        <span class="pill" data-val1="60000" data-val2="110000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">僅臉頰</span>
+        <span class="pill" data-val1="58000" data-val2="106000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">僅下巴</span>
+        <span class="pill active" data-val1="90000" data-val2="160000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">臉頰＋下巴</span>
+        <span class="pill" data-val1="110000" data-val2="198000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">臉頰＋下巴＋脖子</span>
+      </div>
+      <div class="ol">眼下追加（擇一）</div>
+      <div class="pill-group" id="pg-s0t31-eye">
+        <span class="pill active" data-val1="0" data-val2="0" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">不加</span>
+        <span class="pill" data-val1="78000" data-val2="135000" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">眼下（醫師）</span>
+        <span class="pill" data-val1="65000" data-val2="110000" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">眼下（護理師）</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s0t31-time">
+        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s0t31-time');morpheusFaceU()">1次</span>
+        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s0t31-time');morpheusFaceU()">2次套組</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s0t31b" data-name="墨菲斯８　身體">
     <div class="tim" onclick="tog('s0t31b')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">墨菲斯８　身體</div><div class="pd" id="ps0t31b"><span class="y">¥</span>96,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t31b','ps0t31b',this)"><option value="96000">M部位（手臂/腹部/臀部/大腿等）　1次</option><option value="178000">M部位　2次套組</option><option value="126000">L部位（大腿前後內側）　1次</option><option value="234000">L部位　2次套組</option></select></div>
+    <div class="opts">
+      <div class="ol">部位（可複選）</div>
+      <div class="pill-group" id="pg-s0t31b-part">
+        <span class="pill" data-val1="96000" data-val2="178000" onclick="pillToggle(this);morpheusBodyU()">M部位（手臂/腹部/臀部/大腿等）</span>
+        <span class="pill" data-val1="126000" data-val2="234000" onclick="pillToggle(this);morpheusBodyU()">L部位（大腿前後內側）</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s0t31b-time">
+        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s0t31b-time');morpheusBodyU()">1次</span>
+        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s0t31b-time');morpheusBodyU()">2次套組</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s0t32" data-name="墨菲斯８ 上眼皮追加選項">
     <div class="tim" onclick="tog('s0t32')"><div class="ck"><span class="tk">✓</span></div>
@@ -752,6 +811,47 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 <div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen・其他針治療</div></div>
+  <div class="ti" id="s1t40" data-name="DermaPen4　臉">
+    <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4　臉</div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次</option><option value="49500">5次</option><option value="9900">1次 皮膚科限定</option></select></div>
+  </div>
+  <div class="ti" id="s1t41" data-name="DermaPen4 身體（手臂上方・背部上下）">
+    <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（手臂上方・背部上下）</div><div class="pd" id="ps1t41"><span class="y">¥</span>29,700</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t41','ps1t41',this)"><option value="29700">1次</option><option value="126000">5次</option></select></div>
+  </div>
+  <div class="ti" id="s1t42" data-name="DermaPen4 身體（脖子・手背）">
+    <div class="tim" onclick="tog('s1t42')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（脖子・手背）</div><div class="pd" id="ps1t42"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t42','ps1t42',this)"><option value="11000">1次</option><option value="49500">5次</option></select></div>
+  </div>
+  <div class="ti" id="s1t43" data-name="天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）">
+    <div class="tim" onclick="tog('s1t43')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）</div><div class="pd" id="ps1t43"><span class="y">¥</span>16,500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t58" data-name="玉の肌 DermaPen（ACRS 自己血細胞激素療法）">
+    <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
+    <div class="opts">
+      <div class="ol">選擇方案</div>
+      <select class="os" id="s1t58-base" onchange="s1t58U()">
+        <option value="88000">臉・脖子・手背三選一　1次</option>
+        <option value="149800">2次療程（有效期120天）</option>
+      </select>
+      <div class="odiv"></div>
+      <div class="ol">追加選項（升級醫師施術）</div>
+      <select class="os" id="s1t58-upg" onchange="s1t58U()">
+        <option value="0">不追加</option>
+        <option value="30000">升級醫師施術</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+<div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">消脂針</div></div>
   <div class="ti" id="s1t44" data-name="BNLS溶脂針">
     <div class="tim" onclick="tog('s1t44')"><div class="ck"><span class="tk">✓</span></div>
@@ -846,7 +946,19 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <div class="ti" id="s2t6" data-name="Onda Pro　身體">
     <div class="tim" onclick="tog('s2t6')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">Onda Pro　身體</div><div class="pd" id="ps2t6"><span class="y">¥</span>36,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t6','ps2t6',this)"><option value="36000">M部位（背部・手臂・腰・臀部・小腿・腹部・大腿）1次</option><option value="96000">M部位　3次</option><option value="56000">L部位（大腿前側・後側・內側）1次</option><option value="141000">L部位　3次</option><option value="32000">M部位　1次　皮膚科診所限定</option><option value="47000">L部位　1次　皮膚科診所限定</option></select></div>
+    <div class="opts">
+      <div class="ol">部位（可複選）</div>
+      <div class="pill-group" id="pg-s2t6-part">
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">M部位（背部・手臂・腰・臀部・小腿・腹部・大腿）</span>
+        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">L部位（大腿前側・後側・內側）</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s2t6-time">
+        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">1次</span>
+        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">3次</span>
+        <span class="pill" data-val="3" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">皮膚科限定 1次</span>
+      </div>
+    </div>
   </div>
 </div>
 <div class="cat">
@@ -915,7 +1027,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 
 <div class="sp" id="sh4"><div class="main">
 <div style="background:var(--gold-p);border:1px solid var(--gold-l);border-radius:6px;padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--ink-m);line-height:1.7;letter-spacing:.04em;">
-  ⚠️ 以下為<strong>美容外科</strong>項目，費用已含約10% OFF優惠價。括號內為原價供參考。
+  ⚠️ 以下為<strong>美容外科</strong>項目，費用已含約10% OFF優惠價。括號內為原價供參考。抽脂注射係指使用細針進行的精雕抽脂,修復期較短
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">抽脂　臉部</div></div>
@@ -936,7 +1048,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s4t3" data-name="抽脂　法令脂肪">
     <div class="tim" onclick="tog('s4t3')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">抽脂　法令脂肪（ジョールファット）</div><div class="pd" id="ps4t3"><span class="y">¥</span>81,000</div></div>
+    <div class="tn">抽脂　法令脂肪</div><div class="pd" id="ps4t3"><span class="y">¥</span>81,000</div></div>
     <div class="opts"><div class="hint">原價 ¥90,000　→　約10%OFF　¥81,000</div></div>
   </div>
 </div>
@@ -988,63 +1100,39 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="sp" id="sh5"><div class="main">
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">海庫斯水光導入</div></div>
-<div class="ti" id="s1t50" data-name="喬雅露水光(海庫斯)">
+  <div class="ti" id="s1t50" data-name="喬雅露水光(海庫斯)">
     <div class="tim" onclick="tog('s1t50')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">喬雅露水光(海庫斯)</div><div class="pd" id="ps1t50"><span class="y">¥</span>39,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t50','ps1t50',this)"><option value="39800">臉　1次</option><option value="39800">脖子　1次</option></select></div>
+    <div class="opts">
+      <div class="ol">選擇部位（可複選）</div>
+      <div class="pill-group" id="pg-s1t50" data-unit="39800">
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t50','ps1t50')">臉</span>
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t50','ps1t50')">脖子</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s1t52" data-name="女優水光(海庫斯)">
     <div class="tim" onclick="tog('s1t52')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">女優水光(海庫斯)</div><div class="pd" id="ps1t52"><span class="y">¥</span>42,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t52','ps1t52',this)"><option value="42800">臉　1次</option><option value="42800">脖子　1次</option></select></div>
+    <div class="opts">
+      <div class="ol">選擇部位（可複選）</div>
+      <div class="pill-group" id="pg-s1t52" data-unit="42800">
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t52','ps1t52')">臉</span>
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t52','ps1t52')">脖子</span>
+      </div>
+    </div>
   </div>
   <div class="ti" id="s1t56" data-name="熊貓針水光(海庫斯)">
     <div class="tim" onclick="tog('s1t56')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">熊貓針水光（海庫斯）</div><div class="pd" id="ps1t56"><span class="y">¥</span>79,600</div></div>
-    <div class="opts"><div class="ol">選擇規格</div><select class="os" id="sel-s1t56" onchange="qtySelU('s1t56','ps1t56','sel-s1t56','q-s1t56')"><option value="79600">臉 / 支</option><option value="79600">脖子 / 支</option></select><div class="odiv"></div><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t56" min="1" max="20" step="1" value="1" oninput="qtySelU('s1t56','ps1t56','sel-s1t56','q-s1t56')"><span class="cu">支</span></div></div>
-  </div>
-</div>
-  <div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen・其他針治療</div></div>
-  <div class="ti" id="s1t40" data-name="DermaPen4　臉">
-    <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4　臉</div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次</option><option value="49500">5次</option><option value="9900">1次 皮膚科限定</option></select></div>
-  </div>
-  <div class="ti" id="s1t41" data-name="DermaPen4 身體（手臂上方・背部上下）">
-    <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4 身體（手臂上方・背部上下）</div><div class="pd" id="ps1t41"><span class="y">¥</span>29,700</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t41','ps1t41',this)"><option value="29700">1次</option><option value="126000">5次</option></select></div>
-  </div>
-  <div class="ti" id="s1t42" data-name="DermaPen4 身體（脖子・手背）">
-    <div class="tim" onclick="tog('s1t42')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4 身體（脖子・手背）</div><div class="pd" id="ps1t42"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t42','ps1t42',this)"><option value="11000">1次</option><option value="49500">5次</option></select></div>
-  </div>
-  <div class="ti" id="s1t43" data-name="天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）">
-    <div class="tim" onclick="tog('s1t43')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）</div><div class="pd" id="ps1t43"><span class="y">¥</span>16,500</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t58" data-name="玉の肌 DermaPen（ACRS 自己血細胞激素療法）">
-    <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
     <div class="opts">
-      <div class="ol">選擇方案</div>
-      <select class="os" id="s1t58-base" onchange="s1t58U()">
-        <option value="88000">臉・脖子・手背三選一　1次</option>
-        <option value="149800">2次療程（有效期120天）</option>
-      </select>
-      <div class="odiv"></div>
-      <div class="ol">追加選項（升級醫師施術）</div>
-      <select class="os" id="s1t58-upg" onchange="s1t58U()">
-        <option value="0">不追加</option>
-        <option value="30000">升級醫師施術 1次</option>
-        <option value="60000">升級醫師施術 2次療程</option>
-      </select>
+      <div class="ol">選擇部位（可複選）</div>
+      <div class="pill-group" id="pg-s1t56" data-unit="79600">
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t56','ps1t56')">臉</span>
+        <span class="pill" onclick="pillToggle(this);pillSimpleU('s1t56','ps1t56')">脖子</span>
+      </div>
     </div>
   </div>
-
 </div>
 </div></div>
 
@@ -1430,6 +1518,21 @@ function applySheetPrices(data) {
   for (const [id, keys] of Object.entries(data)) {
     if (id === 'liquid') continue;
     const el = document.getElementById(id);
+    // ── Pill 項目 Sheet 價格同步 ──
+    if(id==='s1t50'){const pg=document.getElementById('pg-s1t50');if(keys['0']!==undefined&&pg)pg.dataset.unit=keys['0'];if(keys['0']!==undefined)setPD('ps1t50',keys['0']);continue;}
+    if(id==='s1t52'){const pg=document.getElementById('pg-s1t52');if(keys['0']!==undefined&&pg)pg.dataset.unit=keys['0'];if(keys['0']!==undefined)setPD('ps1t52',keys['0']);continue;}
+    if(id==='s0t21'){const tg=document.getElementById('pg-s0t21-t');if(tg){const pp=tg.querySelectorAll('.pill');if(keys['0']!==undefined&&pp[0])pp[0].dataset.val=keys['0'];if(keys['1']!==undefined&&pp[1])pp[1].dataset.val=keys['1'];}if(keys['0']!==undefined)setPD('ps0t21',keys['0']);continue;}
+    if(id==='s0t22'){const tg=document.getElementById('pg-s0t22-t');if(tg){const pp=tg.querySelectorAll('.pill');if(keys['0']!==undefined&&pp[0])pp[0].dataset.val=keys['0'];if(keys['1']!==undefined&&pp[1])pp[1].dataset.val=keys['1'];}if(keys['0']!==undefined)setPD('ps0t22',keys['0']);continue;}
+    if(id==='s0t31'){
+      const fg=document.getElementById('pg-s0t31-face'),eg=document.getElementById('pg-s0t31-eye');
+      if(fg){const fp=fg.querySelectorAll('.pill');[[6,7],[8,9],[0,1],[10,11]].forEach(([k1,k2],i)=>{if(fp[i]){if(keys[String(k1)]!==undefined)fp[i].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)fp[i].dataset.val2=keys[String(k2)];}});}
+      if(eg){const ep=eg.querySelectorAll('.pill');[[2,3],[4,5]].forEach(([k1,k2],i)=>{if(ep[i+1]){if(keys[String(k1)]!==undefined)ep[i+1].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)ep[i+1].dataset.val2=keys[String(k2)];}});}
+      if(keys['0']!==undefined)setPD('ps0t31',keys['0']);continue;
+    }
+    if(id==='s2t6'){const pg=document.getElementById('pg-s2t6-part');if(pg){const pp=pg.querySelectorAll('.pill');if(pp[0]){if(keys['0']!==undefined)pp[0].dataset.val1=keys['0'];if(keys['1']!==undefined)pp[0].dataset.val2=keys['1'];if(keys['4']!==undefined)pp[0].dataset.val3=keys['4'];}if(pp[1]){if(keys['2']!==undefined)pp[1].dataset.val1=keys['2'];if(keys['3']!==undefined)pp[1].dataset.val2=keys['3'];if(keys['5']!==undefined)pp[1].dataset.val3=keys['5'];}}if(keys['0']!==undefined)setPD('ps2t6',keys['0']);continue;}
+    if(id==='s0t31b'){const pg=document.getElementById('pg-s0t31b-part');if(pg){const pp=pg.querySelectorAll('.pill');[[0,1],[2,3]].forEach(([k1,k2],i)=>{if(pp[i]){if(keys[String(k1)]!==undefined)pp[i].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)pp[i].dataset.val2=keys[String(k2)];}});}if(keys['0']!==undefined)setPD('ps0t31b',keys['0']);continue;}
+    if(id==='s1t56'){const pg=document.getElementById('pg-s1t56');if(keys['0']!==undefined&&pg)pg.dataset.unit=keys['0'];if(keys['0']!==undefined)setPD('ps1t56',keys['0']);continue;}
+
 
     // 靜態固定價格
     if (keys['static'] !== undefined) {
@@ -1498,7 +1601,7 @@ function applySheetPrices(data) {
 
     // qty_sel 項目
     if (id === 's1t31') { const s=document.getElementById('sel-s1t31'); if(s){Object.entries(keys).forEach(([k,v])=>{const i=parseInt(k);if(!isNaN(i)&&s.options[i])s.options[i].value=v;}); if(keys['0']!==undefined)setPD('ps1t31',keys['0']);} }
-    if (id === 's1t56') { const s=document.getElementById('sel-s1t56'); if(s){Object.entries(keys).forEach(([k,v])=>{const i=parseInt(k);if(!isNaN(i)&&s.options[i])s.options[i].value=v;}); if(keys['0']!==undefined)setPD('ps1t56',keys['0']);} }
+    // s1t56 pill sync handled above
 
     // 韓國肉毒 kr-base / kr-extra
     if (id === 's1t0') {
@@ -1670,10 +1773,11 @@ function renderExtraItems(extras) {
       const firstPrice = opts[0].price;
       const firstLabel = opts[0].label || '';
 
-      // 判斷類型：[支] [瓶] [cc] 等 → 數量輸入；多選項 → 下拉；其他 → 固定
-      const qtyMatch = opts.length === 1 && firstLabel.match(/^\[(.+)\]$/);
+      // 判斷類型：[pill] → pill複選；[支][瓶][cc] → 數量輸入；多選項 → 下拉；其他 → 固定
+      const isPill = opts.length > 0 && opts[0].label.startsWith('[pill]');
+      const qtyMatch = !isPill && opts.length === 1 && firstLabel.match(/^\[(.+)\]$/);
       const isQty = !!qtyMatch;
-      const isSelect = !isQty && (opts.length > 1 || (opts.length === 1 && firstLabel));
+      const isSelect = !isPill && !isQty && (opts.length > 1 || (opts.length === 1 && firstLabel));
       const unit = isQty ? qtyMatch[1] : '';
       // 連結小按鈕
       const linkHtml = item.link
@@ -1688,7 +1792,38 @@ function renderExtraItems(extras) {
       tiDiv.dataset.currentPrice = firstPrice;
       tiDiv.dataset.unitPrice = firstPrice;
 
-      if (isQty) {
+      if (isPill) {
+        const areaOpts  = opts.filter(o => o.label.startsWith('[pill]'));
+        const timesOpts = opts.filter(o => o.label.startsWith('[times]'));
+        const hasTimes  = timesOpts.length > 0;
+        const areaPillsHtml = areaOpts.map(o =>
+          `<span class="pill" data-val="${o.price}" onclick="pillToggle(this);extraPillU('${eid}')">${o.label.replace('[pill]','').trim()}</span>`
+        ).join('\n        ');
+        const timesPillsHtml = hasTimes ? timesOpts.map((o, i) =>
+          `<span class="pill${i===0?' active':''}" data-val="${o.price}" onclick="pillRadio(this,'pg-t-${eid}');extraPillU('${eid}')">${o.label.replace('[times]','').trim()}</span>`
+        ).join('\n        ') : '';
+        const timesSection = hasTimes
+          ? `<div class="ol">次數</div><div class="pill-group" id="pg-t-${eid}">${timesPillsHtml}</div>`
+          : '';
+        const defPrice = hasTimes
+          ? (timesOpts[0]?.price || firstPrice)
+          : (areaOpts[0]?.price || firstPrice);
+        tiDiv.dataset.currentPrice = 0;
+        tiDiv.dataset.hasTimes = hasTimes ? '1' : '';
+        tiDiv.innerHTML = `
+          <div class="tim" onclick="togExtraPill('${eid}')">
+            <div class="ck"><span class="tk">✓</span></div>
+            <div class="tn">${nameHtml}</div>
+            <div class="pd" id="p${eid}"><span class="y">¥</span>${defPrice.toLocaleString()}</div>
+          </div>
+          <div class="opts">
+            <div class="ol">選擇部位（可複選）</div>
+            <div class="pill-group" id="pg-${eid}">
+              ${areaPillsHtml}
+            </div>
+            ${timesSection}
+          </div>`;
+      } else if (isQty) {
         // 數量輸入（支/瓶/cc）
         tiDiv.innerHTML = `
           <div class="tim" onclick="togExtraQty('${eid}')">
@@ -1813,6 +1948,40 @@ function extraSelU(id, sel) {
 }
 
 // 舊版相容（保留）
+function extraPillU(eid){
+  const el=document.getElementById(eid);if(!el)return;
+  const g=document.getElementById('pg-'+eid);if(!g)return;
+  const hasTimes=el.dataset.hasTimes==='1';
+  const activeAreas=g.querySelectorAll('.pill.active');
+  let total=0,oLabel='';
+  if(hasTimes){
+    const tg=document.getElementById('pg-t-'+eid);
+    const activeTime=tg?.querySelector('.pill.active');
+    const unit=parseInt(activeTime?.dataset.val)||0;
+    total=activeAreas.length*unit;
+    const aLabel=Array.from(activeAreas).map(p=>p.textContent).join('・');
+    const tLabel=activeTime?.textContent||'';
+    oLabel=[aLabel,tLabel].filter(Boolean).join('　');
+    const defP=unit||parseInt(g.querySelector('.pill')?.dataset.val)||0;
+    setPD('p'+eid,total>0?total:defP);
+  }else{
+    activeAreas.forEach(p=>{total+=parseInt(p.dataset.val)||0;});
+    oLabel=Array.from(activeAreas).map(p=>p.textContent).join('・');
+    const defP=parseInt(g.querySelector('.pill')?.dataset.val)||0;
+    setPD('p'+eid,total>0?total:defP);
+  }
+  el.dataset.currentPrice=total;
+  if(C.has(eid)){P[eid]=total;O[eid]=oLabel;upd();}
+}
+function togExtraPill(eid){
+  const el=document.getElementById(eid);if(!el)return;
+  const price=parseInt(el.dataset.currentPrice)||0;
+  const g=document.getElementById('pg-'+eid);
+  const labels=g?Array.from(g.querySelectorAll('.pill.active')).map(p=>p.textContent).join('・'):'';
+  if(C.has(eid)){C.delete(eid);delete P[eid];delete O[eid];el.classList.remove('on');}
+  else{C.add(eid);P[eid]=price;O[eid]=labels;el.classList.add('on');}
+  upd();
+}
 function togExtra(id, price) { togExtraSimple(id, price); }
 const staticPrices = {
   's4t0':81000,'s4t1':121500,'s4t2':81000,'s4t3':81000,
@@ -2070,6 +2239,72 @@ function s1t58U(){
   setPD('ps1t58',total);upd();
 }
 
+// ── Pill helpers ──
+function pillToggle(pill){pill.classList.toggle('active');}
+function pillRadio(pill,groupId){
+  const g=document.getElementById(groupId);
+  if(g)g.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+}
+function pillSimpleU(itemId,priceElId){
+  const g=document.getElementById('pg-'+itemId);if(!g)return;
+  const active=g.querySelectorAll('.pill.active');
+  const unit=parseInt(g.dataset.unit)||0;
+  const count=active.length;
+  const labels=Array.from(active).map(p=>p.textContent).join('・');
+  P[itemId]=count*unit;O[itemId]=labels||'';
+  setPD(priceElId,count>0?count*unit:unit);
+  if(C.has(itemId))upd();
+}
+function pillAreaTimesU(itemId,priceElId){
+  const ag=document.getElementById('pg-'+itemId+'-a');
+  const tg=document.getElementById('pg-'+itemId+'-t');
+  if(!ag||!tg)return;
+  const activeA=ag.querySelectorAll('.pill.active');
+  const activeT=tg.querySelector('.pill.active');
+  const count=activeA.length;
+  const unit=parseInt(activeT?.dataset.val)||0;
+  const aLabels=Array.from(activeA).map(p=>p.textContent).join('・');
+  P[itemId]=count*unit;O[itemId]=aLabels?(aLabels+'　'+(activeT?.textContent||'')):(activeT?.textContent||'');
+  setPD(priceElId,count>0?count*unit:unit);
+  if(C.has(itemId))upd();
+}
+function morpheusFaceU(){
+  const af=document.getElementById('pg-s0t31-face')?.querySelector('.pill.active');
+  const ae=document.getElementById('pg-s0t31-eye')?.querySelector('.pill.active');
+  const at=document.getElementById('pg-s0t31-time')?.querySelector('.pill.active');
+  const t=parseInt(at?.dataset.val)||1;
+  const fp=parseInt(af?.dataset['val'+t])||0;
+  const ep=parseInt(ae?.dataset['val'+t])||0;
+  const total=fp+ep;
+  const parts=[af?.textContent||'',ae?.textContent!=='不加'?ae?.textContent||'':'',at?.textContent||''].filter(Boolean);
+  P['s0t31']=total;O['s0t31']=parts.join(' ＋ ');
+  setPD('ps0t31',total>0?total:90000);
+  if(C.has('s0t31'))upd();
+}
+function ondaBodyU(){
+  const pg=document.getElementById('pg-s2t6-part');
+  const at=document.getElementById('pg-s2t6-time')?.querySelector('.pill.active');
+  const t=at?.dataset.val||'1';
+  const ap=pg?.querySelectorAll('.pill.active')||[];
+  let total=0,labels=[];
+  ap.forEach(p=>{total+=parseInt(p.dataset['val'+t])||0;labels.push(p.textContent);});
+  P['s2t6']=total;O['s2t6']=[labels.join('・'),at?.textContent||''].filter(Boolean).join('　');
+  const defP=parseInt(pg?.querySelector('.pill')?.dataset['val'+t])||36000;
+  setPD('ps2t6',total>0?total:defP);
+  if(C.has('s2t6'))upd();
+}
+function morpheusBodyU(){
+  const pg=document.getElementById('pg-s0t31b-part');
+  const at=document.getElementById('pg-s0t31b-time')?.querySelector('.pill.active');
+  const t=parseInt(at?.dataset.val)||1;
+  const ap=pg?.querySelectorAll('.pill.active')||[];
+  let total=0,labels=[];
+  ap.forEach(p=>{total+=parseInt(p.dataset['val'+t])||0;labels.push(p.textContent);});
+  P['s0t31b']=total;O['s0t31b']=[labels.join('・'),at?.textContent||''].filter(Boolean).join('　');
+  setPD('ps0t31b',total>0?total:96000);
+  if(C.has('s0t31b'))upd();
+}
 function tog(id){
   const el=document.getElementById(id);
   if(!el)return;
@@ -2095,6 +2330,14 @@ function tog(id){
     else if(id==='s1t45') sansamU();
     else if(id==='s1t46') fatxU();
     else if(id==='s1t58') s1t58U();
+    else if(id==='s1t50') pillSimpleU('s1t50','ps1t50');
+    else if(id==='s1t52') pillSimpleU('s1t52','ps1t52');
+    else if(id==='s1t56') pillSimpleU('s1t56','ps1t56');
+    else if(id==='s0t21') pillAreaTimesU('s0t21','ps0t21');
+    else if(id==='s0t22') pillAreaTimesU('s0t22','ps0t22');
+    else if(id==='s0t31') morpheusFaceU();
+    else if(id==='s0t31b') morpheusBodyU();
+    else if(id==='s2t6') ondaBodyU();
     else if(id==='s3t0') anU();
     else if(id==='s0t24') comboU('s0t24','ps0t24',7800,'pico24-liq');
     else if(id==='s0t34') comboU('s0t34','ps0t34',null,'pico34-liq','pico34-base');
@@ -2102,7 +2345,6 @@ function tog(id){
     else if(id==='s0t26') comboU('s0t26','ps0t26',11520,'pico26-liq');
     else{
       if(id==='s1t31') qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31');
-      else if(id==='s1t56') qtySelU('s1t56','ps1t56','sel-s1t56','q-s1t56');
       else if(staticPrices[id]!==undefined){P[id]=staticPrices[id];O[id]='';}
       else{
         const sel=el.querySelector('.os');
@@ -2205,6 +2447,12 @@ function resetAll(){
   Object.keys(O).forEach(k=>delete O[k]);
   document.querySelectorAll('.ti').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.os').forEach(sel=>{sel.selectedIndex=0;});
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('[id^="pg-t-extra-item-"]').forEach(g=>g.querySelector('.pill')?.classList.add('active'));
+  [{g:'pg-s0t21-t',i:0},{g:'pg-s0t22-t',i:0},{g:'pg-s0t31-time',i:0},{g:'pg-s0t31b-time',i:0}].forEach(({g,i})=>{const el=document.getElementById(g);if(el)el.querySelectorAll('.pill')[i]?.classList.add('active');});
+  const mFace=document.getElementById('pg-s0t31-face');if(mFace)mFace.querySelectorAll('.pill')[2]?.classList.add('active');
+  const mEye=document.getElementById('pg-s0t31-eye');if(mEye)mEye.querySelector('.pill')?.classList.add('active');
+  const s2t6T=document.getElementById('pg-s2t6-time');if(s2t6T)s2t6T.querySelector('.pill')?.classList.add('active');
   ['kr-base','kr-extra','bt-base','bt-extra'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   const jg=document.getElementById('jalupro26-glow');if(jg)jg.selectedIndex=0;
   const aa=document.getElementById('an-areas');if(aa)aa.value=1;
@@ -2214,7 +2462,7 @@ function resetAll(){
   const sh=document.getElementById('sansam-hint');if(sh){sh.textContent='1cc × ¥'+rates.sansam.r1.toLocaleString()+'/cc = ¥'+rates.sansam.r1.toLocaleString()+'　｜　1〜4cc：¥'+rates.sansam.r1.toLocaleString()+'　5〜9cc：¥'+rates.sansam.r2.toLocaleString()+'　10cc以上：¥'+rates.sansam.r3.toLocaleString();sh.style.color='';}
   const fh=document.getElementById('fatx-hint');if(fh){fh.textContent='1cc × ¥'+rates.fatx.r1.toLocaleString()+'/cc = ¥'+rates.fatx.r1.toLocaleString()+'　｜　1〜4cc：¥'+rates.fatx.r1.toLocaleString()+'　5〜9cc：¥'+rates.fatx.r2.toLocaleString()+'　10cc以上：¥'+rates.fatx.r3.toLocaleString();fh.style.color='';}
   document.querySelectorAll('input.ci[id^="q-"]').forEach(el=>{el.value=1;});
-  ['sel-s1t31','sel-s1t56'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ['sel-s1t31'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   mrfU();upd();
 }
