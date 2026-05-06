@@ -715,11 +715,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">逆時針 Structura 臉　2cc</div><div class="pd" id="ps1t30"><span class="y">¥</span>120,000</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t30" min="1" max="20" step="1" value="1" oninput="qtyU('s1t30','ps1t30',120000,'q-s1t30')"><span class="cu">支　×　¥120,000</span></div></div>
   </div>
-  <div class="ti" id="s1t53" data-name="水光針加打保妥適">
-    <div class="tim" onclick="tog('s1t53')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">水光針加打保妥適<span class="note">施打水光針時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
-    <div class="opts"></div>
-  </div>
   <div class="ti" id="s1t54" data-name="熊貓針">
     <div class="tim" onclick="tog('s1t54')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">熊貓針<span class="note">促進膠原蛋白再生</span></div><div class="pd" id="ps1t54"><span class="y">¥</span>88,000</div></div>
@@ -784,47 +779,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">玻尿酸溶解（HIRAX）</div><div class="pd" id="ps1t39"><span class="y">¥</span>19,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t39','ps1t39',this)"><option value="19800">本院施打的玻尿酸　1瓶</option><option value="39600">他院施打的玻尿酸　1瓶</option></select></div>
   </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen・其他針治療</div></div>
-  <div class="ti" id="s1t40" data-name="DermaPen4　臉">
-    <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4　臉</div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次</option><option value="49500">5次</option><option value="9900">1次 皮膚科限定</option></select></div>
-  </div>
-  <div class="ti" id="s1t41" data-name="DermaPen4 身體（手臂上方・背部上下）">
-    <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4 身體（手臂上方・背部上下）</div><div class="pd" id="ps1t41"><span class="y">¥</span>29,700</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t41','ps1t41',this)"><option value="29700">1次</option><option value="126000">5次</option></select></div>
-  </div>
-  <div class="ti" id="s1t42" data-name="DermaPen4 身體（脖子・手背）">
-    <div class="tim" onclick="tog('s1t42')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DermaPen4 身體（脖子・手背）</div><div class="pd" id="ps1t42"><span class="y">¥</span>11,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t42','ps1t42',this)"><option value="11000">1次</option><option value="49500">5次</option></select></div>
-  </div>
-  <div class="ti" id="s1t43" data-name="天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）">
-    <div class="tim" onclick="tog('s1t43')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">天鵝絨美肌　臉（DermaPen4＋玻尿酸面膜）</div><div class="pd" id="ps1t43"><span class="y">¥</span>16,500</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s1t58" data-name="玉の肌 DermaPen（ACRS 自己血細胞激素療法）">
-    <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">玉の肌 DermaPen（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
-    <div class="opts">
-      <div class="ol">選擇方案</div>
-      <select class="os" id="s1t58-base" onchange="s1t58U()">
-        <option value="88000">臉・脖子・手背三選一　1次</option>
-        <option value="149800">2次療程（有效期120天）</option>
-      </select>
-      <div class="odiv"></div>
-      <div class="ol">追加選項（升級醫師施術）</div>
-      <select class="os" id="s1t58-upg" onchange="s1t58U()">
-        <option value="0">不追加</option>
-        <option value="30000">升級醫師施術</option>
-      </select>
-    </div>
-  </div>
-
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">消脂針</div></div>
@@ -1108,7 +1062,53 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
       </div>
     </div>
   </div>
+  <div class="ti" id="s1t53" data-name="水光針加打保妥適">
+    <div class="tim" onclick="tog('s1t53')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">水光針加打保妥適<span class="note">施打水光針時可追加</span></div><div class="pd" id="ps1t53"><span class="y">¥</span>5,000</div></div>
+    <div class="opts"></div>
+  </div>
 </div>
+<div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">DermaPen</div></div>
+  <div class="ti" id="s1t40" data-name="DermaPen4　臉">
+    <div class="tim" onclick="tog('s1t40')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4　臉</div><div class="pd" id="ps1t40"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t40','ps1t40',this)"><option value="11000">1次</option><option value="49500">5次</option><option value="9900">1次 皮膚科限定</option></select></div>
+  </div>
+  <div class="ti" id="s1t41" data-name="DermaPen4 身體（手臂上方・背部上下）">
+    <div class="tim" onclick="tog('s1t41')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（手臂上方・背部上下）</div><div class="pd" id="ps1t41"><span class="y">¥</span>29,700</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t41','ps1t41',this)"><option value="29700">1次</option><option value="126000">5次</option></select></div>
+  </div>
+  <div class="ti" id="s1t42" data-name="DermaPen4 身體（脖子・手背）">
+    <div class="tim" onclick="tog('s1t42')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">DermaPen4 身體（脖子・手背）</div><div class="pd" id="ps1t42"><span class="y">¥</span>11,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s1t42','ps1t42',this)"><option value="11000">1次</option><option value="49500">5次</option></select></div>
+  </div>
+  <div class="ti" id="s1t43" data-name="天鵝絨美肌　臉（DermaPen4＋TCA煥膚）">
+    <div class="tim" onclick="tog('s1t43')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">天鵝絨美肌　臉（DermaPen4＋TCA煥膚）</div><div class="pd" id="ps1t43"><span class="y">¥</span>16,500</div></div>
+    <div class="opts"></div>
+  </div>
+  <div class="ti" id="s1t58" data-name="玉の肌（ACRS 自己血細胞激素療法）">
+    <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">玉の肌（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
+    <div class="opts">
+      <div class="ol">選擇方案</div>
+      <select class="os" id="s1t58-base" onchange="s1t58U()">
+        <option value="88000">臉・脖子・手背三選一　1次</option>
+        <option value="149800">2次療程（有效期120天）</option>
+      </select>
+      <div class="odiv"></div>
+      <div class="ol">追加選項（升級醫師施術）</div>
+      <select class="os" id="s1t58-upg" onchange="s1t58U()">
+        <option value="0">不追加</option>
+        <option value="30000">升級醫師施術</option>
+      </select>
+    </div>
+  </div>
+</div>
+  
 </div></div>
 
 <script>
