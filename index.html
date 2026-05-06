@@ -1091,17 +1091,22 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tim" onclick="tog('s1t58')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">玉の肌（ACRS 自己血細胞激素療法）</div><div class="pd" id="ps1t58"><span class="y">¥</span>88,000</div></div>
     <div class="opts">
-      <div class="ol">選擇方案</div>
-      <select class="os" id="s1t58-base" onchange="s1t58U()">
-        <option value="88000">臉・脖子・手背三選一　1次</option>
-        <option value="149800">2次療程（有效期120天）</option>
-      </select>
-      <div class="odiv"></div>
-      <div class="ol">追加選項（升級醫師施術）</div>
-      <select class="os" id="s1t58-upg" onchange="s1t58U()">
-        <option value="0">不追加</option>
-        <option value="30000">升級醫師施術</option>
-      </select>
+      <div class="ol">部位（可複選）</div>
+      <div class="pill-group" id="pg-s1t58-part">
+        <span class="pill" data-val1="88000" data-val2="149800" onclick="pillToggle(this);gyokuU()">臉</span>
+        <span class="pill" data-val1="88000" data-val2="149800" onclick="pillToggle(this);gyokuU()">脖子</span>
+        <span class="pill" data-val1="88000" data-val2="149800" onclick="pillToggle(this);gyokuU()">手背</span>
+      </div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s1t58-time">
+        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s1t58-time');gyokuU()">1次</span>
+        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s1t58-time');gyokuU()">2次療程（有效期120天）</span>
+      </div>
+      <div class="ol">追加選項</div>
+      <div class="pill-group" id="pg-s1t58-upg">
+        <span class="pill active" data-val="0" onclick="pillRadio(this,'pg-s1t58-upg');gyokuU()">不追加</span>
+        <span class="pill" data-val="30000" onclick="pillRadio(this,'pg-s1t58-upg');gyokuU()">升級醫師施術</span>
+      </div>
     </div>
   </div>
 </div>
@@ -2226,17 +2231,20 @@ function anU(){
   upd();
 }
 
-function s1t58U(){
-  const base=parseInt(document.getElementById('s1t58-base')?.value)||0;
-  const upg=parseInt(document.getElementById('s1t58-upg')?.value)||0;
-  const total=base+upg;
+function gyokuU(){
+  const pg=document.getElementById('pg-s1t58-part');
+  const at=document.getElementById('pg-s1t58-time')?.querySelector('.pill.active');
+  const au=document.getElementById('pg-s1t58-upg')?.querySelector('.pill.active');
+  const t=parseInt(at?.dataset.val)||1;
+  const upg=parseInt(au?.dataset.val)||0;
+  const ap=pg?.querySelectorAll('.pill.active')||[];
+  let partTotal=0,labels=[];
+  ap.forEach(p=>{partTotal+=parseInt(p.dataset['val'+t])||0;labels.push(p.textContent);});
+  const total=partTotal+upg;
   P['s1t58']=total;
-  const bs=document.getElementById('s1t58-base');
-  const us=document.getElementById('s1t58-upg');
-  const bl=bs?bs.options[bs.selectedIndex]?.text:'';
-  const ul=us?us.options[us.selectedIndex]?.text:'';
-  O['s1t58']=upg>0?bl+' ＋ '+ul:bl;
-  setPD('ps1t58',total);upd();
+  O['s1t58']=[labels.join('・'),at?.textContent||'',upg>0?au?.textContent||'':''].filter(Boolean).join('　');
+  setPD('ps1t58',total>0?total:88000);
+  if(C.has('s1t58'))upd();
 }
 
 // ── Pill helpers ──
@@ -2340,7 +2348,7 @@ function tog(id){
     else if(id==='s1t44') bnlsU();
     else if(id==='s1t45') sansamU();
     else if(id==='s1t46') fatxU();
-    else if(id==='s1t58') s1t58U();
+    else if(id==='s1t58') gyokuU();
     else if(id==='s1t50') pillSimpleU('s1t50','ps1t50');
     else if(id==='s1t52') pillSimpleU('s1t52','ps1t52');
     else if(id==='s1t56') pillSimpleU('s1t56','ps1t56');
@@ -2461,7 +2469,7 @@ function resetAll(){
   document.querySelectorAll('.os').forEach(sel=>{sel.selectedIndex=0;});
   document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('[id^="pg-t-extra-item-"]').forEach(g=>g.querySelector('.pill')?.classList.add('active'));
-  [{g:'pg-s0t21-t',i:0},{g:'pg-s0t22-t',i:0},{g:'pg-s0t31-time',i:0},{g:'pg-s0t31b-time',i:0},{g:'pg-s1t41-time',i:0}].forEach(({g,i})=>{const el=document.getElementById(g);if(el)el.querySelectorAll('.pill')[i]?.classList.add('active');});
+  [{g:'pg-s0t21-t',i:0},{g:'pg-s0t22-t',i:0},{g:'pg-s0t31-time',i:0},{g:'pg-s0t31b-time',i:0},{g:'pg-s1t41-time',i:0},{g:'pg-s1t58-time',i:0},{g:'pg-s1t58-upg',i:0}].forEach(({g,i})=>{const el=document.getElementById(g);if(el)el.querySelectorAll('.pill')[i]?.classList.add('active');});
   const mFace=document.getElementById('pg-s0t31-face');if(mFace)mFace.querySelectorAll('.pill')[2]?.classList.add('active');
   const mEye=document.getElementById('pg-s0t31-eye');if(mEye)mEye.querySelector('.pill')?.classList.add('active');
   const s2t6T=document.getElementById('pg-s2t6-time');if(s2t6T)s2t6T.querySelector('.pill')?.classList.add('active');
