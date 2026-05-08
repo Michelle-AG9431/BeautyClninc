@@ -2906,158 +2906,180 @@ function resetAll(){
   }, 200);
 })();
 </script>
-  <script>
+ <script>
 /* ════════════════════════════════════════════════════════════
-   ★ 分院篩選 patch v2（Spreadsheet 驅動版）
-   貼到 HTML 最後一個 </script> 之後、</body> 之前
-
-   Spreadsheet 需新增 clinic_avail 工作表：
-   - 第一列：A=項目ID或名稱, B以後=各院名稱（表頭）
-   - 後續列：A=項目ID或名稱, B以後=核取方塊（有勾=該院有此項目）
-   - 沒出現在表中的項目 = 預設所有院都有
+   ★ 分院篩選 patch v3
+   貼到 HTML 最後一個之後、</body> 之前
 ════════════════════════════════════════════════════════════ */
 (function(){
 
-  let clinicData = { names: [], map: {} };
+  let clinicMap   = {};   // { itemIdOrName: { '新宿總院': true, ... } }
   let currentClinic = 'all';
 
-  // ── 建立下拉選單 DOM ──
-  function createClinicBar() {
+  // ── 1. 建立 DOM（立即執行，不等 sheet 資料）──
+  function buildUI() {
     if (document.getElementById('clinic-bar')) return;
-    const priceStatus = document.getElementById('price-status');
-    if (!priceStatus) return;
+    const statusEl = document.getElementById('price-status');
+    if (!statusEl) return;
 
     const bar = document.createElement('div');
     bar.id = 'clinic-bar';
     bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:8px;margin-top:5px;';
 
-    const label = document.createElement('span');
-    label.style.cssText = 'font-size:9px;letter-spacing:.1em;color:var(--gold-l);';
-    label.textContent = '分院篩選';
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:9px;letter-spacing:.1em;color:var(--gold-l);white-space:nowrap;';
+    lbl.textContent = '分院篩選';
 
     const sel = document.createElement('select');
-    sel.id = 'clinic-select';
+    sel.id = 'clinic-sel';
     sel.style.cssText = [
-      'background:rgba(255,255,255,.08)',
-      'border:1px solid rgba(212,176,122,.5)',
+      'background:rgba(255,255,255,.1)',
+      'border:1px solid rgba(212,176,122,.6)',
       'border-radius:4px',
       'padding:3px 22px 3px 8px',
       'font-size:10px',
       'color:#fff',
-      'font-family:\'Noto Sans TC\',sans-serif',
+      'font-family:"Noto Sans TC",sans-serif',
       'cursor:pointer',
       'appearance:none',
+      '-webkit-appearance:none',
       'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M1 1l4 4 4-4\' stroke=\'%23d4b07a\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E")',
       'background-repeat:no-repeat',
       'background-position:right 5px center',
     ].join(';');
 
-    // 預設選項
-    const defOpt = document.createElement('option');
-    defOpt.value = 'all';
-    defOpt.textContent = '🏥 選擇分院（全部）';
-    sel.appendChild(defOpt);
+    // 預設「全部」選項
+    addOption(sel, 'all', '🏥 全部分院');
 
-    sel.addEventListener('change', () => {
-      currentClinic = sel.value;
-      applyClinicFilter(currentClinic);
+    sel.addEventListener('change', function() {
+      currentClinic = this.value;
+      applyFilter();
     });
 
-    bar.appendChild(label);
+    bar.appendChild(lbl);
     bar.appendChild(sel);
-    priceStatus.parentNode.insertBefore(bar, priceStatus.nextSibling);
+
+    // 插在 price-status 之後（header 裡）
+    statusEl.insertAdjacentElement('afterend', bar);
   }
 
-  // ── 從 Sheet 載入院所清單後，填入 select 選項 ──
-  function populateClinicOptions(names) {
-    const sel = document.getElementById('clinic-select');
-    if (!sel) return;
-    // 移除舊選項（保留第一個 "全部"）
-    while (sel.options.length > 1) sel.remove(1);
-    names.forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      sel.appendChild(opt);
-    });
+  function addOption(sel, val, text) {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = text;
+    sel.appendChild(opt);
   }
 
-  // ── 套用篩選 ──
-  window.applyClinicFilter = function(clinic) {
-    currentClinic = clinic;
-
-    document.querySelectorAll('.ti').forEach(ti => {
-      if (clinic === 'all') {
-        ti.style.display = '';
-        return;
+  // ── 2. 等 Sheet 資料出現後，填入分院選項（輪詢）──
+  function waitForClinicData() {
+    let tries = 0;
+    const intv = setInterval(function() {
+      tries++;
+      // 從 window.__clinicData__ 取得資料（由 applySheetPrices 注入）
+      const data = window.__clinicData__;
+      if (data && data.names && data.names.length > 0) {
+        clearInterval(intv);
+        clinicMap = data.map || {};
+        const sel = document.getElementById('clinic-sel');
+        if (!sel) return;
+        // 移除舊選項（保留第一個「全部」）
+        while (sel.options.length > 1) sel.remove(1);
+        data.names.forEach(function(name) {
+          addOption(sel, name, name);
+        });
       }
+      if (tries > 60) clearInterval(intv); // 最多等 12 秒
+    }, 200);
+  }
 
-      const itemId   = ti.id || '';
-      const itemName = ti.dataset.name || '';
+  // ── 3. 覆寫 applySheetPrices，把 __clinics__ 存到全域 ──
+  //    用 try/catch 避免任何錯誤影響其他功能
+  (function() {
+    try {
+      const orig = window.applySheetPrices;
+      if (!orig) return;
+      window.applySheetPrices = function(data) {
+        try { orig.call(this, data); } catch(e) {}
+        try {
+          if (data && data['__clinics__']) {
+            window.__clinicData__ = data['__clinics__'];
+          }
+        } catch(e) {}
+      };
+    } catch(e) {}
+  })();
 
-      // 優先用 ID 查，找不到再用名稱查
-      const row = clinicData.map[itemId] ?? clinicData.map[itemName] ?? null;
+  // ── 4. 套用篩選 ──
+  window.applyClinicFilter = applyFilter;
+
+  function applyFilter() {
+    const clinic = currentClinic;
+
+    document.querySelectorAll('.ti').forEach(function(ti) {
+      if (clinic === 'all') { ti.style.display = ''; return; }
+
+      // 優先用 ID 查，找不到再用 data-name 查
+      const row = clinicMap[ti.id] || clinicMap[ti.dataset.name || ''] || null;
 
       if (row === null) {
-        // 不在 clinic_avail 表中 → 預設所有院都有，顯示
+        // 沒在 clinic_avail 表中 → 預設全院都有 → 顯示
         ti.style.display = '';
       } else {
-        // 在表中：只有勾了才顯示
         ti.style.display = row[clinic] ? '' : 'none';
       }
     });
 
-    // 某分類下全部項目都隱藏 → 隱藏分類標題
-    document.querySelectorAll('.cat').forEach(cat => {
+    // 若某分類下全部項目被隱藏，隱藏分類標題
+    document.querySelectorAll('.cat').forEach(function(cat) {
       const items = cat.querySelectorAll('.ti');
       if (!items.length) { cat.style.display = ''; return; }
-      const allHidden = Array.from(items).every(ti => ti.style.display === 'none');
+      const allHidden = Array.from(items).every(function(ti) {
+        return ti.style.display === 'none';
+      });
       cat.style.display = allHidden ? 'none' : '';
     });
-  };
-
-  // ── 攔截 loadSheetPrices 載入完成後，取得 clinic 資料 ──
-  const _origLoad = window.loadSheetPrices;
-  window.loadSheetPrices = async function() {
-    await _origLoad.call(this);
-    // loadSheetPrices 結束後 clinicData 還沒更新，
-    // 改用 polling 等 __clinics__ 資料被寫入
-  };
-
-  // 攔截 applySheetPrices 取得 clinic 資料
-  const _origApply = window.applySheetPrices;
-  window.applySheetPrices = function(data) {
-    _origApply.call(this, data);
-    if (data['__clinics__'] && data['__clinics__'].names.length > 0) {
-      clinicData = data['__clinics__'];
-      populateClinicOptions(clinicData.names);
-    }
-  };
-
-  // ── extra items 渲染後重新套用篩選 ──
-  const _origRender = window.renderExtraItems;
-  if (_origRender) {
-    window.renderExtraItems = function(extras) {
-      _origRender.call(this, extras);
-      if (currentClinic !== 'all') applyClinicFilter(currentClinic);
-    };
   }
 
-  // ── resetAll 時重置選單 ──
-  const _origReset = window.resetAll;
-  window.resetAll = function() {
-    _origReset.call(this);
-    const sel = document.getElementById('clinic-select');
-    if (sel) sel.value = 'all';
-    currentClinic = 'all';
-    applyClinicFilter('all');
-  };
+  // ── 5. extra items 渲染後重新套用（安全包裝）──
+  (function() {
+    try {
+      const orig = window.renderExtraItems;
+      if (!orig) return;
+      window.renderExtraItems = function(extras) {
+        try { orig.call(this, extras); } catch(e) {}
+        try {
+          if (currentClinic !== 'all') applyFilter();
+        } catch(e) {}
+      };
+    } catch(e) {}
+  })();
 
-  // ── 初始化（建立 DOM） ──
+  // ── 6. 清除全部時重置 ──
+  (function() {
+    try {
+      const orig = window.resetAll;
+      if (!orig) return;
+      window.resetAll = function() {
+        try { orig.call(this); } catch(e) {}
+        try {
+          const sel = document.getElementById('clinic-sel');
+          if (sel) sel.value = 'all';
+          currentClinic = 'all';
+          applyFilter();
+        } catch(e) {}
+      };
+    } catch(e) {}
+  })();
+
+  // ── 啟動 ──
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createClinicBar);
+    document.addEventListener('DOMContentLoaded', function() {
+      buildUI();
+      waitForClinicData();
+    });
   } else {
-    createClinicBar();
+    buildUI();
+    waitForClinicData();
   }
 
 })();
