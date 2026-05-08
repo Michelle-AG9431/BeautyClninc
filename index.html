@@ -161,7 +161,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="tabs">
   <button class="tb on" onclick="sw(0,this)">✦ 音電波雷射</button>
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
-  <button class="tb" onclick="sw(2,this)">✦ 瘦身・減脂</button>
   <button class="tb" onclick="sw(5,this)">✦ 煥膚・保養</button>
   <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
   <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
@@ -224,6 +223,34 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">美國極線音波 第二代<span class="note">新宿總院及Neo Skin Clinic限定</span></div><div class="pd" id="ps0t10"><span class="y">¥</span>140,000</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t10','ps0t10',this)"><option value="140000">臉（臉頰/顴骨/下顎線）　1次</option><option value="170000">臉＋眼周　1次</option><option value="220000">臉＋眼周＋脖子　1次</option><option value="186000">三探頭 臉　1次</option><option value="217000">三探頭 臉＋眼周　1次</option><option value="268000">三探頭 臉＋眼周＋脖子　1次</option></select></div>
   </div>
+  <div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">新・脂肪溶解立線音波（HIFU）</div></div>
+  <div class="ti" id="s2t3" data-name="新・脂肪溶解線性音波">
+    <div class="tim" onclick="tog('s2t3')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">新・脂肪溶解立線音波<span class="note">立線音波Q+/媚必提</span></div><div class="pd" id="ps2t3"><span class="y">¥</span>25,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div>
+      <select class="os" onchange="gu('s2t3','ps2t3',this)">
+        <option value="25000">180發　1次</option>
+        <option value="60000">180發　3次</option>
+        <option value="20000">180發　1次　皮膚科診所限定</option>
+        <option value="29700">300發　1次</option>
+        <option value="69300">300發　3次</option>
+        <option value="23100">300發　1次　皮膚科診所限定</option>
+      </select>
+    </div>
+  </div>
+  <div class="ti" id="s2t4" data-name="新・脂肪溶解立線音波＋音波拉提 套組">
+    <div class="tim" onclick="tog('s2t4')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">新・脂肪溶解立線音波＋音波拉提 同日施術套組<span class="note">同日折¥2,000,價格已折</span></div><div class="pd" id="ps2t4"><span class="y">¥</span>49,700</div></div>
+    <div class="opts"><div class="ol">選擇方案</div>
+      <select class="os" onchange="gu('s2t4','ps2t4',this)">
+        <option value="49700">300發＋音波拉提 臉頰・下巴　1次</option>
+        <option value="56500">300發＋音波拉提 全臉　1次</option>
+        <option value="62500">300發＋音波拉提 全臉＋脖子　1次</option>
+      </select>
+    </div>
+  </div>
+</div>
 </div>
 <div class="cat">
   <div class="chd"><div class="cbar"></div><div class="ctit">美肌・飛梭雷射</div></div>
@@ -376,6 +403,48 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tim" onclick="tog('s0t29')"><div class="ck"><span class="tk">✓</span></div>
     <div class="tn">心動光Photogenesis（客製療程）</div><div class="pd" id="ps0t29"><span class="y">¥</span>12,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t29','ps0t29',this)"><option value="12800">1次</option><option value="47400">5次</option></select></div>
+  </div>
+</div>
+  <div class="cat">
+  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（微波RF射頻）</div></div>
+  <div class="ti" id="s2t5" data-name="Onda Pro　臉部">
+    <div class="tim" onclick="tog('s2t5')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Onda Pro　臉部</div><div class="pd" id="ps2t5"><span class="y">¥</span>27,000</div></div>
+    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t5','ps2t5',this)"><option value="27000">臉頰　1次</option><option value="72000">臉頰　3次</option><option value="42000">臉頰＋下巴　1次</option><option value="114000">臉頰＋下巴　3次</option><option value="24000">臉頰　1次　皮膚科診所限定</option><option value="38000">臉頰＋下巴　1次　皮膚科診所限定</option></select></div>
+  </div>
+  <div class="ti" id="s2t6" data-name="Onda Pro　身體">
+    <div class="tim" onclick="tog('s2t6')"><div class="ck"><span class="tk">✓</span></div>
+    <div class="tn">Onda Pro　身體</div><div class="pd" id="ps2t6"><span class="y">¥</span>36,000</div></div>
+    <div class="opts">
+      <div class="ol">M 部位（可複選）</div>
+      <div class="pill-group" id="pg-s2t6-m">
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">上背</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">下背</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">上手臂（兩側）</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">後腰</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">臀部（微笑線）</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">小腿</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">腹部</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">側腰</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿前側（M）</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿後側（M）</span>
+        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿內側（M）</span>
+      </div>
+      <div class="ol">L 部位－大腿（可複選）</div>
+      <div class="pill-group" id="pg-s2t6-l">
+        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿前側（L）</span>
+        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿後側（L）</span>
+        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿內側（L）</span>
+      </div>
+      <div class="hint">※ 大腿部分的尺寸判斷依現場測量結果為主</div>
+      <div class="odiv"></div>
+      <div class="ol">次數</div>
+      <div class="pill-group" id="pg-s2t6-time">
+        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">1次</span>
+        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">3次</span>
+        <span class="pill" data-val="3" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">皮膚科限定 1次</span>
+      </div>
+    </div>
   </div>
 </div>
 <div class="cat">
@@ -815,143 +884,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
 </div>
 </div></div>
-
-<div class="sp" id="sh2"><div class="main">
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">TrueSculpt iD（高周波RF溶脂）</div></div>
-  <div class="ti" id="s2t0" data-name="TrueSculpt iD">
-    <div class="tim" onclick="tog('s2t0')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">TrueSculpt iD</div><div class="pd" id="ps2t0"><span class="y">¥</span>35,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t0','ps2t0',this)"><option value="35000">1區（40㎠）/ 下巴（16㎠）　1次</option><option value="60000">2區同時　1次（每區）</option><option value="75000">3區　1次（每區）</option><option value="80000">4區　1次（每區）</option><option value="85000">5區　1次（每區）</option><option value="90000">6區　1次（每區）</option><option value="15000">7區以上（每增加1區）</option></select></div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">TrueSculpt flex（EMS 肌肉刺激）</div></div>
-  <div class="ti" id="s2t1" data-name="TrueSculpt flex">
-    <div class="tim" onclick="tog('s2t1')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">TrueSculpt flex<span class="note">部位：手臂・腹部・臀部・大腿前後・小腿</span></div><div class="pd" id="ps2t1"><span class="y">¥</span>29,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t1','ps2t1',this)"><option value="29800">體驗方案　1部位（每人限1次）</option><option value="59800">定價　1部位　1次</option><option value="98000">1個月方案　1部位 每月4次</option></select></div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">CoolSculpting® Elite（冷凍溶脂）</div></div>
-  <div class="ti" id="s2t2" data-name="CoolSculpting® Elite">
-    <div class="tim" onclick="tog('s2t2')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">CoolSculpting® Elite</div><div class="pd" id="ps2t2"><span class="y">¥</span>29,800</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t2','ps2t2',this)"><option value="29800">1區　初次優惠</option><option value="54000">2區同時　1次</option><option value="139200">小試套組（2區×2次＋飲食管理App 2個月）</option><option value="208800">小試套組（2區×3次＋飲食管理App 3個月）</option><option value="258400">完整套組（4區×2次＋飲食管理App 2個月）</option><option value="387600">完整套組（4區×3次＋飲食管理App 3個月）</option></select></div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">新・脂肪溶解立線音波（HIFU）</div></div>
-  <div class="ti" id="s2t3" data-name="新・脂肪溶解線性音波">
-    <div class="tim" onclick="tog('s2t3')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">新・脂肪溶解立線音波<span class="note">立線音波Q+/媚必提</span></div><div class="pd" id="ps2t3"><span class="y">¥</span>25,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div>
-      <select class="os" onchange="gu('s2t3','ps2t3',this)">
-        <option value="25000">180發　1次</option>
-        <option value="60000">180發　3次</option>
-        <option value="20000">180發　1次　皮膚科診所限定</option>
-        <option value="29700">300發　1次</option>
-        <option value="69300">300發　3次</option>
-        <option value="23100">300發　1次　皮膚科診所限定</option>
-      </select>
-    </div>
-  </div>
-  <div class="ti" id="s2t4" data-name="新・脂肪溶解立線音波＋音波拉提 套組">
-    <div class="tim" onclick="tog('s2t4')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">新・脂肪溶解立線音波＋音波拉提 同日施術套組<span class="note">同日折¥2,000,價格已折</span></div><div class="pd" id="ps2t4"><span class="y">¥</span>49,700</div></div>
-    <div class="opts"><div class="ol">選擇方案</div>
-      <select class="os" onchange="gu('s2t4','ps2t4',this)">
-        <option value="49700">300發＋音波拉提 臉頰・下巴　1次</option>
-        <option value="56500">300發＋音波拉提 全臉　1次</option>
-        <option value="62500">300發＋音波拉提 全臉＋脖子　1次</option>
-      </select>
-    </div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">Onda Pro（微波RF射頻）</div></div>
-  <div class="ti" id="s2t5" data-name="Onda Pro　臉部">
-    <div class="tim" onclick="tog('s2t5')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Onda Pro　臉部</div><div class="pd" id="ps2t5"><span class="y">¥</span>27,000</div></div>
-    <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s2t5','ps2t5',this)"><option value="27000">臉頰　1次</option><option value="72000">臉頰　3次</option><option value="42000">臉頰＋下巴　1次</option><option value="114000">臉頰＋下巴　3次</option><option value="24000">臉頰　1次　皮膚科診所限定</option><option value="38000">臉頰＋下巴　1次　皮膚科診所限定</option></select></div>
-  </div>
-  <div class="ti" id="s2t6" data-name="Onda Pro　身體">
-    <div class="tim" onclick="tog('s2t6')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">Onda Pro　身體</div><div class="pd" id="ps2t6"><span class="y">¥</span>36,000</div></div>
-    <div class="opts">
-      <div class="ol">M 部位（可複選）</div>
-      <div class="pill-group" id="pg-s2t6-m">
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">上背</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">下背</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">上手臂（兩側）</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">後腰</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">臀部（微笑線）</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">小腿</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">腹部</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">側腰</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿前側（M）</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿後側（M）</span>
-        <span class="pill" data-val1="36000" data-val2="96000" data-val3="32000" onclick="pillToggle(this);ondaBodyU()">大腿內側（M）</span>
-      </div>
-      <div class="ol">L 部位－大腿（可複選）</div>
-      <div class="pill-group" id="pg-s2t6-l">
-        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿前側（L）</span>
-        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿後側（L）</span>
-        <span class="pill" data-val1="56000" data-val2="141000" data-val3="47000" onclick="pillToggle(this);ondaBodyU()">大腿內側（L）</span>
-      </div>
-      <div class="hint">※ 大腿部分的尺寸判斷依現場測量結果為主</div>
-      <div class="odiv"></div>
-      <div class="ol">次數</div>
-      <div class="pill-group" id="pg-s2t6-time">
-        <span class="pill active" data-val="1" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">1次</span>
-        <span class="pill" data-val="2" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">3次</span>
-        <span class="pill" data-val="3" onclick="pillRadio(this,'pg-s2t6-time');ondaBodyU()">皮膚科限定 1次</span>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">LipoFlat（超音波＋光療法）</div></div>
-  <div class="ti" id="s2t7" data-name="LipoFlat　臉">
-    <div class="tim" onclick="tog('s2t7')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat　臉<span class="note">套組價格¥10,800</span></div><div class="pd" id="ps2t7"><span class="y">¥</span>15,800</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s2t8" data-name="LipoFlat 身體 M部位">
-    <div class="tim" onclick="tog('s2t8')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 M部位（30分・背部/手臂/腰/臀部/小腿/腹部）<span class="note">套組價格¥13,800</span></div><div class="pd" id="ps2t8"><span class="y">¥</span>18,800</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s2t9" data-name="LipoFlat 身體 L部位">
-    <div class="tim" onclick="tog('s2t9')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">LipoFlat 身體 L部位（60分・大腿後側/前側/內側）<span class="note">套組價格¥19,800</span></div><div class="pd" id="ps2t9"><span class="y">¥</span>24,800</div></div>
-    <div class="opts"></div>
-  </div>
-</div>
-<div class="cat">
-  <div class="chd"><div class="cbar"></div><div class="ctit">InBody 體組成測量・INDIBA 溫熱療法</div></div>
-  <div class="ti" id="s2t10" data-name="InBody 體組成測量（與瘦身治療同時進行）">
-    <div class="tim" onclick="tog('s2t10')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">InBody 體組成測量（與瘦身治療同時進行）</div><div class="pd" id="ps2t10"><span class="y">¥</span>500</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s2t11" data-name="InBody 體組成測量（單獨進行）">
-    <div class="tim" onclick="tog('s2t11')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">InBody 體組成測量（單獨進行）</div><div class="pd" id="ps2t11"><span class="y">¥</span>1,000</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s2t12" data-name="INDIBA 高周波溫熱療法　各部位 30分">
-    <div class="tim" onclick="tog('s2t12')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">INDIBA 高周波溫熱療法　各部位 30分</div><div class="pd" id="ps2t12"><span class="y">¥</span>7,500</div></div>
-    <div class="opts"></div>
-  </div>
-  <div class="ti" id="s2t13" data-name="INDIBA 高周波溫熱療法　各部位 60分">
-    <div class="tim" onclick="tog('s2t13')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">INDIBA 高周波溫熱療法　各部位 60分</div><div class="pd" id="ps2t13"><span class="y">¥</span>14,000</div></div>
-    <div class="opts"></div>
-  </div>
-</div></div></div>
 
 <div class="sp" id="sh3"><div class="main">
 <div class="cat">
