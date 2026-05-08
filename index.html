@@ -161,9 +161,9 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <div class="tabs">
   <button class="tb on" onclick="sw(0,this)">✦ 音電波雷射</button>
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
-  <button class="tb" onclick="sw(5,this)">✦ 煥膚・保養</button>
-  <button class="tb" onclick="sw(4,this)">✦ 抽脂注射</button>
-  <button class="tb" onclick="sw(3,this)">✦ 麻醉選項</button>
+  <button class="tb" onclick="sw(4,this)">✦ 煥膚・保養</button>
+<button class="tb" onclick="sw(3,this)">✦ 抽脂注射</button>
+<button class="tb" onclick="sw(2,this)">✦ 麻醉選項</button>
 </div>
 <div class="sp on" id="sh0"><div class="main">
 <div class="cat">
@@ -1665,10 +1665,9 @@ function addLinkToItem(id, url) {
 const TAB_MAP = {
   '音電波雷射': 0, '雷射': 0,
   '注射': 1, '針劑': 1, '肉毒': 1, '玻尿酸': 1,
-  '瘦身': 2, '減脂': 2,
-  '麻醉': 3,
-  '抽脂': 4,
-  '煥膚': 5, '保養': 5,   // ← 你手動加的 tab，sw(5)
+  '麻醉': 2,
+  '抽脂': 3,
+  '煥膚': 4, '保養': 4,
 };
 const dynamicTabs = {};
 
