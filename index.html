@@ -2665,26 +2665,10 @@ function resetAll(){
   };
 })();
 </script>
-  <!-- ════════════════════════════════════════════════════════════════
-     ★ Buddy 搭配折扣 patch
-     使用方式：貼到原 HTML 最後一個 </script> 之後、</body> 之前
-     
-     monthly_deals 填法：
-       主項目：選項代碼=unit, 優惠價格=折後價, 觸發數量=N（含主自己）
-       夥伴項目：選項代碼=buddy, 優惠價格=0, 群組ID=同主項目
-     
-     範例（保柔緹 Revive 與其他針劑同打半價）：
-       s1t57 | unit  | 24000 | 與其他針劑同打優惠 | 2 | revive_combo
-       s1t21 | buddy | 0     |                   |   | revive_combo
-       s1t22 | buddy | 0     |                   |   | revive_combo
-       ...其他針劑 ID
-═════════════════════════════════════════════════════════════════ -->
-<script>
+  <script>
 (function(){
-  // 重新定義 buildGroupDeals：支援 buddy 群組
   window.buildGroupDeals = function() {
     groupDeals = {};
-    // 收集每個群組的成員
     const groupMembers = {};
     Object.entries(dealsData).forEach(([id, deal]) => {
       if (!deal['__group__']) return;
@@ -2693,55 +2677,56 @@ function resetAll(){
       groupMembers[gid].push({ id, deal });
     });
 
-    // 分類
     Object.entries(groupMembers).forEach(([gid, members]) => {
-      const buddyMembers = members.filter(m => m.deal['buddy'] !== undefined);
-      const unitMembers  = members.filter(m => m.deal['unit'] !== undefined);
+      const buddyMembers     = members.filter(m => m.deal['buddy'] !== undefined);
+      // ★ 改用 buddy_unit 識別主項目
+      const buddyUnitMembers = members.filter(m => m.deal['buddy_unit'] !== undefined);
 
-      if (buddyMembers.length > 0 && unitMembers.length > 0) {
+      if (buddyMembers.length > 0 && buddyUnitMembers.length > 0) {
         // ── buddy 群組 ──
-        const primary = unitMembers[0];
+        const primary = buddyUnitMembers[0];
         groupDeals[gid] = {
           type: 'buddy',
           trigger: primary.deal['__trigger__'] || 2,
           primary: {
             id: primary.id,
-            dealUnit: primary.deal['unit'],
+            dealUnit: primary.deal['buddy_unit'],
             normalUnit: unitPrices[primary.id] || 0,
             priceElId: 'p' + primary.id,
             note: primary.deal['__note__'] || '搭配優惠',
           },
           buddies: buddyMembers.map(b => b.id),
         };
-      } else if (unitMembers.length > 0 && unitMembers[0].deal['__trigger__']) {
-        // ── 原 unit 群組 ──
-        const trigger = unitMembers[0].deal['__trigger__'];
-        groupDeals[gid] = { type: 'unit', trigger, items: {} };
-        unitMembers.forEach(m => {
-          groupDeals[gid].items[m.id] = {
-            dealUnit: m.deal['unit'],
-            normalUnit: unitPrices[m.id] || 0,
-            priceElId: 'p' + m.id,
-          };
-        });
       } else {
-        // ── select 群組（原邏輯） ──
-        members.forEach(m => {
-          if (m.deal['unit'] || m.deal['buddy'] !== undefined) return;
-          const optionKeys = Object.keys(m.deal).filter(k => !k.startsWith('__'));
-          if (optionKeys.length === 0) return;
-          const trigger = m.deal['__trigger__'] || 0;
-          if (!trigger) return;
-          if (!groupDeals[gid]) groupDeals[gid] = { trigger, type: 'select', items: {} };
-          const options = {};
-          optionKeys.forEach(k => { options[k] = m.deal[k]; });
-          groupDeals[gid].items[m.id] = { options, priceElId: 'p' + m.id };
-        });
+        // ── 原有 unit / select 群組邏輯 ──
+        const unitMembers = members.filter(m => m.deal['unit'] !== undefined);
+        if (unitMembers.length > 0 && unitMembers[0].deal['__trigger__']) {
+          const trigger = unitMembers[0].deal['__trigger__'];
+          groupDeals[gid] = { type: 'unit', trigger, items: {} };
+          unitMembers.forEach(m => {
+            groupDeals[gid].items[m.id] = {
+              dealUnit: m.deal['unit'],
+              normalUnit: unitPrices[m.id] || 0,
+              priceElId: 'p' + m.id,
+            };
+          });
+        } else {
+          members.forEach(m => {
+            if (m.deal['unit'] || m.deal['buddy'] !== undefined || m.deal['buddy_unit'] !== undefined) return;
+            const optionKeys = Object.keys(m.deal).filter(k => !k.startsWith('__'));
+            if (!optionKeys.length) return;
+            const trigger = m.deal['__trigger__'] || 0;
+            if (!trigger) return;
+            if (!groupDeals[gid]) groupDeals[gid] = { trigger, type: 'select', items: {} };
+            const options = {};
+            optionKeys.forEach(k => { options[k] = m.deal[k]; });
+            groupDeals[gid].items[m.id] = { options, priceElId: 'p' + m.id };
+          });
+        }
       }
     });
   };
 
-  // 包裝 getGroupQty：buddy 群組回 0（避免 NPE）
   const _origGetGroupQty = window.getGroupQty;
   window.getGroupQty = function(groupId, selfId) {
     const group = groupDeals[groupId];
@@ -2749,7 +2734,6 @@ function resetAll(){
     return _origGetGroupQty.call(this, groupId, selfId);
   };
 
-  // 新增：重新計算 buddy 群組
   window.refreshBuddyGroup = function(gid) {
     const group = groupDeals[gid];
     if (!group || group.type !== 'buddy') return;
@@ -2759,17 +2743,21 @@ function resetAll(){
     const el = document.getElementById(primary.id);
     if (!el) return;
 
-    // 計算群組內勾選總數（主 + 已勾選 buddies）
     const checkedCount = (C.has(primary.id) ? 1 : 0)
       + group.buddies.filter(bid => C.has(bid)).length;
     const triggered = checkedCount >= group.trigger;
 
     const inp = el.querySelector('input[type="number"]');
     const qty = parseInt(inp?.value) || 0;
-    const unit = triggered ? primary.dealUnit : primary.normalUnit;
+
+    // ★ 未觸發時用「當前有效單價」（可能是獨立的 unit 優惠）
+    const standaloneDealUnit = dealsData[primary.id]?.unit;
+    const effectiveNormalUnit = (dealModeOn && standaloneDealUnit)
+      ? standaloneDealUnit
+      : primary.normalUnit;
+    const unit = triggered ? primary.dealUnit : effectiveNormalUnit;
     const total = qty * unit;
 
-    // 更新主項目價格顯示
     setPD(primary.priceElId, qty > 0 && C.has(primary.id) ? total : unit);
     if (C.has(primary.id)) {
       P[primary.id] = total;
@@ -2777,10 +2765,8 @@ function resetAll(){
         + (triggered ? ' 🎉 同打優惠' : '');
     }
 
-    // 視覺：deal-on class
     el.classList.toggle('deal-on', triggered && C.has(primary.id));
 
-    // 提示文字
     let hint = el.querySelector('.qty-deal-hint');
     if (!C.has(primary.id)) {
       if (hint) hint.style.display = 'none';
@@ -2798,8 +2784,8 @@ function resetAll(){
           + primary.dealUnit.toLocaleString() + '</span> /支（原價 ¥'
           + primary.normalUnit.toLocaleString() + '）';
       } else {
-        hint.className = 'qty-deal-hint inactive';
         const need = group.trigger - checkedCount;
+        hint.className = 'qty-deal-hint inactive';
         hint.innerHTML = '搭配其他項目同打可享 <span style="color:var(--gold)">¥'
           + primary.dealUnit.toLocaleString() + '</span> /支　（再勾選 <strong>'
           + need + '</strong> 項即可觸發）';
@@ -2808,7 +2794,6 @@ function resetAll(){
     upd();
   };
 
-  // 包裝 qtyU：偵測 buddy primary
   const _origQtyU = window.qtyU;
   window.qtyU = function(itemId, priceElId, defaultUnit, qtyElId) {
     if (dealModeOn) {
@@ -2816,37 +2801,57 @@ function resetAll(){
       Object.entries(groupDeals).forEach(([gid, g]) => {
         if (g.type === 'buddy' && g.primary.id === itemId) buddyGid = gid;
       });
-      if (buddyGid) { refreshBuddyGroup(buddyGid); return; }
+      if (buddyGid) {
+        const group = groupDeals[buddyGid];
+        const checkedCount = (C.has(itemId) ? 1 : 0)
+          + group.buddies.filter(bid => C.has(bid)).length;
+        const triggered = checkedCount >= group.trigger;
+        if (triggered) {
+          // ★ 已觸發：交給 refreshBuddyGroup 處理
+          refreshBuddyGroup(buddyGid);
+          return;
+        }
+        // ★ 未觸發：fall through 讓原版 qtyU 處理（含獨立 unit 優惠 45000）
+      }
     }
     return _origQtyU.call(this, itemId, priceElId, defaultUnit, qtyElId);
   };
 
-  // 包裝 applyDealToEl：buddy primary 走自己邏輯，buddy 不顯示 deal-on
   const _origApplyDealToEl = window.applyDealToEl;
   window.applyDealToEl = function(el, id, deal, on) {
-    // buddy primary：自己處理
+    // buddy primary（有 buddy_unit）：只負責存/清 normalUnit，其餘交給原版處理獨立 unit 優惠
     let buddyGid = null;
     Object.entries(groupDeals).forEach(([gid, g]) => {
       if (g.type === 'buddy' && g.primary.id === id) buddyGid = gid;
     });
     if (buddyGid) {
-      if (on && !el.dataset.normalUnit) el.dataset.normalUnit = unitPrices[id] || '';
-      if (!on) {
-        delete el.dataset.normalUnit;
+      if (on) {
+        if (!el.dataset.buddyNormalUnit) el.dataset.buddyNormalUnit = unitPrices[id] || '';
+      } else {
+        delete el.dataset.buddyNormalUnit;
         const hint = el.querySelector('.qty-deal-hint');
         if (hint) hint.style.display = 'none';
         el.classList.remove('deal-on');
-      } else {
-        refreshBuddyGroup(buddyGid);
       }
-      return;
+      // 繼續執行原版（處理獨立 unit 優惠 45000）
+      return _origApplyDealToEl.call(this, el, id, deal, on);
     }
-    // buddy 行：不做任何事（不打折也不顯示 deal-on）
-    if (deal['buddy'] !== undefined) return;
+
+    // ★ buddy 夥伴項目：只跳過 buddy 相關部分，保留自己的 unit/select 優惠
+    if (deal['buddy'] !== undefined) {
+      // 把 buddy key 暫時移除，讓原版處理其他 key（如 unit: 39000）
+      const dealWithoutBuddy = Object.fromEntries(
+        Object.entries(deal).filter(([k]) => k !== 'buddy')
+      );
+      if (Object.keys(dealWithoutBuddy).filter(k => !k.startsWith('__')).length > 0) {
+        return _origApplyDealToEl.call(this, el, id, dealWithoutBuddy, on);
+      }
+      return; // 純 buddy 行，無自己的優惠，跳過
+    }
+
     return _origApplyDealToEl.call(this, el, id, deal, on);
   };
 
-  // 包裝 tog：勾選/取消後刷新相關 buddy 群組
   const _origTog = window.tog;
   window.tog = function(id) {
     _origTog.call(this, id);
@@ -2858,7 +2863,6 @@ function resetAll(){
     }
   };
 
-  // 包裝 delFromM
   const _origDelFromM = window.delFromM;
   window.delFromM = function(id) {
     _origDelFromM.call(this, id);
@@ -2870,7 +2874,6 @@ function resetAll(){
     }
   };
 
-  // 包裝 toggleDeals：開關時重新計算 buddy 群組
   const _origToggleDeals = window.toggleDeals;
   window.toggleDeals = function(on) {
     _origToggleDeals.call(this, on);
@@ -2879,19 +2882,19 @@ function resetAll(){
     });
   };
 
-  // 等 dealsData 載入完成後，重建 groupDeals 並清掉 buddy 行的徽章
   let attempts = 0;
   const _intv = setInterval(() => {
     if (typeof dealsData !== 'undefined' && Object.keys(dealsData).length > 0) {
       buildGroupDeals();
-      // 移除 buddy 行的「優惠」徽章（buddy 自己不打折，徽章會誤導）
       Object.entries(dealsData).forEach(([id, deal]) => {
-        if (deal['buddy'] === undefined) return;
-        const el = document.getElementById(id);
-        const badge = el?.querySelector('.deal-badge');
-        if (badge) badge.remove();
+        // ★ 只有「純 buddy」（沒有自己優惠）才移除徽章
+        const hasOwnDeal = Object.keys(deal).some(k => !k.startsWith('__') && k !== 'buddy');
+        if (deal['buddy'] !== undefined && !hasOwnDeal) {
+          const el = document.getElementById(id);
+          const badge = el?.querySelector('.deal-badge');
+          if (badge) badge.remove();
+        }
       });
-      // 若優惠開關已開，重算所有 buddy 群組
       if (dealModeOn) {
         Object.entries(groupDeals).forEach(([gid, g]) => {
           if (g.type === 'buddy') refreshBuddyGroup(gid);
