@@ -2933,7 +2933,8 @@ function resetAll(){
     const sel = document.createElement('select');
     sel.id = 'clinic-sel';
     sel.style.cssText = [
-      'background:rgba(255,255,255,.1)',
+      'background:#2a2016',
+      'color:#fff',
       'border:1px solid rgba(212,176,122,.6)',
       'border-radius:4px',
       'padding:3px 22px 3px 8px',
@@ -2956,6 +2957,13 @@ function resetAll(){
       applyFilter();
     });
 
+    // 注入 option 樣式
+if (!document.getElementById('clinic-style')) {
+  const s = document.createElement('style');
+  s.id = 'clinic-style';
+  s.textContent = '#clinic-sel option { background:#2a2016; color:#fff; }';
+  document.head.appendChild(s);
+}
     bar.appendChild(lbl);
     bar.appendChild(sel);
 
@@ -2984,9 +2992,22 @@ function resetAll(){
         if (!sel) return;
         // 移除舊選項（保留第一個「全部」）
         while (sel.options.length > 1) sel.remove(1);
-        data.names.forEach(function(name) {
-          addOption(sel, name, name);
-        });
+        // 換成這段（支援城市分組）
+if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
+  data.cityOrder.forEach(function(city) {
+    const group = document.createElement('optgroup');
+    group.label = city;
+    (data.cityGroups[city] || []).forEach(function(name) {
+      addOption(group, name, name);
+    });
+    sel.appendChild(group);
+  });
+} else {
+  // 沒有城市資料，照舊
+  data.names.forEach(function(name) {
+    addOption(sel, name, name);
+  });
+}
       }
       if (tries > 60) clearInterval(intv); // 最多等 12 秒
     }, 200);
