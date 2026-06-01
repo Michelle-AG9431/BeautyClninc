@@ -1251,30 +1251,6 @@ function buildGroupDeals() {
       }
     }
   });
-
-  // glow 追加選項優惠（Jalupro Superhydro 用）
-  if (deal['glow'] !== undefined && id === 's1t26') {
-    const gs = document.getElementById('jalupro26-glow');
-    if (gs && gs.options[1]) {
-      if (on) {
-        if (!gs.options[1].dataset.normalValue) {
-          gs.options[1].dataset.normalValue = gs.options[1].value;
-          gs.options[1].dataset.normalText = gs.options[1].text;
-        }
-        gs.options[1].value = deal['glow'];
-        gs.options[1].text = '⭐ ' + gs.options[1].dataset.normalText;
-      } else {
-        if (gs.options[1].dataset.normalValue) {
-          gs.options[1].value = gs.options[1].dataset.normalValue;
-          gs.options[1].text = gs.options[1].dataset.normalText;
-          delete gs.options[1].dataset.normalValue;
-          delete gs.options[1].dataset.normalText;
-        }
-      }
-      rates.jalu26.glow = on ? deal['glow'] : (parseInt(gs.options[1].dataset.normalValue) || 7000);
-      if (C.has('s1t26')) jalu26U();
-    }
-  }
 }
 
 // 重新整理下拉選單型群組（勾選/取消時呼叫）
@@ -1488,6 +1464,30 @@ function applyDealToEl(el, id, deal, on) {
       }
     });
     fn(); // 重新計算顯示金額與 hint 文字
+  };
+
+  // glow 追加選項優惠（Jalupro Superhydro 用）
+  if (deal['glow'] !== undefined && id === 's1t26') {
+    const gs = document.getElementById('jalupro26-glow');
+    if (gs && gs.options[1]) {
+      if (on) {
+        if (!gs.options[1].dataset.normalValue) {
+          gs.options[1].dataset.normalValue = gs.options[1].value;
+          gs.options[1].dataset.normalText = gs.options[1].text;
+        }
+        gs.options[1].value = deal['glow'];
+        gs.options[1].text = '⭐ ' + gs.options[1].dataset.normalText;
+      } else {
+        if (gs.options[1].dataset.normalValue) {
+          gs.options[1].value = gs.options[1].dataset.normalValue;
+          gs.options[1].text = gs.options[1].dataset.normalText;
+          delete gs.options[1].dataset.normalValue;
+          delete gs.options[1].dataset.normalText;
+        }
+      }
+      rates.jalu26.glow = on ? deal['glow'] : (parseInt(gs.options[1].dataset.normalValue) || 7000);
+      if (C.has('s1t26')) jalu26U();
+    }
   }
 }
 
