@@ -1405,13 +1405,21 @@ function applyDealToEl(el, id, deal, on) {
   }
 
   // 固定價格
-  if (deal['static'] !== undefined) {
-    const normalVal = on ? null : (staticPrices[id] || 0);
+ if (deal['static'] !== undefined) {
+    const normalVal = on ? null : (parseFloat(el.dataset.normalStatic) || staticPrices[id] || 0);
     const displayVal = on ? deal['static'] : normalVal;
-    if (on) el.dataset.normalStatic = el.dataset.normalStatic || (staticPrices[id] || 0);
+    if (on) {
+        if (!el.dataset.normalStatic) {
+            el.dataset.normalStatic = el.dataset.currentPrice || staticPrices[id] || 0;
+        }
+        el.dataset.currentPrice = deal['static'];
+    } else {
+        el.dataset.currentPrice = el.dataset.normalStatic || staticPrices[id] || 0;
+        delete el.dataset.normalStatic;
+    }
     setPD('p' + id, displayVal);
     if (C.has(id)) { P[id] = displayVal; upd(); }
-  }
+}
 
   // [times] pill 優惠（extra pill 項目的次數選項）
   // Sheet monthly_deals key 格式：[times]5次（與 extra_items D欄完全一致）
