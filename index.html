@@ -162,7 +162,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   <button class="tb on" onclick="sw(0,this)">✦ 音電波雷射</button>
   <button class="tb" onclick="sw(1,this)">✦ 注射・針劑</button>
   <button class="tb" onclick="sw(4,this)">✦ 煥膚・保養</button>
-<button class="tb" onclick="sw(3,this)">✦ 抽脂注射</button>
+<button class="tb" onclick="sw(3,this)">✦ 減脂治療</button>
 <button class="tb" onclick="sw(2,this)">✦ 麻醉選項</button>
 </div>
 <div class="sp on" id="sh0"><div class="main">
@@ -1465,8 +1465,7 @@ function applyDealToEl(el, id, deal, on) {
     });
     fn(); // 重新計算顯示金額與 hint 文字
   };
-
-  // glow 追加選項優惠（Jalupro Superhydro 用）
+// glow 追加選項優惠（Jalupro Superhydro 用）
   if (deal['glow'] !== undefined && id === 's1t26') {
     const gs = document.getElementById('jalupro26-glow');
     if (gs && gs.options[1]) {
@@ -1489,6 +1488,7 @@ function applyDealToEl(el, id, deal, on) {
       if (C.has('s1t26')) jalu26U();
     }
   }
+  
 }
 
 async function loadSheetPrices() {
