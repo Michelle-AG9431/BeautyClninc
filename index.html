@@ -866,8 +866,11 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s1t45" data-name="人參消脂針">
     <div class="tim" onclick="tog('s1t45')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">人參消脂針</div><div class="pd" id="ps1t45"><span class="y">¥</span>8,000</div></div>
-    <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t45" min="1" max="20" step="1" value="1" oninput="qtyU('s1t37','ps1t37',17500,'q-s1t45')"><span class="cu">支　×　¥17,500</span></div></div>
+    <div class="tn">人參消脂針</div><div class="pd" id="ps1t45"><span class="y">¥</span>17,500</div></div>
+    <div class="opts">
+      <div class="ol">輸入支數</div>
+      <div class="crow"><input type="number" class="ci" id="q-s1t45" min="1" max="50" step="1" value="1" oninput="qtyU('s1t45','ps1t45',17500,'q-s1t45')"><span class="cu">支　×　¥17,500</span></div>
+    </div>
   </div>
   <div class="ti" id="s1t46" data-name="FatX Core">
     <div class="tim" onclick="tog('s1t46')"><div class="ck"><span class="tk">✓</span></div>
@@ -1127,7 +1130,7 @@ const rates = {
 
 // 支/瓶計算項目的單位價格（Sheet 更新時會同步）
 const unitPrices = {
-  's1t21':30350, 's1t22':35350, 's1t23':35350,
+  's1t21':30350, 's1t22':35350, 's1t23':35350, 's1t45':17500,
   's1t27':105000,
   's1t28':54800, 's1t29':56000, 's1t30':120000,
   's1t32':34800, 's1t33':45000,
@@ -2386,7 +2389,7 @@ function tog(id){
     else if(id==='s0t30') mrfU();
     else if(id==='s1t26') jalu26U();
     else if(id==='s1t44') bnlsU();
-    else if(id==='s1t45') sansamU();
+    else if(id==='s1t45') qtyU('s1t45','ps1t45',17500,'q-s1t45');
     else if(id==='s1t46') fatxU();
     else if(id==='s1t58') gyokuU();
     else if(id==='s1t50') pillSimpleU('s1t50','ps1t50');
@@ -2518,9 +2521,8 @@ function resetAll(){
   const jg=document.getElementById('jalupro26-glow');if(jg)jg.selectedIndex=0;
   const aa=document.getElementById('an-areas');if(aa)aa.value=1;
   const ah=document.getElementById('an-hint');if(ah)ah.textContent='1部位 × ¥980 = ¥980';
-  ['s1t44-cc','s1t45-cc','s1t46-cc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=1;});
+  ['s1t44-cc','s1t46-cc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=1;});
   const bh=document.getElementById('bnls-hint');if(bh){bh.textContent='1cc × ¥'+rates.bnls.r1.toLocaleString()+'/cc = ¥'+rates.bnls.r1.toLocaleString()+'　｜　1〜9cc：¥'+rates.bnls.r1.toLocaleString()+'　10cc以上：¥'+rates.bnls.r2.toLocaleString();bh.style.color='';}
-  const sh=document.getElementById('sansam-hint');if(sh){sh.textContent='1cc × ¥'+rates.sansam.r1.toLocaleString()+'/cc = ¥'+rates.sansam.r1.toLocaleString()+'　｜　1〜4cc：¥'+rates.sansam.r1.toLocaleString()+'　5〜9cc：¥'+rates.sansam.r2.toLocaleString()+'　10cc以上：¥'+rates.sansam.r3.toLocaleString();sh.style.color='';}
   const fh=document.getElementById('fatx-hint');if(fh){fh.textContent='1cc × ¥'+rates.fatx.r1.toLocaleString()+'/cc = ¥'+rates.fatx.r1.toLocaleString()+'　｜　1〜4cc：¥'+rates.fatx.r1.toLocaleString()+'　5〜9cc：¥'+rates.fatx.r2.toLocaleString()+'　10cc以上：¥'+rates.fatx.r3.toLocaleString();fh.style.color='';}
   document.querySelectorAll('input.ci[id^="q-"]').forEach(el=>{el.value=1;});
   ['sel-s1t31'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
