@@ -2439,9 +2439,11 @@ function tog(id){
     else if(id==='s0t34') comboU('s0t34','ps0t34',null,'pico34-liq','pico34-base');
     else if(id==='s0t25') comboU('s0t25','ps0t25',null,'pico25-liq','pico25-base');
     else if(id==='s0t26') comboU('s0t26','ps0t26',11520,'pico26-liq');
-    else{
-      if(id==='s1t31') qtySelU('s1t31','ps1t31','sel-s1t31','q-s1t31');
-      else if(staticPrices[id]!==undefined){P[id]=staticPrices[id];O[id]='';}
+    else if(staticPrices[id]!==undefined){
+    const el2=document.getElementById(id);
+    P[id]=el2&&el2.dataset.currentPrice?parseInt(el2.dataset.currentPrice):staticPrices[id];
+    O[id]='';
+  }
       else{
         const sel=el.querySelector('.os');
         if(sel){P[id]=parseInt(sel.value)||0;O[id]=sel.options[sel.selectedIndex]?.text||'';}
