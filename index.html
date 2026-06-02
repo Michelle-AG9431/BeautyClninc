@@ -1933,7 +1933,8 @@ function togExtraSimple(id, price) {
     C.delete(id); delete P[id]; delete O[id];
     el.classList.remove('on');
   } else {
-    C.add(id); P[id] = price; O[id] = '';
+    const effectivePrice = el.dataset.currentPrice ? parseInt(el.dataset.currentPrice) : price;
+    C.add(id); P[id] = effectivePrice; O[id] = '';
     el.classList.add('on');
   }
   upd();
