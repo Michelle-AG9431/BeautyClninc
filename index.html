@@ -461,9 +461,6 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
         <span class="pill active" data-val1="90000" data-val2="160000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">臉頰＋下巴</span>
         <span class="pill" data-val1="110000" data-val2="198000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">臉頰＋下巴＋脖子</span>
         <span class="pill" data-val1="58000" data-val2="106000" onclick="pillRadio(this,'pg-s0t31-face');morpheusFaceU()">脖子</span>
-      </div>
-      <div class="ol">眼下追加（擇一）</div>
-      <div class="pill-group" id="pg-s0t31-eye">
         <span class="pill active" data-val1="0" data-val2="0" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">不加</span>
         <span class="pill" data-val1="78000" data-val2="135000" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">眼下（醫師）</span>
         <span class="pill" data-val1="65000" data-val2="110000" onclick="pillRadio(this,'pg-s0t31-eye');morpheusFaceU()">眼下（護理師）</span>
@@ -2390,7 +2387,9 @@ function morpheusFaceU(){
   const total=fp+ep;
   const parts=[af?.textContent||'',ae?.textContent!=='不加'?ae?.textContent||'':'',at?.textContent||''].filter(Boolean);
   P['s0t31']=total;O['s0t31']=parts.join(' ＋ ');
-  setPD('ps0t31',total>0?total:90000);
+  // 預設顯示價格：有選臉部用臉部價，只選眼下用眼下價，都沒選用預設
+  const defaultP = fp > 0 ? fp+ep : ep > 0 ? ep : 90000;
+  setPD('ps0t31', total > 0 ? total : defaultP);
   if(C.has('s0t31'))upd();
 }
 function ondaBodyU(){
