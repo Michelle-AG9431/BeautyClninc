@@ -1563,7 +1563,7 @@ function applySheetPrices(data) {
     if(id==='s0t22'){const tg=document.getElementById('pg-s0t22-t');if(tg){const pp=tg.querySelectorAll('.pill');if(keys['0']!==undefined&&pp[0])pp[0].dataset.val=keys['0'];if(keys['1']!==undefined&&pp[1])pp[1].dataset.val=keys['1'];}if(keys['0']!==undefined)setPD('ps0t22',keys['0']);continue;}
     if(id==='s0t31'){
       const fg=document.getElementById('pg-s0t31-face'),eg=document.getElementById('pg-s0t31-eye');
-      if(fg){const fp=fg.querySelectorAll('.pill');[[6,7],[8,9],[0,1],[10,11]].forEach(([k1,k2],i)=>{if(fp[i]){if(keys[String(k1)]!==undefined)fp[i].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)fp[i].dataset.val2=keys[String(k2)];}});}
+      if(fg){const fp=fg.querySelectorAll('.pill');[[6,7],[8,9],[0,1],[10,11],[12,13].forEach(([k1,k2],i)=>{if(fp[i]){if(keys[String(k1)]!==undefined)fp[i].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)fp[i].dataset.val2=keys[String(k2)];}});}
       if(eg){const ep=eg.querySelectorAll('.pill');[[2,3],[4,5]].forEach(([k1,k2],i)=>{if(ep[i+1]){if(keys[String(k1)]!==undefined)ep[i+1].dataset.val1=keys[String(k1)];if(keys[String(k2)]!==undefined)ep[i+1].dataset.val2=keys[String(k2)];}});}
       if(keys['0']!==undefined)setPD('ps0t31',keys['0']);continue;
     }
