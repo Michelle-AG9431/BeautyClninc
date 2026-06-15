@@ -1366,7 +1366,61 @@ function applyDealToEl(el, id, deal, on) {
     setPD('p' + id, curVal);
     if (C.has(id)) { P[id] = curVal; O[id] = sel.options[sel.selectedIndex]?.text || ''; upd(); }
   }
+// ── 通用 pill 優惠處理 ──
+  // key 格式：數字（0,1,2...）對應所有 pill-group 內 pill 的累計索引
+  // val1 = 1次價格, val2 = 2次/套組價格
+  // key 格式也支援 "數字_val1" 或 "數字_val2" 來分別指定
+  const numericKeys = Object.keys(deal).filter(k => /^\d+$/.test(k));
+  if (numericKeys.length > 0 && !el.querySelector('select.os')) {
+    // 收集所有 pill-group 下的 pill
+    const allPillGroups = el.querySelectorAll('.pill-group');
+    // 建立累計索引對照表: { globalIndex: { groupEl, pillEl, valType } }
+    let globalIdx = 0;
+    const pillMap = {}; // globalIdx → { pill, valKey }
 
+    allPillGroups.forEach(pg => {
+      const pills = pg.querySelectorAll('.pill');
+      pills.forEach(pill => {
+        // val1 和 val2 各佔一個 index
+        pillMap[globalIdx]     = { pill, valKey: 'val1' };
+        pillMap[globalIdx + 1] = { pill, valKey: 'val2' };
+        globalIdx += 2;
+      });
+    });
+
+    numericKeys.forEach(k => {
+      const ki = parseInt(k);
+      const entry = pillMap[ki];
+      if (!entry) return;
+      const { pill, valKey } = entry;
+      if (on) {
+        if (!pill.dataset['_orig_' + valKey]) {
+          pill.dataset['_orig_' + valKey] = pill.dataset[valKey] || '0';
+        }
+        pill.dataset[valKey] = deal[k];
+      } else {
+        if (pill.dataset['_orig_' + valKey] !== undefined) {
+          pill.dataset[valKey] = pill.dataset['_orig_' + valKey];
+          delete pill.dataset['_orig_' + valKey];
+        }
+      }
+    });
+
+    // 重新計算顯示價格（呼叫對應的 update 函數）
+    const updFnMap = {
+      's0t31':  morpheusFaceU,
+      's0t31b': morpheusBodyU,
+      's2t6':   ondaBodyU,
+      's0t21':  () => pillAreaTimesU('s0t21','ps0t21'),
+      's0t22':  () => pillAreaTimesU('s0t22','ps0t22'),
+      's1t50':  () => pillSimpleU('s1t50','ps1t50'),
+      's1t52':  () => pillSimpleU('s1t52','ps1t52'),
+      's1t56':  () => pillSimpleU('s1t56','ps1t56'),
+      's1t58':  gyokuU,
+      's1t41':  dermaPenBodyU,
+    };
+    if (updFnMap[id]) updFnMap[id]();
+  }
   // qty 項目（unit）
   if (deal['unit'] !== undefined) {
     const trigger = deal['__trigger__'] || 0;
