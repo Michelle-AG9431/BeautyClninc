@@ -185,7 +185,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   </div>
   <div class="ti" id="s0t3" data-name="DENSITY 無雙電波">
     <div class="tim" onclick="tog('s0t3')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">DENSITY 電波</div><div class="pd" id="ps0t3"><span class="y">¥</span>19,800</div></div>
+    <div class="tn">DENSITY 無雙電波</div><div class="pd" id="ps0t3"><span class="y">¥</span>19,800</div></div>
     <div class="opts"><div class="ol">選擇方案</div><select class="os" onchange="gu('s0t3','ps0t3',this)"><option value="19800">100發（局部照射）　1次</option><option value="48000">300發（臉或脖子）　1次</option><option value="86000">600發（臉＋脖子全部）　1次</option><option value="47000">225發（上或下眼皮）　1次</option><option value="85000">450發（上＋下眼皮）　1次</option></select></div>
   </div>
   <div class="ti" id="s0t4" data-name="索夫波">
@@ -2354,8 +2354,9 @@ function gyokuU(){
 function pillToggle(pill){pill.classList.toggle('active');}
 function pillRadio(pill,groupId){
   const g=document.getElementById(groupId);
+  const wasActive = pill.classList.contains('active');
   if(g)g.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-  pill.classList.add('active');
+  if(!wasActive) pill.classList.add('active');
 }
 function pillSimpleU(itemId,priceElId){
   const g=document.getElementById('pg-'+itemId);if(!g)return;
