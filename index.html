@@ -3275,9 +3275,10 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
 </script>
 <script>
 (function(){
+  console.log('%c[同時優惠 patch v3 已載入]', 'color:#b8965a;font-weight:bold');
+ 
   let extraGroups = {};
  
-  // 依 __group__ 把 extra 優惠分組（同一項目可出現在多組）
   function buildExtraGroups(){
     extraGroups = {};
     if (typeof extraDealsData === 'undefined' || !extraDealsData) return;
@@ -3288,9 +3289,17 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
       if (deal['__trigger__']) extraGroups[gid].trigger = parseInt(deal['__trigger__']) || 2;
       extraGroups[gid].members.push({ key, deal });
     });
+    // 診斷：印出每個群組有哪些成員、各自的說明
+    const summary = {};
+    Object.entries(extraGroups).forEach(([gid, g])=>{
+      summary[gid] = {
+        觸發數量: g.trigger,
+        成員: g.members.map(m => (m.deal['__name__']||m.key) + '（說明：' + (m.deal['__note__']||'（空）') + '）')
+      };
+    });
+    console.log('[同時優惠] 偵測到的群組：', summary);
   }
  
-  // 用 key 或名稱找到對應的 extra 項目 DOM 元素
   function findExtraEl(key, deal){
     let el = null;
     document.querySelectorAll('[data-extra-deal-key]').forEach(c=>{
@@ -3311,10 +3320,9 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     return el;
   }
  
-  // 套用某筆優惠的選項價格（只負責「設定」優惠價）
   function applyOverride(el, deal){
     const sel = el.querySelector('select.os');
-    if (!sel) return; // 目前只處理「下拉選單型」extra 項目
+    if (!sel) return;
     sel.querySelectorAll('option').forEach((opt,i)=>{
       const k = String(i);
       if (deal[k] === undefined) return;
@@ -3327,7 +3335,6 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     });
   }
  
-  // 還原該項目上所有被群組覆寫過的選項（不論是哪一組設的，全部清掉）
   function restoreAll(el){
     const sel = el.querySelector('select.os');
     if (!sel) return;
@@ -3341,7 +3348,6 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     });
   }
  
-  // 依目前選到的選項，重算該 extra 項目的價格與顯示
   function recompute(el){
     const sel = el.querySelector('select.os');
     if (!sel) return;
@@ -3352,9 +3358,7 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     if (C.has(el.id)){ P[el.id] = price; O[el.id] = label; }
   }
  
-  // 重新評估所有群組（兩階段：先算出每個項目該套哪一組，再一次套用）
   function refreshExtraGroups(){
-    // elInfo: 元素 → [{ deal, triggered }]
     const elInfo = new Map();
     Object.values(extraGroups).forEach(group=>{
       const resolved = group.members
@@ -3369,17 +3373,15 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     });
  
     elInfo.forEach((entries, el)=>{
-      // 找出「實際觸發」的那一組（一個項目可能在多組裡，取已觸發的）
       const activeEntry = entries.find(e=>e.triggered);
       const apply = !!activeEntry && C.has(el.id);
  
-      restoreAll(el);                       // 先全部還原成原價
-      if (activeEntry) applyOverride(el, activeEntry.deal);  // 再套用觸發那一組
+      restoreAll(el);
+      if (activeEntry) applyOverride(el, activeEntry.deal);
  
       el.classList.toggle('deal-on', apply);
       recompute(el);
  
-      // 動態優惠說明：顯示「實際觸發那一組」的說明文字
       const badge = el.querySelector('.deal-badge');
       if (badge){
         if (apply && activeEntry.deal['__note__']){
@@ -3395,18 +3397,16 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   }
   window.refreshExtraGroups = refreshExtraGroups;
  
-  // 讓 toggleDeals 不要對「群組型 extra 項目」做無條件套用，改由本 patch 依觸發條件控制
   const _applyDealToEl = window.applyDealToEl;
   if (_applyDealToEl){
     window.applyDealToEl = function(el, id, deal, on){
       if (deal && deal['__group__'] && el && el.dataset && el.dataset.extraDealKey){
-        return; // 交給 refreshExtraGroups 處理
+        return;
       }
       return _applyDealToEl.call(this, el, id, deal, on);
     };
   }
  
-  // 包裝相關函式：動作完成後重新評估群組
   function wrap(name){
     const orig = window[name];
     if (typeof orig !== 'function') return;
@@ -3418,7 +3418,6 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   }
   ['toggleDeals','togExtraSelect','extraSelU','togExtraSimple','togExtraQty','togExtraPill','delFromM'].forEach(wrap);
  
-  // 等 extraDealsData 載入後建立群組並做初次評估
   let tries = 0;
   const intv = setInterval(()=>{
     tries++;
@@ -3430,8 +3429,8 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
       } else {
         const hasGroup = Object.values(extraDealsData).some(d => d && d['__group__']);
         if (!hasGroup){
-          console.warn('[群組優惠] 偵測到 extra 優惠資料，但沒有任何 __group__ 欄位。' +
-            '請確認試算表的「群組ID」「觸發數量」欄有填，且 Apps Script 有把這兩欄帶進 __extra_deals__。');
+          console.warn('[同時優惠] 偵測到 extra 優惠資料，但沒有任何 __group__ 欄位。' +
+            '請確認試算表「群組ID」「觸發數量」欄有填，且 Apps Script 有把這兩欄帶進 __extra_deals__。');
         }
         clearInterval(intv);
       }
