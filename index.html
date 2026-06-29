@@ -3273,11 +3273,11 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   window.sortItemsInCategories = sortCats;
 })();
 </script>
-  <script>
+<script>
 (function(){
   let extraGroups = {};
  
-  // 依 __group__ 把 extra 優惠分組
+  // 依 __group__ 把 extra 優惠分組（同一項目可出現在多組）
   function buildExtraGroups(){
     extraGroups = {};
     if (typeof extraDealsData === 'undefined' || !extraDealsData) return;
@@ -3311,21 +3311,28 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     return el;
   }
  
-  // 套用 / 還原下拉選單的優惠價（用獨立 dataset 避免和其他 patch 衝突）
-  function applyOverride(el, deal, apply){
+  // 套用某筆優惠的選項價格（只負責「設定」優惠價）
+  function applyOverride(el, deal){
     const sel = el.querySelector('select.os');
     if (!sel) return; // 目前只處理「下拉選單型」extra 項目
     sel.querySelectorAll('option').forEach((opt,i)=>{
       const k = String(i);
       if (deal[k] === undefined) return;
-      if (apply){
-        if (opt.dataset.grpNorm === undefined){
-          opt.dataset.grpNorm = opt.value;
-          opt.dataset.grpNormTxt = opt.text;
-        }
-        opt.value = deal[k];
-        opt.text = '⭐ ' + opt.dataset.grpNormTxt;
-      } else if (opt.dataset.grpNorm !== undefined){
+      if (opt.dataset.grpNorm === undefined){
+        opt.dataset.grpNorm = opt.value;
+        opt.dataset.grpNormTxt = opt.text;
+      }
+      opt.value = deal[k];
+      opt.text = '⭐ ' + opt.dataset.grpNormTxt;
+    });
+  }
+ 
+  // 還原該項目上所有被群組覆寫過的選項（不論是哪一組設的，全部清掉）
+  function restoreAll(el){
+    const sel = el.querySelector('select.os');
+    if (!sel) return;
+    sel.querySelectorAll('option').forEach(opt=>{
+      if (opt.dataset.grpNorm !== undefined){
         opt.value = opt.dataset.grpNorm;
         opt.text = opt.dataset.grpNormTxt;
         delete opt.dataset.grpNorm;
@@ -3345,8 +3352,10 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
     if (C.has(el.id)){ P[el.id] = price; O[el.id] = label; }
   }
  
-  // 重新評估所有 extra 群組：滿足觸發數量 → 套優惠，否則還原
+  // 重新評估所有群組（兩階段：先算出每個項目該套哪一組，再一次套用）
   function refreshExtraGroups(){
+    // elInfo: 元素 → [{ deal, triggered }]
+    const elInfo = new Map();
     Object.values(extraGroups).forEach(group=>{
       const resolved = group.members
         .map(m=>({ deal:m.deal, el:findExtraEl(m.key, m.deal) }))
@@ -3354,11 +3363,34 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
       const checkedCount = resolved.filter(x=>C.has(x.el.id)).length;
       const triggered = (typeof dealModeOn !== 'undefined') && dealModeOn && checkedCount >= group.trigger;
       resolved.forEach(({deal,el})=>{
-        applyOverride(el, deal, triggered);
-        el.classList.toggle('deal-on', triggered && C.has(el.id));
-        recompute(el);
+        if (!elInfo.has(el)) elInfo.set(el, []);
+        elInfo.get(el).push({ deal, triggered });
       });
     });
+ 
+    elInfo.forEach((entries, el)=>{
+      // 找出「實際觸發」的那一組（一個項目可能在多組裡，取已觸發的）
+      const activeEntry = entries.find(e=>e.triggered);
+      const apply = !!activeEntry && C.has(el.id);
+ 
+      restoreAll(el);                       // 先全部還原成原價
+      if (activeEntry) applyOverride(el, activeEntry.deal);  // 再套用觸發那一組
+ 
+      el.classList.toggle('deal-on', apply);
+      recompute(el);
+ 
+      // 動態優惠說明：顯示「實際觸發那一組」的說明文字
+      const badge = el.querySelector('.deal-badge');
+      if (badge){
+        if (apply && activeEntry.deal['__note__']){
+          if (badge.dataset.defNote === undefined) badge.dataset.defNote = badge.textContent;
+          badge.textContent = activeEntry.deal['__note__'];
+        } else if (badge.dataset.defNote !== undefined){
+          badge.textContent = badge.dataset.defNote;
+        }
+      }
+    });
+ 
     if (typeof upd === 'function') upd();
   }
   window.refreshExtraGroups = refreshExtraGroups;
@@ -3396,7 +3428,6 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
         refreshExtraGroups();
         clearInterval(intv);
       } else {
-        // 有 extra 優惠但抓不到群組 → 多半是 Apps Script 沒把「群組ID/觸發數量」欄帶進來
         const hasGroup = Object.values(extraDealsData).some(d => d && d['__group__']);
         if (!hasGroup){
           console.warn('[群組優惠] 偵測到 extra 優惠資料，但沒有任何 __group__ 欄位。' +
