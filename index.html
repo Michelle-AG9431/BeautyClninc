@@ -3273,4 +3273,140 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   window.sortItemsInCategories = sortCats;
 })();
 </script>
+  <script>
+(function(){
+  let extraGroups = {};
+ 
+  // 依 __group__ 把 extra 優惠分組
+  function buildExtraGroups(){
+    extraGroups = {};
+    if (typeof extraDealsData === 'undefined' || !extraDealsData) return;
+    Object.entries(extraDealsData).forEach(([key, deal])=>{
+      const gid = deal && deal['__group__'];
+      if (!gid) return;
+      if (!extraGroups[gid]) extraGroups[gid] = { trigger: 2, members: [] };
+      if (deal['__trigger__']) extraGroups[gid].trigger = parseInt(deal['__trigger__']) || 2;
+      extraGroups[gid].members.push({ key, deal });
+    });
+  }
+ 
+  // 用 key 或名稱找到對應的 extra 項目 DOM 元素
+  function findExtraEl(key, deal){
+    let el = null;
+    document.querySelectorAll('[data-extra-deal-key]').forEach(c=>{
+      if (!el && c.dataset.extraDealKey === key) el = c;
+    });
+    if (el) return el;
+    const name = deal && deal['__name__'];
+    if (!name) return null;
+    const cat = (deal && deal['__cat__']) || '';
+    document.querySelectorAll('[id^="extra-item-"]').forEach(c=>{
+      if (el) return;
+      if ((c.dataset.name||'') !== name) return;
+      if (!cat){ el = c; return; }
+      const catEl = c.closest('.cat');
+      const title = catEl?.querySelector('.ctit')?.textContent?.replace('✦','').trim() || '';
+      if (title.includes(cat) || cat.includes(title)) el = c;
+    });
+    return el;
+  }
+ 
+  // 套用 / 還原下拉選單的優惠價（用獨立 dataset 避免和其他 patch 衝突）
+  function applyOverride(el, deal, apply){
+    const sel = el.querySelector('select.os');
+    if (!sel) return; // 目前只處理「下拉選單型」extra 項目
+    sel.querySelectorAll('option').forEach((opt,i)=>{
+      const k = String(i);
+      if (deal[k] === undefined) return;
+      if (apply){
+        if (opt.dataset.grpNorm === undefined){
+          opt.dataset.grpNorm = opt.value;
+          opt.dataset.grpNormTxt = opt.text;
+        }
+        opt.value = deal[k];
+        opt.text = '⭐ ' + opt.dataset.grpNormTxt;
+      } else if (opt.dataset.grpNorm !== undefined){
+        opt.value = opt.dataset.grpNorm;
+        opt.text = opt.dataset.grpNormTxt;
+        delete opt.dataset.grpNorm;
+        delete opt.dataset.grpNormTxt;
+      }
+    });
+  }
+ 
+  // 依目前選到的選項，重算該 extra 項目的價格與顯示
+  function recompute(el){
+    const sel = el.querySelector('select.os');
+    if (!sel) return;
+    const price = parseInt(sel.value) || 0;
+    const label = sel.options[sel.selectedIndex]?.text || '';
+    el.dataset.currentPrice = price;
+    setPD('p'+el.id, price);
+    if (C.has(el.id)){ P[el.id] = price; O[el.id] = label; }
+  }
+ 
+  // 重新評估所有 extra 群組：滿足觸發數量 → 套優惠，否則還原
+  function refreshExtraGroups(){
+    Object.values(extraGroups).forEach(group=>{
+      const resolved = group.members
+        .map(m=>({ deal:m.deal, el:findExtraEl(m.key, m.deal) }))
+        .filter(x=>x.el);
+      const checkedCount = resolved.filter(x=>C.has(x.el.id)).length;
+      const triggered = (typeof dealModeOn !== 'undefined') && dealModeOn && checkedCount >= group.trigger;
+      resolved.forEach(({deal,el})=>{
+        applyOverride(el, deal, triggered);
+        el.classList.toggle('deal-on', triggered && C.has(el.id));
+        recompute(el);
+      });
+    });
+    if (typeof upd === 'function') upd();
+  }
+  window.refreshExtraGroups = refreshExtraGroups;
+ 
+  // 讓 toggleDeals 不要對「群組型 extra 項目」做無條件套用，改由本 patch 依觸發條件控制
+  const _applyDealToEl = window.applyDealToEl;
+  if (_applyDealToEl){
+    window.applyDealToEl = function(el, id, deal, on){
+      if (deal && deal['__group__'] && el && el.dataset && el.dataset.extraDealKey){
+        return; // 交給 refreshExtraGroups 處理
+      }
+      return _applyDealToEl.call(this, el, id, deal, on);
+    };
+  }
+ 
+  // 包裝相關函式：動作完成後重新評估群組
+  function wrap(name){
+    const orig = window[name];
+    if (typeof orig !== 'function') return;
+    window[name] = function(){
+      const r = orig.apply(this, arguments);
+      try { refreshExtraGroups(); } catch(e){}
+      return r;
+    };
+  }
+  ['toggleDeals','togExtraSelect','extraSelU','togExtraSimple','togExtraQty','togExtraPill','delFromM'].forEach(wrap);
+ 
+  // 等 extraDealsData 載入後建立群組並做初次評估
+  let tries = 0;
+  const intv = setInterval(()=>{
+    tries++;
+    if (typeof extraDealsData !== 'undefined' && extraDealsData && Object.keys(extraDealsData).length){
+      buildExtraGroups();
+      if (Object.keys(extraGroups).length){
+        refreshExtraGroups();
+        clearInterval(intv);
+      } else {
+        // 有 extra 優惠但抓不到群組 → 多半是 Apps Script 沒把「群組ID/觸發數量」欄帶進來
+        const hasGroup = Object.values(extraDealsData).some(d => d && d['__group__']);
+        if (!hasGroup){
+          console.warn('[群組優惠] 偵測到 extra 優惠資料，但沒有任何 __group__ 欄位。' +
+            '請確認試算表的「群組ID」「觸發數量」欄有填，且 Apps Script 有把這兩欄帶進 __extra_deals__。');
+        }
+        clearInterval(intv);
+      }
+    }
+    if (tries > 60) clearInterval(intv);
+  }, 200);
+})();
+</script>
 </body></html>
