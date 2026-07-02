@@ -3439,4 +3439,75 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   }, 200);
 })();
 </script>
+  <!-- ════════════════════════════════════════════════════════════
+   ★ 群組化藥丸優惠 patch（給 Onda 身體 / 墨菲斯身體 這類 M・L 部位項目）
+   用途：
+     讓「整個部位群組同一個價格」的藥丸項目，優惠只要填 4 列就好，
+     不必逐顆部位填 28 列。
+
+   monthly_deals 填法（以 Onda 身體 s2t6 為例，選項代碼欄）：
+     m_val1 → M 群組所有部位的「1次」價格
+     m_val2 → M 群組所有部位的「3次」價格
+     l_val1 → L 群組所有部位的「1次」價格
+     l_val2 → L 群組所有部位的「3次」價格
+   （命名規則：群組後綴_valN，程式會自動對應 pg-項目ID-後綴 這個部位群組）
+
+   安裝：把底下整段貼到 HTML 最後面、</body> 之前，
+        放在所有現有 <script> 的最下面。存檔後重新部署 + 強制重新整理。
+════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  console.log('%c[群組藥丸優惠 patch 已載入]', 'color:#b8965a;font-weight:bold');
+
+  // 各項目對應的「重算顯示」函式（部位群組內每顆同價的項目才適用）
+  const recomputeFns = {
+    's2t6':   'ondaBodyU',      // Onda 身體
+    's0t31b': 'morpheusBodyU',  // 墨菲斯 身體
+  };
+
+  // 套用 / 還原「整個部位群組」的優惠價
+  // deal 內的 key 格式：後綴_valN（例如 m_val1 / l_val2）
+  function applyGroupPillDeal(el, id, deal, on){
+    const keys = Object.keys(deal).filter(k => /^[a-zA-Z0-9]+_val\d+$/.test(k));
+    if (!keys.length) return false;
+
+    keys.forEach(k=>{
+      const m = k.match(/^(.+)_val(\d+)$/);
+      if (!m) return;
+      const suffix = m[1];
+      const slot   = 'val' + m[2];             // val1 / val2 / val3
+      const pg = document.getElementById('pg-' + id + '-' + suffix);
+      if (!pg) return;
+      pg.querySelectorAll('.pill').forEach(pill=>{
+        const store = 'grpDealOrig' + slot;    // 存原價用（避開其他 patch 的 dataset）
+        if (on){
+          if (pill.dataset[store] === undefined) pill.dataset[store] = pill.dataset[slot] || '0';
+          pill.dataset[slot] = deal[k];
+        } else {
+          if (pill.dataset[store] !== undefined){
+            pill.dataset[slot] = pill.dataset[store];
+            delete pill.dataset[store];
+          }
+        }
+      });
+    });
+    return true;
+  }
+
+  // 包裝 applyDealToEl：原本邏輯跑完後，再處理群組藥丸優惠並重算
+  const _orig = window.applyDealToEl;
+  if (_orig){
+    window.applyDealToEl = function(el, id, deal, on){
+      const r = _orig.call(this, el, id, deal, on);
+      try {
+        if (el && deal && applyGroupPillDeal(el, id, deal, on)){
+          const fnName = recomputeFns[id];
+          if (fnName && typeof window[fnName] === 'function') window[fnName]();
+        }
+      } catch(e){}
+      return r;
+    };
+  }
+})();
+</script>
 </body></html>
