@@ -3510,4 +3510,77 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   }
 })();
 </script>
+  <!-- ════════════════════════════════════════════════════════════
+   ★ 電腦寬螢幕放大 patch（純 CSS）
+   ≥1200px：字級整體放大約兩級、內容區與下拉選單拉寬
+   <1200px：維持原本大小，完全不變
+
+   安裝：貼到 HTML 最後面、</body> 之前即可（放在最下面）。
+        只是樣式，不用重新部署 Apps Script，存檔後強制重新整理就會生效。
+        想微調可改下方的 1200px 門檻、或 .main 的 max-width。
+════════════════════════════════════════════════════════════ -->
+<style>
+@media (min-width:1200px){
+
+  /* ── 內容區・欄位拉寬（讓每行放更多字）── */
+  .main   { max-width:1240px; padding:30px 28px 90px; }
+  .os     { max-width:820px; }
+  .modal  { max-width:860px; }
+  .tbar   { padding:11px 24px; }
+
+  /* ── 頁首 ── */
+  h1              { font-size:21px; }
+  .logo           { font-size:12px; }
+  .price-status   { font-size:11px; }
+  .lbl            { font-size:11px; }
+  .jpy            { font-size:36px; }
+  .jpy .cy        { font-size:18px; }
+  .twd            { font-size:23px; }
+  .twd .cy        { font-size:14px; }
+  .rn             { font-size:11px; }
+  .scnt           { font-size:13px; }
+  .bsum, .brst    { font-size:13px; padding:7px 15px; }
+  .deal-label     { font-size:11px; }
+
+  /* ── 分頁標籤 ── */
+  .tb             { font-size:14px; padding:13px 22px; }
+
+  /* ── 分類標題 ── */
+  .ctit           { font-size:16px; }
+  .cbar           { height:20px; }
+
+  /* ── 療程項目 ── */
+  .tim            { padding:13px 18px; gap:12px; }
+  .ck             { width:18px; height:18px; }
+  .tk             { font-size:11px; }
+  .tn             { font-size:15px; }
+  .note           { font-size:11px; }
+  .pd             { font-size:19px; }
+  .pd .y          { font-size:13px; }
+  .item-link      { font-size:11px; }
+
+  /* ── 選項區（下拉・數量・藥丸）── */
+  .opts           { padding:0 18px 12px 46px; }
+  .ol             { font-size:11px; }
+  .os             { font-size:14px; padding:8px 26px 8px 10px; }
+  .ci             { font-size:16px; width:100px; }
+  .cu             { font-size:14px; }
+  .hint           { font-size:12px; }
+  .pill           { font-size:14px; padding:6px 16px; }
+
+  /* ── 優惠標籤・提示 ── */
+  .deal-badge     { font-size:10px; }
+  .qty-deal-hint  { font-size:12px; }
+  .qty-deal-price { font-size:18px; }
+
+  /* ── 已選清單彈窗 ── */
+  .mhd h3         { font-size:16px; }
+  .mn             { font-size:15px; }
+  .mo             { font-size:13px; }
+  .mp             { font-size:22px; }
+  .mftot          { font-size:30px; }
+  .mdel           { width:26px; height:26px; font-size:13px; }
+
+}
+</style>
 </body></html>
