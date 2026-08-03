@@ -1117,7 +1117,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 // ══════════════════════════════════════════════════════
 //  ★ 在這裡貼上你的 Apps Script URL
 // ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgsxbyY2uojVMp3ZZZOdW6QZ17KKL2-zM-RoQJVZUdtEi0LOyDmofwlqdFZxBrMREVtw/exec';  // ← 貼在這裡，空字串 = 使用內建價格
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwisIQTEa5jyNXXybpKP8VbG9mIfOwj21Yu-qlMdFNvYaWq4B4k8y9AbTeZxQ0fQg3OrQ/exec';  // ← 貼在這裡，空字串 = 使用內建價格
 
 // 可被 Sheet 覆蓋的費率
 const rates = {
@@ -3588,4 +3588,220 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
 
 }
 </style>
+  <script>
+(function(){
+  console.log('%c[核心項目多群組優惠 patch 已載入]', 'color:#b8965a;font-weight:bold');
+
+  let dealsById = {};
+  function indexDealsById(){
+    dealsById = {};
+    Object.entries(dealsData).forEach(([key, deal])=>{
+      const eid = deal['__id__'] || key;
+      if (!dealsById[eid]) dealsById[eid] = [];
+      dealsById[eid].push({ key, deal });
+    });
+  }
+  window.getDealsForElement = function(id){ return dealsById[id] || []; };
+
+  window.syncDealOnClass = function(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+    let any = false;
+    Object.values(groupDeals).forEach(g=>{
+      if ((g.type !== 'select' && g.type !== 'unit') || !g.items[id]) return;
+      const checkedCount = Object.keys(g.items).filter(iid => C.has(iid)).length;
+      if (C.has(id) && checkedCount >= g.trigger) any = true;
+    });
+    el.classList.toggle('deal-on', any);
+  };
+
+  // ── badges：改用 dealsById 找元素 ──
+  window.applyDealBadges = function(){
+    indexDealsById();
+    Object.keys(dealsById).forEach(id=>{
+      const el = document.getElementById(id);
+      if (!el || el.querySelector('.deal-badge')) return;
+      const tn = el.querySelector('.tn');
+      if (!tn) return;
+      const note = dealsById[id].map(e=>e.deal['__note__']).filter(Boolean)[0] || '優惠';
+      const badge = document.createElement('span');
+      badge.className = 'deal-badge';
+      badge.textContent = note;
+      const noteEl = tn.querySelector('.note');
+      if (noteEl) tn.insertBefore(badge, noteEl); else tn.appendChild(badge);
+      el.classList.add('has-deal');
+    });
+    Object.entries(extraDealsData).forEach(([extraKey, deal]) => {
+      const name = deal['__name__'] || extraKey, cat = deal['__cat__'] || '';
+      let el = null;
+      document.querySelectorAll(`[data-name="${name}"]`).forEach(c => {
+        if (el) return;
+        if (!cat) { el = c; return; }
+        const catTitle = (c.closest('.cat')||c.parentElement?.closest('.cat'))?.querySelector('.ctit')?.textContent?.trim() || '';
+        if (catTitle.includes(cat) || cat.includes(catTitle)) el = c;
+      });
+      if (!el || el.querySelector('.deal-badge')) return;
+      const tn = el.querySelector('.tn');
+      if (!tn) return;
+      const badge = document.createElement('span');
+      badge.className = 'deal-badge';
+      badge.textContent = deal['__note__'] || '優惠';
+      const note = tn.querySelector('.note');
+      if (note) tn.insertBefore(badge, note); else tn.appendChild(badge);
+      el.classList.add('has-deal');
+      el.dataset.extraDealKey = extraKey;
+    });
+  };
+
+  // ── buildGroupDeals：保留 buddy/unit/select 三種類型，只把 id 換成真正的元素ID ──
+  window.buildGroupDeals = function() {
+    groupDeals = {};
+    const groupMembers = {};
+    Object.entries(dealsData).forEach(([key, deal]) => {
+      if (!deal['__group__']) return;
+      const gid = deal['__group__'];
+      const id = deal['__id__'] || key;
+      if (!groupMembers[gid]) groupMembers[gid] = [];
+      groupMembers[gid].push({ id, deal });
+    });
+
+    Object.entries(groupMembers).forEach(([gid, members]) => {
+      const buddyMembers = members.filter(m => m.deal['buddy'] !== undefined);
+      const buddyUnitMembers = members.filter(m => m.deal['buddy_unit'] !== undefined);
+
+      if (buddyMembers.length > 0 && buddyUnitMembers.length > 0) {
+        const primary = buddyUnitMembers[0];
+        groupDeals[gid] = {
+          type: 'buddy',
+          trigger: primary.deal['__trigger__'] || 2,
+          primary: {
+            id: primary.id, dealUnit: primary.deal['buddy_unit'],
+            normalUnit: unitPrices[primary.id] || 0, priceElId: 'p' + primary.id,
+            note: primary.deal['__note__'] || '搭配優惠',
+          },
+          buddies: buddyMembers.map(b => b.id),
+        };
+      } else {
+        const unitMembers = members.filter(m => m.deal['unit'] !== undefined);
+        if (unitMembers.length > 0 && unitMembers[0].deal['__trigger__']) {
+          const trigger = unitMembers[0].deal['__trigger__'];
+          groupDeals[gid] = { type: 'unit', trigger, items: {} };
+          unitMembers.forEach(m => {
+            groupDeals[gid].items[m.id] = {
+              dealUnit: m.deal['unit'], normalUnit: unitPrices[m.id] || 0, priceElId: 'p' + m.id,
+            };
+          });
+        } else {
+          members.forEach(m => {
+            if (m.deal['unit'] || m.deal['buddy'] !== undefined || m.deal['buddy_unit'] !== undefined) return;
+            const optionKeys = Object.keys(m.deal).filter(k => !k.startsWith('__'));
+            if (!optionKeys.length) return;
+            const trigger = m.deal['__trigger__'] || 0;
+            if (!trigger) return;
+            if (!groupDeals[gid]) groupDeals[gid] = { trigger, type: 'select', items: {} };
+            const options = {};
+            optionKeys.forEach(k => { options[k] = m.deal[k]; });
+            groupDeals[gid].items[m.id] = { options, priceElId: 'p' + m.id };
+          });
+        }
+      }
+    });
+  };
+
+  // ── refreshSelectGroup：同一元素若跨多個群組，用 overrideGroup 標記避免互相覆蓋 ──
+  window.refreshSelectGroup = function(groupId) {
+    const group = groupDeals[groupId];
+    if (!group || group.type !== 'select' || !dealModeOn) return;
+    const checkedCount = Object.keys(group.items).filter(id => C.has(id)).length;
+    const triggered = checkedCount >= group.trigger;
+    Object.entries(group.items).forEach(([id, info]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const sel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
+      if (sel) {
+        sel.querySelectorAll('option').forEach((opt, i) => {
+          const key = String(i);
+          if (triggered && info.options[key] !== undefined) {
+            if (opt.dataset.overrideGroup === undefined) {
+              opt.dataset.normalValue = opt.value;
+              opt.dataset.normalText = opt.text;
+            }
+            opt.value = info.options[key];
+            opt.text = '⭐ ' + opt.dataset.normalText;
+            opt.dataset.overrideGroup = groupId;
+          } else if (!triggered && opt.dataset.overrideGroup === groupId) {
+            opt.value = opt.dataset.normalValue;
+            opt.text = opt.dataset.normalText;
+            delete opt.dataset.normalValue; delete opt.dataset.normalText; delete opt.dataset.overrideGroup;
+          }
+        });
+        if (C.has(id)) {
+          const curVal = parseInt(sel.options[sel.selectedIndex]?.value) || 0;
+          setPD(info.priceElId, curVal);
+          P[id] = curVal;
+          O[id] = sel.options[sel.selectedIndex]?.text || '';
+        }
+      }
+      syncDealOnClass(id);
+    });
+    upd();
+  };
+
+  // ── toggleDeals：改用 dealsById，一個元素多筆deal全部套用 ──
+  window.toggleDeals = function(on){
+    dealModeOn = on;
+    indexDealsById();
+    Object.entries(dealsById).forEach(([id, entries])=>{
+      const el = document.getElementById(id);
+      entries.forEach(({deal})=> applyDealToEl(el, id, deal, on));
+    });
+    document.querySelectorAll('[data-extra-deal-key]').forEach(el => {
+      const deal = extraDealsData[el.dataset.extraDealKey];
+      if (deal) applyDealToEl(el, el.id, deal, on);
+    });
+    if (!on) {
+      document.querySelectorAll('.qty-deal-hint').forEach(h => h.style.display='none');
+    }
+    Object.keys(groupDeals).forEach(gid => {
+      if (groupDeals[gid].type === 'select') refreshSelectGroup(gid);
+    });
+    if (typeof refreshBuddyGroup === 'function') {
+      Object.entries(groupDeals).forEach(([gid, g]) => { if (g.type === 'buddy') refreshBuddyGroup(gid); });
+    }
+    if (typeof refreshExtraGroups === 'function') { try { refreshExtraGroups(); } catch(e){} }
+  };
+
+  // ── qtyU：只有真的跨多群組的支數項目才接管，其餘照舊(含buddy邏輯) ──
+  const _origQtyU = window.qtyU;
+  window.qtyU = function(itemId, priceElId, defaultUnit, qtyElId){
+    if (dealModeOn) {
+      const entries = getDealsForElement(itemId).filter(e => e.deal['unit'] !== undefined);
+      if (entries.length > 1) {
+        const qty = parseInt(document.getElementById(qtyElId)?.value) || 0;
+        const baseUnit = unitPrices[itemId] ?? defaultUnit;
+        let bestUnit = baseUnit, discountApplied = false;
+        entries.forEach(({deal})=>{
+          const trigger = deal.__trigger__ || 0;
+          const groupId = deal.__group__ || '';
+          const effQty = groupId ? getGroupQty(groupId, itemId) + qty : qty;
+          const triggered = !trigger || effQty >= trigger;
+          if (triggered && deal.unit < bestUnit) { bestUnit = deal.unit; discountApplied = true; }
+          if (trigger) updateQtyDealHint(itemId, effQty, trigger, deal.unit, baseUnit, true, triggered);
+        });
+        const total = qty * bestUnit;
+        P[itemId] = total;
+        O[itemId] = qty > 0 ? qty+'支 × ¥'+bestUnit.toLocaleString()+' = ¥'+total.toLocaleString()+(discountApplied?' 🎉':'') : '';
+        setPD(priceElId, qty > 0 ? total : 0);
+        upd();
+        entries.forEach(({deal})=>{
+          const groupId = deal.__group__ || '';
+          if (groupId) refreshGroupOthers(groupId, itemId, getGroupQty(groupId, itemId) + qty);
+        });
+        return;
+      }
+    }
+    return _origQtyU.call(this, itemId, priceElId, defaultUnit, qtyElId);
+  };
+})();
+</script>
 </body></html>
