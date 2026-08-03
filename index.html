@@ -1250,9 +1250,9 @@ let rate = 0.2004;
 let dealsData       = {};   // 核心項目優惠（key 可用 __id__ 指向元素）
 let extraDealsData  = {};   // extra_items 優惠
 let dealModeOn      = false;
-let groupDeals      = {};   // 群組折扣：unit / select / buddy
+let groupDeals      = {};   // 群組折扣：unit（支數）／ buddy（搭配同打）
 let dealsById       = {};   // 元素ID → [{key, deal}]（同一項目可有多筆優惠）
-let extraGroups     = {};   // extra_items 的「同時優惠」群組
+let comboGroups     = {};   // 「同時施術」群組（核心項目與 extra 項目可混搭）
 
 // 分院篩選
 let clinicMap     = {};
@@ -1290,19 +1290,6 @@ function removePureBuddyBadges(){
       if (badge) badge.remove();
     }
   });
-}
-
-// 同一項目可能跨多個群組，統一決定 deal-on 樣式
-function syncDealOnClass(id){
-  const el = document.getElementById(id);
-  if (!el) return;
-  let any = false;
-  Object.values(groupDeals).forEach(g => {
-    if ((g.type !== 'select' && g.type !== 'unit') || !g.items || !g.items[id]) return;
-    const checkedCount = Object.keys(g.items).filter(iid => C.has(iid)).length;
-    if (C.has(id) && checkedCount >= g.trigger) any = true;
-  });
-  el.classList.toggle('deal-on', any);
 }
 
 // 標記有優惠的項目（加上紅色 badge）
@@ -1368,10 +1355,9 @@ function toggleDeals(on){
   if (!on) document.querySelectorAll('.qty-deal-hint').forEach(h => h.style.display = 'none');
 
   Object.keys(groupDeals).forEach(gid => {
-    if (groupDeals[gid].type === 'select') refreshSelectGroup(gid);
-    if (groupDeals[gid].type === 'buddy')  refreshBuddyGroup(gid);
+    if (groupDeals[gid].type === 'buddy') refreshBuddyGroup(gid);
   });
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 // 建立群組折扣對照表（unit / select / buddy 三種）
@@ -1423,62 +1409,8 @@ function buildGroupDeals(){
       return;
     }
 
-    // ── 下拉選單（select）群組：勾選數量達標即觸發 ──
-    members.forEach(m => {
-      if (m.deal['unit'] || m.deal['buddy'] !== undefined || m.deal['buddy_unit'] !== undefined) return;
-      const optionKeys = Object.keys(m.deal).filter(k => !k.startsWith('__'));
-      if (!optionKeys.length) return;
-      const trigger = m.deal['__trigger__'] || 0;
-      if (!trigger) return;
-      if (!groupDeals[gid]) groupDeals[gid] = { trigger, type: 'select', items: {} };
-      const options = {};
-      optionKeys.forEach(k => { options[k] = m.deal[k]; });
-      groupDeals[gid].items[m.id] = { options, priceElId: 'p' + m.id };
-    });
+    // ── 下拉選單型的「同時施術」群組 → 由 buildComboGroups() 處理 ──
   });
-}
-
-// 重新整理下拉選單型群組（勾選/取消/切換優惠模式時呼叫）
-function refreshSelectGroup(groupId){
-  const group = groupDeals[groupId];
-  if (!group || group.type !== 'select') return;
-
-  const checkedCount = Object.keys(group.items).filter(id => C.has(id)).length;
-  const triggered = dealModeOn && checkedCount >= group.trigger;
-
-  Object.entries(group.items).forEach(([id, info]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const sel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
-    if (sel) {
-      sel.querySelectorAll('option').forEach((opt, i) => {
-        const key = String(i);
-        if (triggered && info.options[key] !== undefined) {
-          if (opt.dataset.overrideGroup === undefined) {
-            opt.dataset.normalValue = opt.value;
-            opt.dataset.normalText  = opt.text;
-          }
-          opt.value = info.options[key];
-          opt.text  = '⭐ ' + opt.dataset.normalText;
-          opt.dataset.overrideGroup = groupId;
-        } else if (!triggered && opt.dataset.overrideGroup === groupId) {
-          opt.value = opt.dataset.normalValue;
-          opt.text  = opt.dataset.normalText;
-          delete opt.dataset.normalValue;
-          delete opt.dataset.normalText;
-          delete opt.dataset.overrideGroup;
-        }
-      });
-      if (C.has(id)) {
-        const curVal = parseInt(sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].value) || 0;
-        setPD(info.priceElId, curVal);
-        P[id] = curVal;
-        O[id] = (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '';
-      }
-    }
-    syncDealOnClass(id);
-  });
-  upd();
 }
 
 // 取得同群組所有已勾選項目的總支數（未勾選不算；buddy 群組不適用）
@@ -1597,8 +1529,8 @@ function refreshBuddyGroup(gid){
 function applyDealToEl(el, id, deal, on){
   if (!el || !deal) return;
 
-  // ① extra_items 的「同時優惠」群組 → 交給 refreshExtraGroups() 統一處理
-  if (deal['__group__'] && el.dataset && el.dataset.extraDealKey) return;
+  // ① 「同時施術」群組（核心 or extra）→ 交給 refreshComboGroups() 統一處理
+  if (deal['__group__'] && comboGroups[deal['__group__']]) return;
 
   // ② buddy 群組
   const buddyGid = findBuddyGroupOf(id);
@@ -1630,13 +1562,6 @@ function applyDealToEl(el, id, deal, on){
 }
 
 function applyDealBase(el, id, deal, on){
-  // select 型群組項目交給 refreshSelectGroup 處理，這裡跳過
-  const gid = deal['__group__'] || '';
-  if (gid && groupDeals[gid] && groupDeals[gid].type === 'select') {
-    el.classList.toggle('deal-on', on && C.has(id));
-    return;
-  }
-
   el.classList.toggle('deal-on', on);
 
   // ── 下拉選單 ──
@@ -1853,18 +1778,34 @@ function applyGroupPillDeal(el, id, deal, on){
 
 
 /* ══════════════════════════════════════════════════════════════
-   2. extra_items 的「同時優惠」群組
+   2. 「同時施術」群組優惠（核心項目與 extra_items 可混搭同一組）
    ══════════════════════════════════════════════════════════════ */
 
-function buildExtraGroups(){
-  extraGroups = {};
-  if (!extraDealsData) return;
-  Object.entries(extraDealsData).forEach(([key, deal]) => {
-    const gid = deal && deal['__group__'];
+// 群組內「不同項目」被勾選的數量達到 __trigger__ → 整組換成群組價
+function buildComboGroups(){
+  comboGroups = {};
+
+  const push = (gid, deal, resolver) => {
+    if (!comboGroups[gid]) comboGroups[gid] = { trigger: 2, members: [] };
+    if (deal['__trigger__']) comboGroups[gid].trigger = parseInt(deal['__trigger__']) || 2;
+    comboGroups[gid].members.push({ deal, resolver });
+  };
+
+  // 核心項目（有數字選項代碼，且不是 unit／buddy 型優惠）
+  Object.entries(dealsData).forEach(([key, deal]) => {
+    const gid = deal['__group__'];
     if (!gid) return;
-    if (!extraGroups[gid]) extraGroups[gid] = { trigger: 2, members: [] };
-    if (deal['__trigger__']) extraGroups[gid].trigger = parseInt(deal['__trigger__']) || 2;
-    extraGroups[gid].members.push({ key, deal });
+    if (deal['unit'] !== undefined || deal['buddy'] !== undefined || deal['buddy_unit'] !== undefined) return;
+    if (!Object.keys(deal).some(k => /^\d+$/.test(k))) return;
+    const eid = deal['__id__'] || key;
+    push(gid, deal, () => document.getElementById(eid));
+  });
+
+  // extra_items（用「名稱＋類別」對應）
+  Object.entries(extraDealsData).forEach(([key, deal]) => {
+    const gid = deal['__group__'];
+    if (!gid) return;
+    push(gid, deal, () => findExtraEl(key, deal));
   });
 }
 
@@ -1888,8 +1829,11 @@ function findExtraEl(key, deal){
   return el;
 }
 
-function extraGroupApplyOverride(el, deal){
-  const sel = el.querySelector('select.os');
+// 群組價要改寫的下拉選單（排除導入液、部位規格那些附屬選單）
+const COMBO_SEL = 'select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])';
+
+function comboApplyOverride(el, deal){
+  const sel = el.querySelector(COMBO_SEL);
   if (!sel) return;
   sel.querySelectorAll('option').forEach((opt, i) => {
     const k = String(i);
@@ -1903,8 +1847,8 @@ function extraGroupApplyOverride(el, deal){
   });
 }
 
-function extraGroupRestore(el){
-  const sel = el.querySelector('select.os');
+function comboRestore(el){
+  const sel = el.querySelector(COMBO_SEL);
   if (!sel) return;
   sel.querySelectorAll('option').forEach(opt => {
     if (opt.dataset.grpNorm === undefined) return;
@@ -1915,8 +1859,8 @@ function extraGroupRestore(el){
   });
 }
 
-function extraGroupRecompute(el){
-  const sel = el.querySelector('select.os');
+function comboRecompute(el){
+  const sel = el.querySelector(COMBO_SEL);
   if (!sel) return;
   const price = parseInt(sel.value) || 0;
   const label = (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '';
@@ -1925,16 +1869,19 @@ function extraGroupRecompute(el){
   if (C.has(el.id)) { P[el.id] = price; O[el.id] = label; }
 }
 
-function refreshExtraGroups(){
-  if (!Object.keys(extraGroups).length) return;
+function refreshComboGroups(){
+  if (!Object.keys(comboGroups).length) return;
   const elInfo = new Map();
 
-  Object.values(extraGroups).forEach(group => {
-    const resolved = group.members
-      .map(m => ({ deal: m.deal, el: findExtraEl(m.key, m.deal) }))
-      .filter(x => x.el);
-    const checkedCount = resolved.filter(x => C.has(x.el.id)).length;
-    const triggered = dealModeOn && checkedCount >= group.trigger;
+  Object.values(comboGroups).forEach(group => {
+    const resolved = [];
+    group.members.forEach(m => {
+      const el = m.resolver();
+      if (el) resolved.push({ deal: m.deal, el });
+    });
+    // 以「不同項目」計算勾選數（同一項目有多列設定不會重複計算）
+    const checkedIds = new Set(resolved.filter(x => C.has(x.el.id)).map(x => x.el.id));
+    const triggered = dealModeOn && checkedIds.size >= group.trigger;
     resolved.forEach(({deal, el}) => {
       if (!elInfo.has(el)) elInfo.set(el, []);
       elInfo.get(el).push({ deal, triggered });
@@ -1945,11 +1892,11 @@ function refreshExtraGroups(){
     const activeEntry = entries.find(e => e.triggered);
     const apply = !!activeEntry && C.has(el.id);
 
-    extraGroupRestore(el);
-    if (activeEntry) extraGroupApplyOverride(el, activeEntry.deal);
+    comboRestore(el);
+    if (activeEntry) comboApplyOverride(el, activeEntry.deal);
 
     el.classList.toggle('deal-on', apply);
-    extraGroupRecompute(el);
+    comboRecompute(el);
 
     const badge = el.querySelector('.deal-badge');
     if (badge) {
@@ -1965,6 +1912,23 @@ function refreshExtraGroups(){
   upd();
 }
 
+// 除錯用：在瀏覽器 console 輸入 comboDebug() 可看到每組的成員與觸發狀態
+function comboDebug(){
+  Object.entries(comboGroups).forEach(([gid, g]) => {
+    const rows = g.members.map(m => {
+      const el = m.resolver();
+      return {
+        項目: el ? (el.dataset.name || el.id) : '⚠ 找不到元素',
+        元素ID: el ? el.id : '-',
+        已勾選: el ? C.has(el.id) : false,
+      };
+    });
+    const ids = new Set(rows.filter(r => r.已勾選).map(r => r.元素ID));
+    console.log('%c' + gid + '　需要 ' + g.trigger + ' 項，目前勾選 ' + ids.size + ' 項',
+      'color:#b8965a;font-weight:bold');
+    console.table(rows);
+  });
+}
 
 /* ══════════════════════════════════════════════════════════════
    3. 分院篩選
@@ -2066,8 +2030,8 @@ async function loadSheetPrices(){
       applyDealBadges();
       buildGroupDeals();
       removePureBuddyBadges();
-      buildExtraGroups();
-      refreshExtraGroups();
+      buildComboGroups();
+      refreshComboGroups();
     }
 
     // 分院篩選選項
@@ -2452,7 +2416,7 @@ function togExtraSimple(id, price) {
     el.classList.add('on');
   }
   upd();
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 // 數量輸入（支/瓶/cc）
@@ -2473,7 +2437,7 @@ function togExtraQty(id) {
     el.classList.add('on');
   }
   upd();
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 function extraQtyU(id, unitPrice, unit, input) {
@@ -2505,7 +2469,7 @@ function togExtraSelect(id) {
     el.classList.add('on');
   }
   upd();
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 function extraSelU(id, sel) {
@@ -2516,7 +2480,7 @@ function extraSelU(id, sel) {
   el.dataset.currentPrice = price;
   setPD('p' + id, price);
   if (C.has(id)) { P[id] = price; O[id] = label; upd(); }
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 // 藥丸複選（可含次數 + [discount-N] 階梯折扣）
@@ -2598,7 +2562,7 @@ function togExtraPill(eid){
   if (C.has(eid)) { C.delete(eid); delete P[eid]; delete O[eid]; el.classList.remove('on'); }
   else { C.add(eid); P[eid] = price; O[eid] = labels; el.classList.add('on'); }
   upd();
-  refreshExtraGroups();
+  refreshComboGroups();
 }
 
 // 舊版相容
@@ -3076,9 +3040,9 @@ function tog(id){
   upd();
   // 勾選/取消後刷新 select 型與 buddy 型群組
   Object.entries(groupDeals).forEach(([gid, g]) => {
-    if (g.type === 'select' && g.items[id]) refreshSelectGroup(gid);
     if (dealModeOn && g.type === 'buddy' && (g.primary.id === id || g.buddies.includes(id))) refreshBuddyGroup(gid);
   });
+  refreshComboGroups();
 }
 
 function delFromM(id){
@@ -3101,12 +3065,8 @@ function delFromM(id){
       }
     });
   }
-  // select 群組
-  Object.keys(groupDeals).forEach(gid => {
-    if (groupDeals[gid].type === 'select' && groupDeals[gid].items[id]) refreshSelectGroup(gid);
-  });
-  // extra 同時優惠群組
-  refreshExtraGroups();
+  // 同時施術群組
+  refreshComboGroups();
 
   if(C.size===0){closeM();}
   else{openM();}
@@ -3182,6 +3142,5 @@ fixTabsTop();
 fetchRate();
 loadSheetPrices();
 </script>
-</body>
-</html>
+
 </body></html>
