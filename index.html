@@ -3884,4 +3884,97 @@ if (data.cityGroups && data.cityOrder && data.cityOrder.length > 0) {
   };
 })();
 </script>
+  <script>
+(function(){
+  console.log('%c[qty型優惠顯示修正 patch 已載入]', 'color:#b8965a;font-weight:bold');
+
+  function getMainSelect(el){
+    return el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
+  }
+
+  // 判斷某項目目前是否該顯示優惠中(不管是select型、qty型還是固定價型)
+  window.syncDealDisplay = function(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!dealModeOn) { el.classList.remove('deal-on'); return; }
+
+    const entries = getDealsForElement(id) || [];
+    if (!entries.length) return;
+
+    let active = false;
+    entries.forEach(({deal}) => {
+      const groupId = deal['__group__'] || '';
+      if (groupId) {
+        const g = groupDeals[groupId];
+        if (!g) return;
+        if (g.type === 'select' || g.type === 'unit') {
+          const checkedCount = Object.keys(g.items).filter(iid => C.has(iid)).length;
+          if (checkedCount >= g.trigger) active = true;
+        } else if (g.type === 'buddy') {
+          const checkedCount = (C.has(g.primary.id)?1:0) + g.buddies.filter(b=>C.has(b)).length;
+          if (checkedCount >= g.trigger) active = true;
+        }
+      } else {
+        // 獨立優惠：沒設觸發數量就一定生效；有設就看目前輸入的支數/cc數夠不夠
+        const trigger = deal['__trigger__'] || 0;
+        if (!trigger) {
+          active = true;
+        } else {
+          const inp = el.querySelector('input[type="number"]');
+          const qty = parseInt(inp?.value) || 0;
+          if (qty >= trigger) active = true;
+        }
+      }
+    });
+    el.classList.toggle('deal-on', active);
+  };
+
+  function syncAllDealSelects(){
+    Object.keys(dealsById || {}).forEach(id => syncDealDisplay(id));
+  }
+
+  window.toggleDeals = function(on){
+    dealModeOn = on;
+    indexDealsById();
+
+    // 保險：確保所有徽章都已建立(避免載入時機錯過)
+    applyDealBadges();
+
+    Object.entries(dealsById).forEach(([id, entries]) => {
+      const el = document.getElementById(id);
+      entries.filter(e => e.deal['__group__']).forEach(({deal}) => applyDealToEl(el, id, deal, on));
+    });
+    document.querySelectorAll('[data-extra-deal-key]').forEach(el => {
+      const deal = extraDealsData[el.dataset.extraDealKey];
+      if (deal) applyDealToEl(el, el.id, deal, on);
+    });
+    Object.keys(groupDeals).forEach(gid => {
+      if (groupDeals[gid].type === 'select') refreshSelectGroup(gid);
+    });
+    if (typeof refreshBuddyGroup === 'function') {
+      Object.entries(groupDeals).forEach(([gid, g]) => { if (g.type === 'buddy') refreshBuddyGroup(gid); });
+    }
+
+    Object.entries(dealsById).forEach(([id, entries]) => {
+      const el = document.getElementById(id);
+      entries.filter(e => !e.deal['__group__']).forEach(({deal}) => applyDealToEl(el, id, deal, on));
+    });
+
+    if (!on) {
+      document.querySelectorAll('.qty-deal-hint').forEach(h => h.style.display = 'none');
+    }
+    if (typeof refreshExtraGroups === 'function') { try { refreshExtraGroups(); } catch(e){} }
+
+    syncAllDealSelects();
+  };
+
+  // 輸入支數/cc數變動時，也要重新判斷badge該不該顯示(針對有trigger的獨立優惠)
+  const _origQtyU2 = window.qtyU;
+  window.qtyU = function(itemId, priceElId, defaultUnit, qtyElId){
+    const r = _origQtyU2.call(this, itemId, priceElId, defaultUnit, qtyElId);
+    syncDealDisplay(itemId);
+    return r;
+  };
+})();
+</script>
 </body></html>
