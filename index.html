@@ -1565,7 +1565,7 @@ function applyDealBase(el, id, deal, on){
   el.classList.toggle('deal-on', on);
 
   // ── 下拉選單 ──
-  const sel = el.querySelector('select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
+  const sel = el.querySelector('select.os:not([data-addon]):not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])');
   if (sel) {
     sel.querySelectorAll('option').forEach((opt, i) => {
       const key = String(i);
@@ -1829,8 +1829,7 @@ function findExtraEl(key, deal){
   return el;
 }
 
-// 群組價要改寫的下拉選單（排除導入液、部位規格那些附屬選單）
-const COMBO_SEL = 'select.os:not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])';
+const COMBO_SEL = 'select.os:not([data-addon]):not([id^="pico"]):not([id^="mrf"]):not([id^="jalupro"]):not([id^="sel-"]):not([id^="kr-"]):not([id^="bt-"])';
 
 function comboApplyOverride(el, deal){
   const sel = el.querySelector(COMBO_SEL);
@@ -1862,8 +1861,10 @@ function comboRestore(el){
 function comboRecompute(el){
   const sel = el.querySelector(COMBO_SEL);
   if (!sel) return;
-  const price = parseInt(sel.value) || 0;
-  const label = (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '';
+  const add = extraAddons(el.id);
+  const price = (parseInt(sel.value) || 0) + add.sum;
+  const label = [(sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '']
+    .concat(add.labels).filter(Boolean).join(' ＋ ');
   el.dataset.currentPrice = price;
   setPD('p' + el.id, price);
   if (C.has(el.id)) { P[el.id] = price; O[el.id] = label; }
@@ -2319,13 +2320,34 @@ function renderExtraItems(extras) {
       const eid = 'extra-item-' + item._i;
       const allOpts = item.options || [{ label: '', price: item.price }];
 
-      // [discount-N] 行：N 個部位以上打折
-      const discounts = {};
-      const opts = [];
+      // 分流：[discount-N] 階梯折扣 / [add-群組]附加選項 / 一般選項
+      const discounts = {}, addonGroups = {}, addonOrder = [], opts = [];
       allOpts.forEach(o => {
-        const m = o.label && o.label.match(/^\[discount-(\d+)\]/);
-        if (m) discounts[parseInt(m[1])] = o.price > 1 ? o.price / 100 : o.price;
-        else opts.push(o);
+        const lb = (o.label || '').trim();
+        let m;
+        if ((m = lb.match(/^\[discount-(\d+)\]/))) {
+          discounts[parseInt(m[1])] = o.price > 1 ? o.price / 100 : o.price;
+        } else if ((m = lb.match(/^\[add(?:[-:：]([^\]]*))?\]/))) {
+          const gname = (m[1] || '').trim() || '追加選項';
+          if (!addonGroups[gname]) { addonGroups[gname] = []; addonOrder.push(gname); }
+          addonGroups[gname].push({ label: lb.slice(m[0].length).trim(), price: o.price });
+        } else {
+          opts.push(o);
+        }
+      });
+      // 只有附加選項、沒有主選項時 → 用本體 price 當主價
+      if (opts.length === 0) opts.push({ label: '', price: item.price || 0 });
+
+      // 附加選項 HTML（每組一個下拉，第一項固定「不追加」）
+      let addonHtml = '';
+      addonOrder.forEach((gname, gi) => {
+        const sid = 'add-' + eid + '-' + gi;
+        const optionsHtml = ['<option value="0">不追加</option>'].concat(
+          addonGroups[gname].map(o =>
+            '<option value="' + o.price + '">' + (o.label ? o.label + '　' : '') + '¥' + o.price.toLocaleString() + '</option>')
+        ).join('');
+        addonHtml += '<div class="odiv"></div><div class="ol">' + gname + '（可不加）</div>' +
+          '<select class="os" data-addon="1" id="' + sid + '" onchange="extraRecalc(\'' + eid + '\')">' + optionsHtml + '</select>';
       });
 
       const firstPrice = (opts[0] && opts[0].price) || 0;
@@ -2347,9 +2369,11 @@ function renderExtraItems(extras) {
       tiDiv.dataset.name = item.name;
       tiDiv.dataset.currentPrice = firstPrice;
       tiDiv.dataset.unitPrice = firstPrice;
+      tiDiv.dataset.basePrice = firstPrice;
       if (Object.keys(discounts).length > 0) tiDiv.dataset.discounts = JSON.stringify(discounts);
 
       if (isPill) {
+        tiDiv.dataset.kind = 'pill';
         const areaOpts  = opts.filter(o => o.label.startsWith('[pill]'));
         const timesOpts = opts.filter(o => o.label.startsWith('[times]'));
         const hasTimes  = timesOpts.length > 0;
@@ -2370,22 +2394,26 @@ function renderExtraItems(extras) {
           '<div class="tn">' + nameHtml + '</div>' +
           '<div class="pd" id="p' + eid + '"><span class="y">¥</span>' + defPrice.toLocaleString() + '</div></div>' +
           '<div class="opts"><div class="ol">選擇部位（可複選）</div>' +
-          '<div class="pill-group" id="pg-' + eid + '">' + areaPillsHtml + '</div>' + timesSection + '</div>';
+          '<div class="pill-group" id="pg-' + eid + '">' + areaPillsHtml + '</div>' + timesSection + addonHtml + '</div>';
       } else if (isQty) {
+        tiDiv.dataset.kind = 'qty';
+        tiDiv.dataset.unitName = unit;
         tiDiv.innerHTML =
           '<div class="tim" onclick="togExtraQty(\'' + eid + '\')"><div class="ck"><span class="tk">✓</span></div>' +
           '<div class="tn">' + nameHtml + '</div>' +
           '<div class="pd" id="p' + eid + '"><span class="y">¥</span>' + firstPrice.toLocaleString() + '</div></div>' +
           '<div class="opts"><div class="ol">輸入' + unit + '數</div><div class="crow">' +
-          '<input type="number" class="ci" id="q-' + eid + '" min="1" max="50" step="1" value="1" oninput="extraQtyU(\'' + eid + '\',' + firstPrice + ',\'' + unit + '\',this)">' +
-          '<span class="cu">' + unit + '　×　¥' + firstPrice.toLocaleString() + '</span></div></div>';
+          '<input type="number" class="ci" id="q-' + eid + '" min="1" max="50" step="1" value="1" oninput="extraQtyU(\'' + eid + '\')">' +
+          '<span class="cu">' + unit + '　×　¥' + firstPrice.toLocaleString() + '</span></div>' + addonHtml + '</div>';
       } else if (!isSelect) {
+        tiDiv.dataset.kind = 'simple';
         tiDiv.innerHTML =
           '<div class="tim" onclick="togExtraSimple(\'' + eid + '\',' + firstPrice + ')"><div class="ck"><span class="tk">✓</span></div>' +
           '<div class="tn">' + nameHtml + '</div>' +
           '<div class="pd" id="p' + eid + '"><span class="y">¥</span>' + firstPrice.toLocaleString() + '</div></div>' +
-          '<div class="opts"></div>';
+          '<div class="opts">' + addonHtml + '</div>';
       } else {
+        tiDiv.dataset.kind = 'select';
         const optionsHtml = opts.map(o =>
           '<option value="' + o.price + '">' + (o.label ? o.label + '　' : '') + '¥' + o.price.toLocaleString() + '</option>'
         ).join('');
@@ -2394,13 +2422,42 @@ function renderExtraItems(extras) {
           '<div class="tn">' + nameHtml + '</div>' +
           '<div class="pd" id="p' + eid + '"><span class="y">¥</span>' + firstPrice.toLocaleString() + '</div></div>' +
           '<div class="opts"><div class="ol">選擇方案</div>' +
-          '<select class="os" onchange="extraSelU(\'' + eid + '\',this)">' + optionsHtml + '</select></div>';
+          '<select class="os" onchange="extraSelU(\'' + eid + '\',this)">' + optionsHtml + '</select>' + addonHtml + '</div>';
       }
       targetCat.appendChild(tiDiv);
     });
   });
 
   if (currentClinic !== 'all') applyClinicFilter();
+}
+
+/* ── 附加選項：取得目前加價總額與標籤 ── */
+function extraAddons(eid){
+  const el = document.getElementById(eid);
+  if (!el) return { sum:0, labels:[] };
+  let sum = 0; const labels = [];
+  el.querySelectorAll('select[data-addon="1"]').forEach(s => {
+    const v = parseInt(s.value) || 0;
+    if (v > 0) { sum += v; labels.push(((s.options[s.selectedIndex] && s.options[s.selectedIndex].text) || '').trim()); }
+  });
+  return { sum, labels };
+}
+
+/* ── 依類型重算某個 extra item ── */
+function extraRecalc(eid){
+  const el = document.getElementById(eid);
+  if (!el) return;
+  const kind = el.dataset.kind || 'simple';
+  if (kind === 'pill')   { extraPillU(eid); return; }
+  if (kind === 'qty')    { extraQtyU(eid);  return; }
+  if (kind === 'select') { extraSelU(eid, el.querySelector('select.os:not([data-addon])')); return; }
+  const base = parseInt(el.dataset.basePrice) || 0;
+  const a = extraAddons(eid);
+  const total = base + a.sum;
+  el.dataset.currentPrice = total;
+  setPD('p' + eid, total);
+  if (C.has(eid)) { P[eid] = total; O[eid] = a.labels.join(' ＋ '); upd(); }
+  refreshComboGroups();
 }
 
 // 固定價格
@@ -2410,46 +2467,44 @@ function togExtraSimple(id, price) {
   if (C.has(id)) {
     C.delete(id); delete P[id]; delete O[id];
     el.classList.remove('on');
+    upd(); refreshComboGroups();
   } else {
-    const effectivePrice = el.dataset.currentPrice ? parseInt(el.dataset.currentPrice) : price;
-    C.add(id); P[id] = effectivePrice; O[id] = '';
-    el.classList.add('on');
+    C.add(id); el.classList.add('on');
+    if (!el.dataset.basePrice) el.dataset.basePrice = price;
+    extraRecalc(id);
+    upd();
   }
-  upd();
-  refreshComboGroups();
 }
 
 // 數量輸入（支/瓶/cc）
 function togExtraQty(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const unitPrice = parseInt(el.dataset.unitPrice) || 0;
-  const qtyEl = document.getElementById('q-' + id);
-  const qty = parseInt(qtyEl && qtyEl.value) || 1;
-  const price = qty * unitPrice;
   if (C.has(id)) {
     C.delete(id); delete P[id]; delete O[id];
     el.classList.remove('on');
   } else {
-    C.add(id); P[id] = price;
-    const unitTxt = (qtyEl && qtyEl.nextElementSibling && qtyEl.nextElementSibling.textContent.split('×')[0].trim()) || '';
-    O[id] = qty + unitTxt + ' × ¥' + unitPrice.toLocaleString();
-    el.classList.add('on');
+    C.add(id); el.classList.add('on');
+    extraQtyU(id);
   }
   upd();
   refreshComboGroups();
 }
 
-function extraQtyU(id, unitPrice, unit, input) {
-  const qty = parseInt(input.value) || 1;
-  const price = qty * unitPrice;
+function extraQtyU(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.dataset.currentPrice = price;
-  setPD('p' + id, price);
+  const unitPrice = parseInt(el.dataset.unitPrice) || 0;
+  const unitName  = el.dataset.unitName || '';
+  const qtyEl = document.getElementById('q-' + id);
+  const qty = parseInt(qtyEl && qtyEl.value) || 1;
+  const a = extraAddons(id);
+  const total = qty * unitPrice + a.sum;
+  el.dataset.currentPrice = total;
+  setPD('p' + id, total);
   if (C.has(id)) {
-    P[id] = price;
-    O[id] = qty + unit + ' × ¥' + unitPrice.toLocaleString();
+    P[id] = total;
+    O[id] = [qty + unitName + ' × ¥' + unitPrice.toLocaleString()].concat(a.labels).join(' ＋ ');
     upd();
   }
 }
@@ -2458,32 +2513,32 @@ function extraQtyU(id, unitPrice, unit, input) {
 function togExtraSelect(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const price = parseInt(el.dataset.currentPrice) || 0;
-  const sel = el.querySelector('select.os');
-  const label = sel ? (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) : '';
   if (C.has(id)) {
     C.delete(id); delete P[id]; delete O[id];
     el.classList.remove('on');
+    upd(); refreshComboGroups();
   } else {
-    C.add(id); P[id] = price; O[id] = label;
-    el.classList.add('on');
+    C.add(id); el.classList.add('on');
+    extraSelU(id, el.querySelector('select.os:not([data-addon])'));
+    upd();
   }
-  upd();
-  refreshComboGroups();
 }
 
 function extraSelU(id, sel) {
-  const price = parseInt(sel.value) || 0;
-  const label = (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '';
   const el = document.getElementById(id);
   if (!el) return;
+  sel = sel || el.querySelector('select.os:not([data-addon])');
+  const base = parseInt(sel && sel.value) || 0;
+  const label = (sel && sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].text) || '';
+  const a = extraAddons(id);
+  const price = base + a.sum;
   el.dataset.currentPrice = price;
   setPD('p' + id, price);
-  if (C.has(id)) { P[id] = price; O[id] = label; upd(); }
+  if (C.has(id)) { P[id] = price; O[id] = [label].concat(a.labels).filter(Boolean).join(' ＋ '); upd(); }
   refreshComboGroups();
 }
 
-// 藥丸複選（可含次數 + [discount-N] 階梯折扣）
+// 藥丸複選（可含次數 + [discount-N] 階梯折扣 + 附加選項）
 function extraPillU(eid){
   const el = document.getElementById(eid); if (!el) return;
   const g  = document.getElementById('pg-' + eid); if (!g) return;
@@ -2499,6 +2554,7 @@ function extraPillU(eid){
     });
   }
 
+  const add = extraAddons(eid);
   let total = 0, oLabel = '';
   if (hasTimes) {
     const tg = document.getElementById('pg-t-' + eid);
@@ -2510,6 +2566,7 @@ function extraPillU(eid){
     const dLabel = discountRate < 1 ? ' 🎉 ' + Math.round(discountRate*100) + '%' : '';
     oLabel = [aLabel, tLabel].filter(Boolean).join('　') + dLabel;
     const defP = unit || parseInt(g.querySelector('.pill') && g.querySelector('.pill').dataset.val) || 0;
+    total += add.sum;
     setPD('p' + eid, total > 0 ? total : defP);
   } else {
     let subtotal = 0;
@@ -2518,8 +2575,10 @@ function extraPillU(eid){
     const dLabel = discountRate < 1 ? ' 🎉 ' + Math.round(discountRate*100) + '%' : '';
     oLabel = Array.from(activeAreas).map(p => p.textContent).join('・') + dLabel;
     const defP = parseInt(g.querySelector('.pill') && g.querySelector('.pill').dataset.val) || 0;
+    total += add.sum;
     setPD('p' + eid, total > 0 ? total : defP);
   }
+  if (add.labels.length) oLabel = [oLabel, add.labels.join(' ＋ ')].filter(Boolean).join(' ＋ ');
 
   updateExtraDiscountHint(el, count, discounts, discountRate);
   el.dataset.currentPrice = total;
@@ -2556,11 +2615,8 @@ function updateExtraDiscountHint(el, count, discounts, currentRate) {
 
 function togExtraPill(eid){
   const el = document.getElementById(eid); if (!el) return;
-  const price = parseInt(el.dataset.currentPrice) || 0;
-  const g = document.getElementById('pg-' + eid);
-  const labels = g ? Array.from(g.querySelectorAll('.pill.active')).map(p => p.textContent).join('・') : '';
   if (C.has(eid)) { C.delete(eid); delete P[eid]; delete O[eid]; el.classList.remove('on'); }
-  else { C.add(eid); P[eid] = price; O[eid] = labels; el.classList.add('on'); }
+  else { C.add(eid); el.classList.add('on'); extraPillU(eid); }
   upd();
   refreshComboGroups();
 }
@@ -3124,6 +3180,7 @@ function resetAll(){
   document.querySelectorAll('input.ci[id^="q-"]').forEach(el=>{el.value=1;});
   ['sel-s1t31'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   ['pico24-liq','pico34-base','pico34-liq','pico25-base','pico25-liq','pico26-liq','dp40-base','dp40-liq','dp41-liq'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  document.querySelectorAll('[id^="extra-item-"]').forEach(el=>extraRecalc(el.id));
   mrfU();upd();
 
   // 分院篩選一併重設
