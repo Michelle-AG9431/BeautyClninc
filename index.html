@@ -3341,7 +3341,13 @@ loadSheetPrices();
    進站導引視窗
    ══════════════════════════════════════════════════════════════ */
 
-// 可選的療程 → 對應頁面上的項目 ID（任一個 ID 有提供就算該診所有）
+// 可選的療程清單。兩種寫法可以混用：
+//   ids : 指定頁面上的項目 ID，例 ids:['s0t0']
+//   cat : 填分類標題（頁面上金色直線旁的字），整個分類底下的項目都算，
+//         包含 Sheet extra_items 新增到該分類的項目。
+//         只要標題「包含」這段文字就會對到，例 cat:'玻尿酸' 會對到「玻尿酸填充」
+//         也可以一次填多個分類：cat:['韓國肉毒','保妥適Botox']
+// 分院只要有提供其中任一項，就算有這個療程。
 const WZ_TREATMENTS = [
   { name:'鳳凰電波 FLX',        ids:['s0t0'] },
   { name:'XERF',                ids:['s0t5'] },
@@ -3353,6 +3359,8 @@ const WZ_TREATMENTS = [
   { name:'墨菲斯8',             ids:['s0t31','s0t31b'] },
   { name:'逆時針',              ids:['s1t28','s1t29','s1t30'] },
   { name:'Jalupro Superhydro',  ids:['s1t26'] },
+  { name:'玻尿酸填充',          cat:'玻尿酸填充' },
+  { name:'保妥適Botox',         cat:'保妥適Botox' },
 ];
 
 let wzClinicData   = null;       // Sheet 回傳的 __clinics__
@@ -3405,10 +3413,24 @@ function wzItemAvailable(id){
   // 只排除被 Sheet 隱藏的項目；不管目前頁面篩選到哪間分院
   return !!el && el.dataset.sheetHidden !== '1';
 }
-function wzTreatmentAvailable(t){ return t.ids.some(wzItemAvailable); }
+// 取得某個選項對應的所有項目 ID（ids 直接指定 + cat 整個分類自動抓）
+function wzIds(t){
+  const ids = (t.ids || []).slice();
+  const cats = t.cat ? [].concat(t.cat) : [];
+  if (cats.length) {
+    document.querySelectorAll('.cat').forEach(catEl => {
+      const tEl = catEl.querySelector('.ctit');
+      const title = tEl ? tEl.textContent.replace(/✦/g, '').trim() : '';
+      if (!title || !cats.some(c => title.includes(c))) return;
+      catEl.querySelectorAll('.ti').forEach(ti => { if (ti.id && !ids.includes(ti.id)) ids.push(ti.id); });
+    });
+  }
+  return ids;
+}
+function wzTreatmentAvailable(t){ return wzIds(t).some(wzItemAvailable); }
 
 function wzClinicHas(clinic, t){
-  return t.ids.some(id => {
+  return wzIds(t).some(id => {
     if (!wzItemAvailable(id)) return false;
     const el = document.getElementById(id);
     const row = clinicMap[id] || clinicMap[el.dataset.name || ''] || null;
@@ -3605,7 +3627,7 @@ function wzFinish(){
   // 跳到第一個選擇療程所在的分頁
   const first = [...wzPicked].sort((a, b) => a - b)[0];
   if (first !== undefined) {
-    const id = WZ_TREATMENTS[first].ids.find(x => {
+    const id = wzIds(WZ_TREATMENTS[first]).find(x => {
       const el = document.getElementById(x);
       return el && el.style.display !== 'none';
     });
