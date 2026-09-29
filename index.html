@@ -3214,5 +3214,432 @@ fixTabsTop();
 fetchRate();
 loadSheetPrices();
 </script>
+<!-- ══════════════════════════════════════════════════════════════
+     SBC 療程試算　進站導引視窗（讀取動畫 → 選療程 → 選診所）
+     ──────────────────────────────────────────────────────────────
+     使用方式：
+       把這整份內容貼在原本檔案「最後一個 </script>」之後、
+       「</body></html>」之前即可。原本的程式碼完全不用改。
 
+     ⚠ 一定要放在原本那段主程式 <script> 的「後面」，
+       因為這裡會接手 sortCats / populateClinicOptions /
+       applyClinicFilter 這三個函式。
+     ══════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── 導引視窗 ── */
+.wz-ov{position:fixed;inset:0;z-index:10000;background:rgba(42,32,22,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;animation:wzFade .25s ease;}
+.wz-ov.out{animation:wzFadeOut .25s ease forwards;}
+@keyframes wzFade{from{opacity:0}to{opacity:1}}
+@keyframes wzFadeOut{to{opacity:0}}
+.wz-card{background:var(--cream);width:100%;max-width:540px;max-height:88vh;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:wzUp .3s ease;}
+@keyframes wzUp{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+.wz-hd{background:var(--ink);padding:16px 20px 14px;text-align:center;}
+.wz-logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:10px;letter-spacing:.35em;color:var(--gold-l);text-transform:uppercase;display:block;margin-bottom:4px;}
+.wz-title{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;letter-spacing:.12em;}
+.wz-steps{display:flex;justify-content:center;gap:6px;margin-top:9px;}
+.wz-dot{width:22px;height:3px;border-radius:2px;background:rgba(255,255,255,.2);transition:background .2s;}
+.wz-dot.on{background:var(--gold);}
+.wz-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.wz-sub{font-size:12px;color:var(--ink-m);letter-spacing:.04em;line-height:1.7;margin-bottom:14px;text-align:center;}
+.wz-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;border-top:1px solid var(--br);background:var(--bg);}
+.wz-ft-r{display:flex;gap:8px;margin-left:auto;}
+
+/* 讀取動畫 */
+.wz-loading{display:flex;flex-direction:column;align-items:center;padding:26px 0 18px;}
+.wz-ring{width:58px;height:58px;border-radius:50%;border:2px solid var(--gold-p);border-top-color:var(--gold);border-right-color:var(--gold-l);animation:wzSpin 1s linear infinite;position:relative;}
+.wz-ring:after{content:'✦';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:16px;animation:wzSpin 1s linear infinite reverse,wzPulse 1.4s ease-in-out infinite;}
+@keyframes wzSpin{to{transform:rotate(360deg)}}
+@keyframes wzPulse{50%{opacity:.35}}
+.wz-ltext{margin-top:18px;font-size:12px;color:var(--ink-m);letter-spacing:.1em;}
+.wz-ldots i{font-style:normal;animation:wzBlink 1.2s infinite;}
+.wz-ldots i:nth-child(2){animation-delay:.2s}.wz-ldots i:nth-child(3){animation-delay:.4s}
+@keyframes wzBlink{0%,100%{opacity:.15}50%{opacity:1}}
+.wz-bar{width:180px;height:2px;background:var(--gold-p);border-radius:2px;margin-top:14px;overflow:hidden;}
+.wz-bar div{width:40%;height:100%;background:var(--gold);border-radius:2px;animation:wzSlide 1.3s ease-in-out infinite;}
+@keyframes wzSlide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+.wz-slow{margin-top:16px;font-size:11px;color:var(--ink-l);text-align:center;}
+
+/* 療程選項 */
+.wz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wz-chip{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg);border:1px solid var(--br);border-radius:6px;font-size:12px;color:var(--ink);cursor:pointer;user-select:none;transition:all .15s;line-height:1.4;}
+.wz-chip:hover{border-color:var(--gold-l);}
+.wz-chip .ck{flex-shrink:0;}
+.wz-chip.on{border-color:var(--gold);background:var(--gold-p);}
+.wz-chip.on .ck{background:var(--gold);border-color:var(--gold);}
+.wz-chip.on .tk{opacity:1;transform:none;}
+.wz-chip.off{opacity:.4;cursor:not-allowed;}
+.wz-chip.off:hover{border-color:var(--br);}
+.wz-chip small{display:block;font-size:9px;color:var(--ink-l);}
+.wz-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-size:10px;color:var(--ink-l);letter-spacing:.2em;}
+.wz-or:before,.wz-or:after{content:'';flex:1;height:1px;background:var(--br);}
+.wz-undecided{justify-content:center;}
+
+/* 診所清單 */
+.wz-notice{font-size:11px;line-height:1.6;padding:8px 12px;border-radius:4px;margin-bottom:12px;background:#fff7ec;border:1px solid var(--gold-l);color:var(--ink-m);}
+.wz-city{font-family:'Noto Serif TC',serif;font-size:12px;letter-spacing:.12em;color:var(--ink-m);margin:12px 0 6px;display:flex;align-items:center;gap:7px;}
+.wz-city:first-child{margin-top:0;}
+.wz-city:before{content:'';width:3px;height:13px;background:var(--gold);}
+.wz-cl{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--br);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all .15s;}
+.wz-cl:hover{border-color:var(--gold-l);}
+.wz-cl.on{border-color:var(--gold);background:var(--gold-p);}
+.wz-cl .ck{border-radius:50%;}
+.wz-cl.on .ck{background:var(--gold);border-color:var(--gold);}
+.wz-cl.on .tk{opacity:1;transform:none;}
+.wz-cn{flex:1;font-size:13px;color:var(--ink);}
+.wz-tags{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end;max-width:60%;}
+.wz-tag{font-size:9px;padding:1px 6px;border-radius:10px;background:var(--cream);border:1px solid var(--br);color:var(--ink-m);white-space:nowrap;}
+.wz-tag.all{background:#f0faf0;border-color:#a8d5a8;color:#27ae60;}
+.wz-tag.cnt{background:var(--gold);border-color:var(--gold);color:#fff;}
+.wz-empty{text-align:center;padding:24px 8px;font-size:12px;color:var(--ink-l);line-height:1.8;}
+
+/* 按鈕 */
+.wz-btn{background:var(--gold);color:#fff;border:1px solid var(--gold);font-size:12px;letter-spacing:.1em;padding:8px 18px;border-radius:3px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .2s;}
+.wz-btn:hover{background:var(--gold-l);}
+.wz-btn:disabled{opacity:.35;cursor:default;background:var(--gold);}
+.wz-btn2{background:none;color:var(--ink-m);border:1px solid var(--br);font-size:12px;letter-spacing:.08em;padding:8px 14px;border-radius:3px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+.wz-btn2:hover{border-color:var(--gold-l);color:var(--gold);}
+.wz-link{background:none;border:none;color:var(--ink-l);font-size:11px;text-decoration:underline;cursor:pointer;font-family:'Noto Sans TC',sans-serif;padding:0;}
+.wz-link:hover{color:var(--gold);}
+.wz-reopen{background:none;border:1px solid rgba(212,176,122,.6);color:var(--gold-l);font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+.wz-reopen:hover{background:rgba(212,176,122,.15);}
+
+@media (max-width:420px){.wz-grid{grid-template-columns:1fr;}.wz-tags{max-width:50%;}}
+@media (min-width:1200px){
+  .wz-card{max-width:640px;}
+  .wz-title{font-size:20px;}
+  .wz-sub{font-size:14px;}
+  .wz-chip{font-size:14px;padding:12px 14px;}
+  .wz-cn{font-size:15px;}
+  .wz-tag{font-size:11px;}
+  .wz-btn,.wz-btn2{font-size:14px;}
+  .wz-reopen{font-size:12px;}
+}
+</style>
+
+<div class="wz-ov" id="wz-ov">
+  <div class="wz-card">
+    <div class="wz-hd">
+      <span class="wz-logo">SBC Shonan Beauty Clinic</span>
+      <div class="wz-title" id="wz-title">療程總價試算</div>
+      <div class="wz-steps" id="wz-steps" style="display:none"><span class="wz-dot"></span><span class="wz-dot"></span></div>
+    </div>
+    <div class="wz-body" id="wz-body">
+      <div class="wz-loading">
+        <div class="wz-ring"></div>
+        <div class="wz-ltext">正在同步最新價格與分院資料<span class="wz-ldots"><i>.</i><i>.</i><i>.</i></span></div>
+        <div class="wz-bar"><div></div></div>
+        <div class="wz-slow" id="wz-slow"></div>
+      </div>
+    </div>
+    <div class="wz-ft" id="wz-ft" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   進站導引視窗
+   ══════════════════════════════════════════════════════════════ */
+
+// 可選的療程 → 對應頁面上的項目 ID（任一個 ID 有提供就算該診所有）
+const WZ_TREATMENTS = [
+  { name:'鳳凰電波 FLX',        ids:['s0t0'] },
+  { name:'XERF',                ids:['s0t5'] },
+  { name:'索夫波',              ids:['s0t4'] },
+  { name:'無雙電波',            ids:['s0t3'] },
+  { name:'美國極限音波',        ids:['s0t9'] },
+  { name:'美國極限音波 第二代', ids:['s0t10'] },
+  { name:'矽谷電波',            ids:['s0t30'] },
+  { name:'墨菲斯8',             ids:['s0t31','s0t31b'] },
+  { name:'逆時針',              ids:['s1t28','s1t29','s1t30'] },
+  { name:'Jalupro Superhydro',  ids:['s1t26'] },
+];
+
+let wzClinicData   = null;       // Sheet 回傳的 __clinics__
+let wzClinics      = [];         // 使用者勾選的診所（多間時給下拉選單用）
+let wzPicked       = new Set();  // 勾選的療程 index
+let wzUndecided    = false;      // 「我還沒決定項目」
+let wzList         = [];         // 第二步顯示的診所清單
+let wzChosen       = new Set();  // 第二步勾選的診所 index
+let wzReadyDone    = false;
+
+document.body.style.overflow = 'hidden';
+
+/* ── 接手原本的函式 ── */
+
+// ① Sheet 載入完畢（成功或失敗都會呼叫 sortCats）→ 開啟選單
+const _wzOrigSortCats = window.sortCats;
+window.sortCats = function(){ _wzOrigSortCats.apply(this, arguments); wzReady(); };
+
+// ② 記下分院資料
+const _wzOrigPopulate = window.populateClinicOptions;
+window.populateClinicOptions = function(data){
+  wzClinicData = data || null;
+  _wzOrigPopulate.apply(this, arguments);
+};
+
+// ③ 分院篩選：多支援「我勾選的診所」（多間）
+window.applyClinicFilter = function(){
+  const clinic = currentClinic;
+  const list = clinic === 'all' ? null : (clinic === '__mine__' ? wzClinics : [clinic]);
+
+  document.querySelectorAll('.ti').forEach(ti => {
+    if (ti.dataset.sheetHidden === '1') return;
+    if (!list) { ti.style.display = ''; return; }
+    const row = clinicMap[ti.id] || clinicMap[ti.dataset.name || ''] || null;
+    ti.style.display = (row === null || list.some(c => row[c])) ? '' : 'none';
+  });
+
+  document.querySelectorAll('.cat').forEach(cat => {
+    const items = cat.querySelectorAll('.ti');
+    if (!items.length) { cat.style.display = ''; return; }
+    const allHidden = Array.from(items).every(ti => ti.style.display === 'none');
+    cat.style.display = allHidden ? 'none' : '';
+  });
+};
+
+/* ── 判斷工具 ── */
+
+function wzItemAvailable(id){
+  const el = document.getElementById(id);
+  // 只排除被 Sheet 隱藏的項目；不管目前頁面篩選到哪間分院
+  return !!el && el.dataset.sheetHidden !== '1';
+}
+function wzTreatmentAvailable(t){ return t.ids.some(wzItemAvailable); }
+
+function wzClinicHas(clinic, t){
+  return t.ids.some(id => {
+    if (!wzItemAvailable(id)) return false;
+    const el = document.getElementById(id);
+    const row = clinicMap[id] || clinicMap[el.dataset.name || ''] || null;
+    return row === null || !!row[clinic];       // 沒設定 = 全院都有
+  });
+}
+
+/* ── 畫面切換 ── */
+
+function wzSet(title, step, body, footer){
+  document.getElementById('wz-title').textContent = title;
+  const st = document.getElementById('wz-steps');
+  st.style.display = step ? 'flex' : 'none';
+  st.querySelectorAll('.wz-dot').forEach((d, i) => d.classList.toggle('on', i < step));
+  document.getElementById('wz-body').innerHTML = body;
+  const ft = document.getElementById('wz-ft');
+  ft.innerHTML = footer || '';
+  ft.style.display = footer ? 'flex' : 'none';
+  document.getElementById('wz-body').scrollTop = 0;
+}
+
+function wzReady(){
+  if (wzReadyDone) return;
+  wzReadyDone = true;
+
+  // 記住被 Sheet 隱藏的項目，之後篩選時不要把它們又顯示出來
+  document.querySelectorAll('.ti').forEach(ti => {
+    if (ti.style.display === 'none') ti.dataset.sheetHidden = '1';
+  });
+
+  const ok = wzClinicData && Array.isArray(wzClinicData.names) && wzClinicData.names.length;
+  if (!ok) {
+    wzSet('無法取得分院資料', 0,
+      '<div class="wz-empty">分院資料暫時無法載入，<br>將先為你顯示所有療程與價格。</div>',
+      '<div class="wz-ft-r"><button class="wz-btn" onclick="wzClose()">進入網站</button></div>');
+    return;
+  }
+
+  // 頁首分院下拉旁加一顆「重新選擇」
+  const bar = document.getElementById('clinic-bar');
+  if (bar && !document.getElementById('wz-reopen')) {
+    const b = document.createElement('button');
+    b.id = 'wz-reopen'; b.className = 'wz-reopen'; b.textContent = '重新選擇';
+    b.onclick = wzReopen;
+    bar.appendChild(b);
+  }
+  wzStep1();
+}
+
+// 載入太久時提供略過
+setTimeout(() => {
+  if (wzReadyDone) return;
+  const s = document.getElementById('wz-slow');
+  if (s) s.innerHTML = '載入時間較久…　<button class="wz-link" onclick="wzReadyDone=true;wzClose()">先直接進入網站</button>';
+}, 12000);
+
+/* ── 第一步：選療程 ── */
+
+function wzStep1(){
+  const chips = WZ_TREATMENTS.map((t, i) => {
+    const cls = 'wz-chip' + (wzPicked.has(i) ? ' on' : '');
+    return '<div class="' + cls + '" onclick="wzPick(' + i + ')">' +
+      '<div class="ck"><span class="tk">✓</span></div>' +
+      '<div>' + t.name + '</div></div>';
+  }).join('');
+
+  wzSet('想做哪些療程？', 1,
+    '<div class="wz-sub">可複選，我們會幫你找出有提供這些療程的分院</div>' +
+    '<div class="wz-grid">' + chips + '</div>' +
+    '<div class="wz-or">或</div>' +
+    '<div class="wz-chip wz-undecided' + (wzUndecided ? ' on' : '') + '" onclick="wzPickUndecided()">' +
+      '<div class="ck"><span class="tk">✓</span></div><div>🤔 我還沒決定項目，先選診所再說</div></div>',
+    '<button class="wz-link" onclick="wzClose()">略過，顯示全部</button>' +
+    '<div class="wz-ft-r"><button class="wz-btn" id="wz-next" onclick="wzStep2()">下一步</button></div>');
+  wzUpdateNext();
+}
+
+function wzPick(i){
+  wzUndecided = false;
+  wzPicked.has(i) ? wzPicked.delete(i) : wzPicked.add(i);
+  wzStep1();
+}
+function wzPickUndecided(){
+  wzUndecided = !wzUndecided;
+  if (wzUndecided) wzPicked.clear();
+  wzStep1();
+}
+function wzUpdateNext(){
+  const b = document.getElementById('wz-next');
+  if (b) b.disabled = !(wzUndecided || wzPicked.size > 0);
+}
+
+/* ── 第二步：選診所 ── */
+
+function wzStep2(){
+  const picked = [...wzPicked].sort((a, b) => a - b).map(i => WZ_TREATMENTS[i]);
+  const names  = wzClinicData.names;
+
+  const scored = names.map(n => ({ name:n, hit: picked.filter(t => wzClinicHas(n, t)) }));
+  let partial = false;
+  if (!picked.length) {
+    wzList = scored;
+  } else {
+    wzList = scored.filter(s => s.hit.length === picked.length);
+    if (!wzList.length) {
+      partial = true;
+      wzList = scored.filter(s => s.hit.length > 0).sort((a, b) => b.hit.length - a.hit.length);
+    }
+  }
+  wzChosen = new Set(wzList.length === 1 ? [0] : []);
+
+  const footer =
+    '<button class="wz-btn2" onclick="wzStep1()">上一步</button>' +
+    '<div class="wz-ft-r"><button class="wz-btn" id="wz-go" onclick="wzFinish()">確定</button></div>';
+
+  if (!wzList.length) {
+    wzSet('選擇診所', 2,
+      '<div class="wz-empty">目前沒有分院提供你選的療程 😢<br>可以回上一步調整，或直接查看全部。</div>',
+      '<button class="wz-btn2" onclick="wzStep1()">上一步</button>' +
+      '<div class="wz-ft-r"><button class="wz-btn" onclick="wzClose()">顯示全部</button></div>');
+    return;
+  }
+
+  let sub = '';
+  if (!picked.length) sub = '<div class="wz-sub">請選擇一間分院，網頁會只顯示這間分院有的療程</div>';
+  else if (partial) sub = '<div class="wz-notice">沒有分院同時提供全部 ' + picked.length + ' 項療程，以下是有提供其中部分療程的分院（依符合數排序），請選擇一間。</div>';
+  else sub = '<div class="wz-sub">以下 ' + wzList.length + ' 間分院都有提供你選的療程，請選擇一間</div>';
+
+  // 依城市分組（沒有城市資料就不分組）
+  const groups = [];
+  const used = new Set();
+  const cg = wzClinicData.cityGroups, co = wzClinicData.cityOrder;
+  if (cg && Array.isArray(co) && co.length) {
+    // 依 cityGroups 的順序逐一認領，每間分院只會被放進一個分組
+    // （即使兩個分組裡有同名的分院，也會各自對到不同的那一筆）
+    co.forEach(city => {
+      const idxs = [];
+      (cg[city] || []).forEach(n => {
+        const i = wzList.findIndex((s, j) => s.name === n && !used.has(j));
+        if (i >= 0) { used.add(i); idxs.push(i); }
+      });
+      if (idxs.length) groups.push({ city, idxs });
+    });
+    const rest = wzList.map((s, i) => i).filter(i => !used.has(i));
+    if (rest.length) groups.push({ city:'其他', idxs:rest });
+  } else {
+    groups.push({ city:'', idxs: wzList.map((s, i) => i) });
+  }
+
+  const rowHtml = i => {
+    const s = wzList[i];
+    let tags = '';
+    if (picked.length && !partial) tags = '<span class="wz-tag all">✓ 全部提供</span>';
+    if (partial) tags = '<span class="wz-tag cnt">' + s.hit.length + '/' + picked.length + '</span>' +
+      s.hit.map(t => '<span class="wz-tag">' + t.name + '</span>').join('');
+    return '<div class="wz-cl' + (wzChosen.has(i) ? ' on' : '') + '" id="wz-cl-' + i + '" onclick="wzToggleClinic(' + i + ')">' +
+      '<div class="ck"><span class="tk">✓</span></div><span class="wz-cn">' + s.name + '</span>' +
+      (tags ? '<span class="wz-tags">' + tags + '</span>' : '') + '</div>';
+  };
+
+  const listHtml = groups.map(g =>
+    (g.city ? '<div class="wz-city">' + g.city + '</div>' : '') + g.idxs.map(rowHtml).join('')
+  ).join('');
+
+  wzSet('選擇診所', 2, sub + listHtml, footer);
+  wzUpdateGo();
+}
+
+// 分院單選：點一間就取代前一間
+function wzToggleClinic(i){
+  wzChosen = new Set([i]);
+  wzList.forEach((s, j) => {
+    const el = document.getElementById('wz-cl-' + j);
+    if (el) el.classList.toggle('on', j === i);
+  });
+  wzUpdateGo();
+}
+function wzUpdateGo(){
+  const b = document.getElementById('wz-go');
+  if (b) b.disabled = wzChosen.size === 0;
+}
+
+/* ── 完成：套用到頁面 ── */
+
+function wzFinish(){
+  const idx = [...wzChosen][0];
+  if (idx === undefined) return;
+  const clinic = wzList[idx].name;
+  const sel = document.getElementById('clinic-sel');
+  currentClinic = clinic;
+  if (sel) sel.value = clinic;
+  applyClinicFilter();
+
+  // 跳到第一個選擇療程所在的分頁
+  const first = [...wzPicked].sort((a, b) => a - b)[0];
+  if (first !== undefined) {
+    const id = WZ_TREATMENTS[first].ids.find(x => {
+      const el = document.getElementById(x);
+      return el && el.style.display !== 'none';
+    });
+    const sp = id && document.getElementById(id).closest('.sp');
+    if (sp) {
+      const n = sp.id.replace('sh', '');
+      const btn = Array.from(document.querySelectorAll('.tabs .tb'))
+        .find(b => (b.getAttribute('onclick') || '').indexOf('sw(' + n + ',') === 0);
+      if (btn) sw(parseInt(n), btn);
+    }
+  }
+  wzClose();
+}
+
+function wzClose(){
+  const ov = document.getElementById('wz-ov');
+  if (!ov) return;
+  ov.classList.add('out');
+  setTimeout(() => {
+    ov.style.display = 'none';
+    ov.classList.remove('out');
+    document.body.style.overflow = '';
+    window.scrollTo(0, 0);
+    fixTabsTop();   // 頁首多了分院列，重新計算黏頂位置
+  }, 250);
+}
+
+function wzReopen(){
+  wzPicked.clear();
+  wzUndecided = false;
+  const ov = document.getElementById('wz-ov');
+  ov.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  wzStep1();
+}
+</script>
 </body></html>
