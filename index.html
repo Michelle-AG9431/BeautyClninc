@@ -788,15 +788,15 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
     <div class="tn">熊貓針水光（手打）</div><div class="pd" id="ps1t55"><span class="y">¥</span>88,000</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t55" min="1" max="20" step="1" value="1" oninput="qtyU('s1t55','ps1t55',88000,'q-s1t55')"><span class="cu">支　×　¥88,000</span></div></div>
   </div>
-  <div class="ti" id="s1t57" data-name="保柔緹Revive">
+  <div class="ti" id="s1t57" data-name="保柔緹Revive 素妍針">
     <div class="tim" onclick="tog('s1t57')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">保柔緹Revive</div><div class="pd" id="ps1t57"><span class="y">¥</span>48,000</div></div>
+    <div class="tn">保柔緹Revive 素妍針</div><div class="pd" id="ps1t57"><span class="y">¥</span>48,000</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t57" min="1" max="20" step="1" value="1" oninput="qtyU('s1t57','ps1t57',48000,'q-s1t57')"><span class="cu">支　×　¥48,000</span></div></div>
   </div>
   
-  <div class="ti" id="s1t33" data-name="喬雅登 SKINVIVE（Volite XC）">
+  <div class="ti" id="s1t33" data-name="喬雅登 SKINVIVE 聚光針">
     <div class="tim" onclick="tog('s1t33')"><div class="ck"><span class="tk">✓</span></div>
-    <div class="tn">喬雅登 SKINVIVE（Volite XC）</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
+    <div class="tn">喬雅登 SKINVIVE 聚光針</div><div class="pd" id="ps1t33"><span class="y">¥</span>45,000</div></div>
     <div class="opts"><div class="ol">輸入支數</div><div class="crow"><input type="number" class="ci" id="q-s1t33" min="1" max="20" step="1" value="1" oninput="qtyU('s1t33','ps1t33',45000,'q-s1t33')"><span class="cu">支　×　¥45,000</span></div></div>
   </div>
 </div>
@@ -3291,6 +3291,7 @@ loadSheetPrices();
 .wz-tag{font-size:9px;padding:1px 6px;border-radius:10px;background:var(--cream);border:1px solid var(--br);color:var(--ink-m);white-space:nowrap;}
 .wz-tag.all{background:#f0faf0;border-color:#a8d5a8;color:#27ae60;}
 .wz-tag.cnt{background:var(--gold);border-color:var(--gold);color:#fff;}
+.wz-tag.var{background:var(--gold-p);border-color:var(--gold);color:#8a6a34;font-weight:500;}
 .wz-empty{text-align:center;padding:24px 8px;font-size:12px;color:var(--ink-l);line-height:1.8;}
 
 /* 按鈕 */
@@ -3347,25 +3348,36 @@ loadSheetPrices();
    進站導引視窗
    ══════════════════════════════════════════════════════════════ */
 
-// 可選的療程清單。兩種寫法可以混用：
+// 可選的療程清單。寫法可以混用，同一個選項裡也可以同時寫：
 //   ids : 指定頁面上的項目 ID，例 ids:['s0t0']
 //   cat : 填分類標題（頁面上金色直線旁的字），整個分類底下的項目都算，
 //         包含 Sheet extra_items 新增到該分類的項目。
 //         只要標題「包含」這段文字就會對到，例 cat:'玻尿酸' 會對到「玻尿酸填充」
 //         也可以一次填多個分類：cat:['韓國肉毒','保妥適Botox']
+//   variants : 同一個選項底下要區分的版本。選診所時，每間分院旁邊
+//         會標出它有哪個版本（例：鳳凰電波 / 黃金電波）。
+//         每個版本自己也可以用 ids 或 cat。
 // 分院只要有提供其中任一項，就算有這個療程。
 const WZ_TREATMENTS = [
-  { name:'鳳凰電波 FLX',        ids:['s0t0'] },
+  { name:'鳳凰/黃金電波', variants:[
+      { label:'鳳凰電波', ids:['s0t0'] },
+      { label:'黃金電波', ids:['s0t1'] },
+  ]},
   { name:'XERF',                ids:['s0t5'] },
   { name:'索夫波',              ids:['s0t4'] },
   { name:'無雙電波',            ids:['s0t3'] },
-  { name:'美國極限音波',        ids:['s0t9'] },
-  { name:'美國極限音波 第二代', ids:['s0t10'] },
+  { name:'美國極限音波', variants:[
+      { label:'美音1代', ids:['s0t9'] },
+      { label:'美音2代', ids:['s0t10'] },
+  ]},
   { name:'音波拉提',            ids:['s0t6'] },
-  { name:'矽谷電波',            ids:['s0t30'] },
-  { name:'墨菲斯8',             ids:['s0t31','s0t31b'] },
+  { name:'微針電波',            ids:['s0t30','s0t31','s0t31b'] },
   { name:'逆時針',              ids:['s1t28','s1t29','s1t30'] },
   { name:'Jalupro Superhydro',  ids:['s1t26'] },
+  { name:'水光針',              ids:['s1t57','s1t33'], cat:'海庫斯水光導入' },
+  { name:'麗珠蘭+肉毒(手打)',   cat:'女優注射・複合注射' },
+  { name:'麗珠蘭(手打)',         cat:'麗珠蘭（鮭魚針）' },
+  { name:'膠原蛋白增生劑',       ids:['s1t27','s1t54'] },
   { name:'玻尿酸填充',          cat:'玻尿酸填充' },
   { name:'保妥適Botox',         cat:'保妥適Botox' },
 ];
@@ -3423,6 +3435,7 @@ function wzItemAvailable(id){
 // 取得某個選項對應的所有項目 ID（ids 直接指定 + cat 整個分類自動抓）
 function wzIds(t){
   const ids = (t.ids || []).slice();
+  (t.variants || []).forEach(v => wzIds(v).forEach(id => { if (!ids.includes(id)) ids.push(id); }));
   const cats = t.cat ? [].concat(t.cat) : [];
   if (cats.length) {
     document.querySelectorAll('.cat').forEach(catEl => {
@@ -3596,10 +3609,16 @@ function wzStep2(){
 
   const rowHtml = i => {
     const s = wzList[i];
+    // 有 variants 的療程 → 標出這間分院是哪一種（例：鳳凰電波 / 黃金電波）
+    const varTags = t => t.variants.filter(v => wzClinicHas(s.name, v))
+      .map(v => '<span class="wz-tag var">' + v.label + '</span>').join('');
     let tags = '';
-    if (picked.length && !partial) tags = '<span class="wz-tag all">✓ 全部提供</span>';
+    if (picked.length && !partial) {
+      tags = s.hit.filter(t => t.variants).map(varTags).join('') +
+        '<span class="wz-tag all">✓ 全部提供</span>';
+    }
     if (partial) tags = '<span class="wz-tag cnt">' + s.hit.length + '/' + picked.length + '</span>' +
-      s.hit.map(t => '<span class="wz-tag">' + t.name + '</span>').join('');
+      s.hit.map(t => t.variants ? varTags(t) : '<span class="wz-tag">' + t.name + '</span>').join('');
     return '<div class="wz-cl' + (wzChosen.has(i) ? ' on' : '') + '" id="wz-cl-' + i + '" onclick="wzToggleClinic(' + i + ')">' +
       '<div class="ck"><span class="tk">✓</span></div><span class="wz-cn">' + s.name + '</span>' +
       (tags ? '<span class="wz-tags">' + tags + '</span>' : '') + '</div>';
