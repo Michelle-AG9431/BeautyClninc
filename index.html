@@ -3304,7 +3304,13 @@ loadSheetPrices();
 .wz-reopen{background:none;border:1px solid rgba(212,176,122,.6);color:var(--gold-l);font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
 .wz-reopen:hover{background:rgba(212,176,122,.15);}
 
-@media (max-width:420px){.wz-grid{grid-template-columns:1fr;}.wz-tags{max-width:50%;}}
+@media (max-width:420px){
+  .wz-body{padding:14px 12px;}
+  .wz-grid{gap:6px;}
+  .wz-chip{font-size:11.5px;padding:9px 8px;gap:6px;}
+  .wz-chip .ck{width:13px;height:13px;}
+  .wz-tags{max-width:50%;}
+}
 @media (min-width:1200px){
   .wz-card{max-width:640px;}
   .wz-title{font-size:20px;}
@@ -3508,15 +3514,22 @@ function wzStep1(){
   wzUpdateNext();
 }
 
+// 勾選時只切換樣式，不重畫整個畫面（避免捲動位置跳回最上面）
+function wzRefreshChips(){
+  document.querySelectorAll('#wz-body .wz-grid .wz-chip').forEach((c, i) => c.classList.toggle('on', wzPicked.has(i)));
+  const u = document.querySelector('#wz-body .wz-undecided');
+  if (u) u.classList.toggle('on', wzUndecided);
+  wzUpdateNext();
+}
 function wzPick(i){
   wzUndecided = false;
   wzPicked.has(i) ? wzPicked.delete(i) : wzPicked.add(i);
-  wzStep1();
+  wzRefreshChips();
 }
 function wzPickUndecided(){
   wzUndecided = !wzUndecided;
   if (wzUndecided) wzPicked.clear();
-  wzStep1();
+  wzRefreshChips();
 }
 function wzUpdateNext(){
   const b = document.getElementById('wz-next');
