@@ -3271,7 +3271,7 @@ loadSheetPrices();
 .wz-chip.off{opacity:.4;cursor:not-allowed;}
 .wz-chip.off:hover{border-color:var(--br);}
 .wz-chip small{display:block;font-size:9px;color:var(--ink-l);}
-.wz-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-size:10px;color:var(--ink-l);letter-spacing:.2em;}
+.wz-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;font-size:10px;color:var(--ink-l);letter-spacing:.2em;white-space:nowrap;}
 .wz-or:before,.wz-or:after{content:'';flex:1;height:1px;background:var(--br);}
 .wz-undecided{justify-content:center;}
 
@@ -3309,7 +3309,7 @@ loadSheetPrices();
   .wz-card{max-width:640px;}
   .wz-title{font-size:20px;}
   .wz-sub{font-size:14px;}
-  .wz-chip{font-size:14px;padding:12px 14px;}
+  .wz-chip{font-size:13px;padding:9px 12px;}
   .wz-cn{font-size:15px;}
   .wz-tag{font-size:11px;}
   .wz-btn,.wz-btn2{font-size:14px;}
@@ -3355,17 +3355,12 @@ const WZ_TREATMENTS = [
   { name:'無雙電波',            ids:['s0t3'] },
   { name:'美國極限音波',        ids:['s0t9'] },
   { name:'美國極限音波 第二代', ids:['s0t10'] },
-  { name:'Linear Z音波拉提',    ids:['s0t6'] },
   { name:'矽谷電波',            ids:['s0t30'] },
   { name:'墨菲斯8',             ids:['s0t31','s0t31b'] },
   { name:'逆時針',              ids:['s1t28','s1t29','s1t30'] },
   { name:'Jalupro Superhydro',  ids:['s1t26'] },
   { name:'玻尿酸填充',          cat:'玻尿酸填充' },
   { name:'保妥適Botox',         cat:'保妥適Botox' },
-  { name:'麗珠蘭(手打)',         cat:'麗珠蘭（鮭魚針）' },
-  { name:'麗珠蘭+肉毒(手打)',         cat:'女優注射・複合注射' },
-  { name:'水光針(機打)',         cat:'海庫斯水光導入' },
-  
 ];
 
 let wzClinicData   = null;       // Sheet 回傳的 __clinics__
@@ -3504,10 +3499,10 @@ function wzStep1(){
 
   wzSet('想做哪些療程？', 1,
     '<div class="wz-sub">可複選，我們會幫你找出有提供這些療程的分院</div>' +
-    '<div class="wz-grid">' + chips + '</div>' +
-    '<div class="wz-or">或</div>' +
     '<div class="wz-chip wz-undecided' + (wzUndecided ? ' on' : '') + '" onclick="wzPickUndecided()">' +
-      '<div class="ck"><span class="tk">✓</span></div><div>🤔 我還沒決定項目，先選診所再說</div></div>',
+      '<div class="ck"><span class="tk">✓</span></div><div>🤔 我還沒決定項目，先選診所再說</div></div>' +
+    '<div class="wz-or">或選擇想做的療程</div>' +
+    '<div class="wz-grid">' + chips + '</div>',
     '<button class="wz-link" onclick="wzClose()">略過，顯示全部</button>' +
     '<div class="wz-ft-r"><button class="wz-btn" id="wz-next" onclick="wzStep2()">下一步</button></div>');
   wzUpdateNext();
