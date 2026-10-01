@@ -3425,6 +3425,107 @@ window.applyClinicFilter = function(){
   });
 };
 
+/* ── 優惠補丁：monthly_deals 的選項代碼可以直接填「選項名稱」──
+   原本下拉選單只認數字 0,1,2…，填「喬雅露-100發」這種名稱會對不到。
+   這裡在套用前，先把名稱換成對應的第幾個選項。 */
+/*    另外：
+   - 名稱如果對不到任何現有選項，優惠開啟時會「新增一個優惠專屬選項」，
+     例如 s0t30 填「臉 5次」→ 下拉選單多一個「⭐ 臉　5次【10月優惠】」，關掉優惠就消失。
+   - 名稱比對時不分半形/全形空白，「臉或脖子 5次」也能對到「臉或脖子　5次」。
+   - 主程式原本會略過的特殊下拉選單（例如矽谷電波），在下面這張表登記後也能套優惠。 */
+const WZ_DEAL_SELECTS = {
+  s0t30: { sel:'mrf-base', update:() => mrfU() },   // 矽谷電波
+};
+
+const wzNorm = s => String(s).replace(/^⭐\s*/, '').replace(/【[^】]*】$/, '').replace(/[\s　]+/g, ' ').trim();
+const wzOptLabel = opt => {
+  const raw = opt.dataset.normalText || opt.dataset.grpNormTxt || opt.text;
+  // 「選項名稱　¥價格」→ 只取名稱；沒有價格的就整段比對
+  return wzNorm(raw.replace(/[\s　]*¥[\d,]+\s*$/, ''));
+};
+const wzIsOptKey = k => !k.startsWith('__') && !/^\d+$/.test(k) &&
+  !['unit','static','glow','buddy','buddy_unit','base','area_rate','rate1','rate2','rate3'].includes(k) &&
+  !k.startsWith('[') && !/_val\d+$/.test(k);
+
+// 把 deal 裡的「選項名稱」換成數字；對不到的名稱回傳在 extra 裡
+function wzMapDeal(sel, deal){
+  const out = Object.assign({}, deal), extra = [];
+  if (!sel || !deal) return { deal: out, extra };
+  const opts = Array.from(sel.options).filter(o => !o.dataset.wzDeal);
+  Object.keys(deal).filter(wzIsOptKey).forEach(k => {
+    const i = opts.findIndex(o => wzOptLabel(o) === wzNorm(k));
+    if (i >= 0) { if (out[String(i)] === undefined) out[String(i)] = deal[k]; }
+    else extra.push({ label: wzNorm(k), price: Number(deal[k]) });
+  });
+  return { deal: out, extra };
+}
+
+// 新增／移除「優惠專屬選項」
+function wzSyncDealOptions(sel, extra, on, note){
+  const wasSel = sel.selectedOptions[0] && sel.selectedOptions[0].dataset.wzDeal;
+  sel.querySelectorAll('option[data-wz-deal]').forEach(o => o.remove());
+  if (wasSel) sel.selectedIndex = 0;
+  if (!on) return;
+  extra.forEach(x => {
+    const o = document.createElement('option');
+    o.value = x.price;
+    o.dataset.wzDeal = '1';
+    o.text = '⭐ ' + x.label.replace(/ /g, '　') + '　【' + (note || '優惠') + '】';
+    sel.appendChild(o);
+  });
+}
+
+// 特殊下拉選單（主程式會略過的）自己套數字優惠
+function wzApplySpecialSelect(sel, deal, on){
+  Array.from(sel.options).forEach((opt, i) => {
+    if (opt.dataset.wzDeal) return;
+    const k = String(i);
+    if (on && deal[k] !== undefined) {
+      opt.dataset.normalValue = opt.dataset.normalValue || opt.value;
+      opt.dataset.normalText  = opt.dataset.normalText  || opt.text;
+      opt.value = deal[k];
+      opt.text  = '⭐ ' + opt.dataset.normalText;
+    } else if (opt.dataset.normalValue) {
+      opt.value = opt.dataset.normalValue;
+      opt.text  = opt.dataset.normalText;
+      delete opt.dataset.normalValue;
+      delete opt.dataset.normalText;
+    }
+  });
+}
+
+function wzLabelKeys(el, deal){
+  return wzMapDeal(el && el.querySelector(COMBO_SEL), deal).deal;
+}
+
+const _wzOrigDealBase = window.applyDealBase;
+window.applyDealBase = function(el, id, deal, on){
+  if (!el || !deal) return _wzOrigDealBase.apply(this, arguments);
+  const special = WZ_DEAL_SELECTS[id];
+  const sel = special ? document.getElementById(special.sel) : el.querySelector(COMBO_SEL);
+  const m = wzMapDeal(sel, deal);
+  if (sel) wzSyncDealOptions(sel, m.extra, on, deal['__note__']);
+  const r = _wzOrigDealBase.call(this, el, id, m.deal, on);
+  // 選項文字裡有寫價格的（extra_items），改成顯示優惠價＋原價
+  if (on && sel && !special) {
+    Array.from(sel.options).forEach(o => {
+      const nt = o.dataset.normalText;
+      if (!nt || !/¥[\d,]+\s*$/.test(nt) || String(o.value) === String(o.dataset.normalValue)) return;
+      const orig = nt.match(/¥[\d,]+\s*$/)[0].trim();
+      o.text = '⭐ ' + nt.replace(/[\s　]*¥[\d,]+\s*$/, '') + '　¥' + Number(o.value).toLocaleString() + '（原價' + orig + '）';
+    });
+  }
+  if (special && sel) {
+    wzApplySpecialSelect(sel, m.deal, on);
+    special.update();
+  }
+  return r;
+};
+const _wzOrigComboOverride = window.comboApplyOverride;
+window.comboApplyOverride = function(el, deal){
+  return _wzOrigComboOverride.call(this, el, wzLabelKeys(el, deal));
+};
+
 /* ── 判斷工具 ── */
 
 function wzItemAvailable(id){
