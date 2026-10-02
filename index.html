@@ -3444,7 +3444,7 @@ const wzOptLabel = opt => {
   return wzNorm(raw.replace(/[\s　]*¥[\d,]+\s*$/, ''));
 };
 const wzIsOptKey = k => !k.startsWith('__') && !/^\d+$/.test(k) &&
-  !['unit','static','glow','buddy','buddy_unit','base','area_rate','rate1','rate2','rate3'].includes(k) &&
+  !['unit','static','glow','glow_rate1','glow_rate2','buddy','buddy_unit','base','area_rate','rate1','rate2','rate3'].includes(k) &&
   !k.startsWith('[') && !/_val\d+$/.test(k);
 
 // 把 deal 裡的「選項名稱」換成數字；對不到的名稱回傳在 extra 裡
@@ -3519,11 +3519,73 @@ window.applyDealBase = function(el, id, deal, on){
     wzApplySpecialSelect(sel, m.deal, on);
     special.update();
   }
+  if (id === 's1t26') { wzJalu.deal = on ? deal : null; wzJaluRefresh(); }
   return r;
 };
 const _wzOrigComboOverride = window.comboApplyOverride;
 window.comboApplyOverride = function(el, deal){
   return _wzOrigComboOverride.call(this, el, wzLabelKeys(el, deal));
+};
+
+/* ── Jalupro Superhydro：第 1 支／第 2 支起 分段單價 ──
+   prices 分頁（項目ID 都填 s1t26）的選項代碼：
+     rate1       第 1 支單價                 例 44000
+     rate2       第 2 支起每支單價           例 39500
+     glow_rate1  加做煥膚時，第 1 支的套組價  例 54000
+     glow_rate2  加做煥膚時，第 2 支起每支    例 49500
+   monthly_deals 也用同樣四個代碼（只填有優惠的那幾個即可）。
+   舊寫法 unit／glow 仍可用：unit = 每支同價，glow = 每支加多少。 */
+const wzJalu = { base:{}, deal:null };
+function wzJaluRates(){
+  const b = wzJalu.base || {}, d = wzJalu.deal;
+  const src = Object.assign({}, b);
+  if (d) {
+    if (d.unit !== undefined && d.rate1 === undefined) { src.rate1 = d.unit; src.rate2 = d.unit; }
+    if (d.glow !== undefined) { src.glow = d.glow; delete src.glow_rate1; delete src.glow_rate2; }
+    ['rate1','rate2','glow_rate1','glow_rate2'].forEach(k => { if (d[k] !== undefined) src[k] = d[k]; });
+  }
+  const num = v => (v === undefined || v === '' || isNaN(Number(v))) ? undefined : Number(v);
+  const r1 = num(src.rate1) ?? num(src.unit) ?? rates.jalu26.unit;
+  const r2 = num(src.rate2) ?? r1;
+  const g1 = num(src.glow_rate1) ?? (r1 + (num(src.glow) ?? rates.jalu26.glow));
+  const g2 = num(src.glow_rate2) ?? (r2 + (g1 - r1));
+  return { r1, r2, g1, g2 };
+}
+function wzJaluRefresh(){
+  const el = document.getElementById('s1t26');
+  if (!el) return;
+  const { r1, r2, g1, g2 } = wzJaluRates();
+  const yen = n => '¥' + n.toLocaleString();
+  const star = wzJalu.deal ? '⭐ ' : '';
+  const cu = el.querySelector('.cu');
+  if (cu) cu.textContent = r2 !== r1 ? '支　第1支 ' + yen(r1) + '／第2支起 ' + yen(r2) : '支　×　' + yen(r1);
+  const gs = document.getElementById('jalupro26-glow');
+  if (gs && gs.options[1]) {
+    gs.options[1].text = star + '加做煥膚　' +
+      (g2 !== g1 ? '第1支 ' + yen(g1) + '／第2支起 ' + yen(g2) : '每支 ' + yen(g1));
+  }
+  if (C.has('s1t26')) jalu26U(); else setPD('ps1t26', r1);
+}
+window.jalu26U = function(){
+  const qty = Math.max(1, parseInt(document.getElementById('q-s1t26')?.value) || 1);
+  const gs = document.getElementById('jalupro26-glow');
+  const withGlow = !!gs && gs.selectedIndex > 0;
+  const { r1, r2, g1, g2 } = wzJaluRates();
+  const a = withGlow ? g1 : r1, b = withGlow ? g2 : r2;
+  const total = a + b * (qty - 1);
+  P['s1t26'] = total;
+  const yen = n => '¥' + n.toLocaleString();
+  O['s1t26'] = (qty === 1 ? '1支 ' + yen(a)
+    : a === b ? qty + '支 × ' + yen(a)
+    : '第1支 ' + yen(a) + ' ＋ 第2支起 ' + yen(b) + ' × ' + (qty - 1)) + (withGlow ? '（含煥膚）' : '');
+  setPD('ps1t26', total); upd();
+};
+const _wzOrigSheetPrices = window.applySheetPrices;
+window.applySheetPrices = function(data){
+  const r = _wzOrigSheetPrices.apply(this, arguments);
+  if (data && data.s1t26 && typeof data.s1t26 === 'object') wzJalu.base = data.s1t26;
+  wzJaluRefresh();
+  return r;
 };
 
 /* ── 判斷工具 ── */
