@@ -101,6 +101,11 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 .price-status.loading{color:#9a8e7a;}
 .price-status.ok{color:#7ab87a;}
 .price-status.err{color:#c97a7a;}
+/* 重新載入價格按鈕 */
+.ps-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px;}
+.ps-row .price-status{margin-top:0;}
+.reload-btn{background:none;border:1px solid rgba(212,176,122,.5);color:var(--gold-l);font-size:9px;letter-spacing:.05em;padding:1px 8px;border-radius:10px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;line-height:1.5;}
+.reload-btn:hover{background:rgba(212,176,122,.15);}
 .deal-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
 .deal-label{font-size:9px;letter-spacing:.1em;color:var(--gold-l);}
 .deal-toggle{position:relative;width:34px;height:18px;cursor:pointer;}
@@ -127,7 +132,10 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
 <header>
   <span class="logo">SBC Shonan Beauty Clinic</span>
   <h1>SBC湘南醫美診所　療程總價試算</h1>
-  <div class="price-status loading" id="price-status">價格載入中…</div>
+  <div class="ps-row">
+    <div class="price-status loading" id="price-status">價格載入中…</div>
+    <button class="reload-btn" id="reload-btn" onclick="reloadSheet()" title="重新抓取 Google Sheets 最新價格">↻ 重新載入</button>
+  </div>
   <div class="deal-bar" id="deal-bar" style="display:none">
     <span class="deal-label">當月優惠價</span>
     <label class="deal-toggle">
@@ -1188,6 +1196,7 @@ h1{font-family:'Noto Serif TC',serif;font-weight:300;font-size:17px;color:#fff;l
   h1              { font-size:21px; }
   .logo           { font-size:12px; }
   .price-status   { font-size:11px; }
+  .reload-btn     { font-size:11px; }
   .lbl            { font-size:11px; }
   .jpy            { font-size:36px; }
   .jpy .cy        { font-size:18px; }
@@ -2019,6 +2028,7 @@ function initHeaderControls(){
   const st = document.getElementById('price-status');
   const dealBar = document.getElementById('deal-bar');
   if (!st || document.getElementById('header-controls')) return;
+  const anchor = st.closest('.ps-row') || st;   // 控制列放在「狀態＋重新載入」那一行下面
   const wrap = document.createElement('div');
   wrap.id = 'header-controls';
   wrap.innerHTML =
@@ -2028,11 +2038,19 @@ function initHeaderControls(){
         '<option value="all">🏥 全部分院</option>' +
       '</select>' +
     '</div>';
-  st.insertAdjacentElement('afterend', wrap);
+  anchor.insertAdjacentElement('afterend', wrap);
   if (dealBar) wrap.appendChild(dealBar);
 }
 
 function setClinic(v){ currentClinic = v; applyClinicFilter(); }
+
+// 重新載入試算表：記住目前的分院和優惠開關，重新整理後自動套回去（不再跳出選單）
+function reloadSheet(){
+  try {
+    sessionStorage.setItem('sbcReload', JSON.stringify({ clinic: currentClinic, deal: !!dealModeOn }));
+  } catch(e) {}
+  location.reload();
+}
 
 function populateClinicOptions(data){
   const bar = document.getElementById('clinic-bar');
@@ -3709,6 +3727,21 @@ function wzReady(){
     b.id = 'wz-reopen'; b.className = 'wz-reopen'; b.textContent = '重新選擇';
     b.onclick = wzReopen;
     bar.appendChild(b);
+  }
+
+  // 按「↻ 重新載入」回來的 → 套回剛才的分院和優惠開關，直接進網頁
+  let rl = null;
+  try { rl = JSON.parse(sessionStorage.getItem('sbcReload') || 'null'); sessionStorage.removeItem('sbcReload'); } catch(e) {}
+  if (rl) {
+    const sel = document.getElementById('clinic-sel');
+    if (rl.clinic && rl.clinic !== 'all' && sel && Array.from(sel.options).some(o => o.value === rl.clinic)) {
+      sel.value = rl.clinic; setClinic(rl.clinic);
+    }
+    const cb = document.getElementById('deal-toggle-cb');
+    const db = document.getElementById('deal-bar');
+    if (rl.deal && cb && db && db.style.display !== 'none') { cb.checked = true; toggleDeals(true); }
+    wzClose();
+    return;
   }
   wzStep1();
 }
