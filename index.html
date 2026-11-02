@@ -1319,12 +1319,15 @@ const GROUP_PILL_RECOMPUTE = {
    列在 ITEM_COUNT_GROUPS 裡的群組，觸發數量算的是「勾選了幾個不同的項目」（每項至少 1 支），
    不是加起來的總支數。所以同一項目自己買再多支也不會觸發。
    monthly_deals 寫法：
-     ・有優惠的那一列：填優惠價、觸發數量、群組ID
-       例：s1t33｜unit｜35000｜觸發數量 2｜DoctorInject_Combo → 自己＋其他 1 項
-     ・只是「可以拿來搭配」的項目：填群組ID，觸發數量留空白（只算成員，價格不會被改）*/
+     ・有優惠的那一列：填優惠價、「優惠說明」、觸發數量、群組ID
+       例：s1t33｜unit｜35000｜11月優惠｜2｜DoctorInject_Combo → 自己＋其他 1 項
+       （觸發數量沒填 = 2）
+     ・只是「可以拿來搭配」的項目：填群組ID，「優惠說明」留空白
+       → 只算搭配成員，不改價格、不顯示優惠標籤或提示（觸發數量填不填都沒關係）
+     ・同一個項目在同一群組只能寫一列（同一個 unit 寫兩列，後面那列會蓋掉前面的價格）*/
 const ITEM_COUNT_GROUPS = ['DoctorInject_Combo'];
 function isItemCountGroup(gid){ return !!gid && ITEM_COUNT_GROUPS.includes(gid); }
-function isIcgMemberOnly(deal){ return isItemCountGroup(deal['__group__']) && !deal['__trigger__']; }
+function isIcgMemberOnly(deal){ return isItemCountGroup(deal['__group__']) && !deal['__note__']; }
 // 同群組裡「已勾選」的不同項目數（自己有填支數就算 1 項）
 function icgItemCount(gid, selfId, selfQty){
   const ids = new Set();
@@ -2933,9 +2936,10 @@ function qtyUMulti(itemId, priceElId, qty, baseUnit, entries){
   const normalUnit = Number(document.getElementById(itemId)?.dataset.normalUnit) || baseUnit;
   let bestUnit = normalUnit, discountApplied = false;
   entries.forEach(({deal}) => {
-    const trigger = deal.__trigger__ || 0;
+    if (deal.unit >= normalUnit) return;   // 沒有比原價便宜 → 不算優惠，也不顯示提示
     const groupId = deal.__group__ || '';
     const itemMode = isItemCountGroup(groupId);
+    const trigger = deal.__trigger__ || (itemMode ? 2 : 0);
     // 需搭配群組：算不同項目數；一般群組：算總支數（getGroupQty 已含自己，不要再加 qty）
     const effQty  = itemMode ? icgItemCount(groupId, itemId, qty)
                   : groupId  ? getGroupQty(groupId, itemId) : qty;
