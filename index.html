@@ -1306,9 +1306,45 @@ const GROUP_PILL_RECOMPUTE = {
    1. 當月優惠：索引・徽章・開關
    ══════════════════════════════════════════════════════════════ */
 
+/* ── 「需搭配其他項目」的群組 ──
+   列在 ITEM_COUNT_GROUPS 裡的群組，觸發數量算的是「勾選了幾個不同的項目」（每項至少 1 支），
+   不是加起來的總支數。所以同一項目自己買再多支也不會觸發。
+   monthly_deals 寫法：
+     ・有優惠的那一列：填優惠價、觸發數量、群組ID
+       例：s1t33｜unit｜35000｜觸發數量 2｜DoctorInject_Combo → 自己＋其他 1 項
+     ・只是「可以拿來搭配」的項目：填群組ID，觸發數量留空白（只算成員，價格不會被改）*/
+const ITEM_COUNT_GROUPS = ['DoctorInject_Combo'];
+function isItemCountGroup(gid){ return !!gid && ITEM_COUNT_GROUPS.includes(gid); }
+function isIcgMemberOnly(deal){ return isItemCountGroup(deal['__group__']) && !deal['__trigger__']; }
+// 同群組裡「已勾選」的不同項目數（自己有填支數就算 1 項）
+function icgItemCount(gid, selfId, selfQty){
+  const ids = new Set();
+  Object.entries(dealsData).forEach(([key, d]) => { if (d['__group__'] === gid) ids.add(d['__id__'] || key); });
+  Object.entries(extraDealsData).forEach(([key, d]) => {
+    if (d['__group__'] !== gid) return;
+    const el = findExtraEl(key, d);
+    if (el && el.id) ids.add(el.id);
+  });
+  let n = selfQty > 0 ? 1 : 0;
+  ids.forEach(id => { if (id !== selfId && C.has(id)) n++; });
+  return n;
+}
+// 有「需搭配」優惠的項目，在其他項目勾選／取消時重新計算
+let icgBusy = false;
+function refreshItemCountDeals(){
+  if (!dealModeOn) return;
+  Object.entries(dealsById).forEach(([id, entries]) => {
+    if (!C.has(id)) return;
+    if (!entries.some(e => e.deal['unit'] !== undefined && isItemCountGroup(e.deal['__group__']))) return;
+    if (!document.getElementById('q-' + id)) return;
+    qtyU(id, 'p' + id, unitPrices[id] || 0, 'q-' + id);
+  });
+}
+
 function indexDealsById(){
   dealsById = {};
   Object.entries(dealsData).forEach(([key, deal]) => {
+    if (isIcgMemberOnly(deal)) return;   // 只是搭配成員，不是優惠
     const eid = deal['__id__'] || key;
     if (!dealsById[eid]) dealsById[eid] = [];
     dealsById[eid].push({ key, deal });
@@ -1350,6 +1386,7 @@ function applyDealBadges(){
 
   // extra_items（用「名稱＋類別」對應）
   Object.entries(extraDealsData).forEach(([extraKey, deal]) => {
+    if (isIcgMemberOnly(deal)) return;   // 只是搭配成員，不是優惠
     const name = deal['__name__'] || extraKey, cat = deal['__cat__'] || '';
     let el = null;
     document.querySelectorAll('[data-name="' + name + '"]').forEach(c => {
@@ -1402,7 +1439,7 @@ function buildGroupDeals(){
   groupDeals = {};
   const groupMembers = {};
   Object.entries(dealsData).forEach(([key, deal]) => {
-    if (!deal['__group__']) return;
+    if (!deal['__group__'] || isItemCountGroup(deal['__group__'])) return;
     const gid = deal['__group__'];
     const id  = deal['__id__'] || key;
     if (!groupMembers[gid]) groupMembers[gid] = [];
@@ -1566,6 +1603,9 @@ function refreshBuddyGroup(gid){
 function applyDealToEl(el, id, deal, on){
   if (!el || !deal) return;
 
+  // ⓪ 「需搭配其他項目」群組 → 價格由 qtyU() 計算時判斷
+  if (isItemCountGroup(deal['__group__'])) return;
+
   // ① 「同時施術」群組（核心 or extra）→ 交給 refreshComboGroups() 統一處理
   if (deal['__group__'] && comboGroups[deal['__group__']]) return;
 
@@ -1693,6 +1733,7 @@ function applyDealBase(el, id, deal, on){
       const inp = el.querySelector('input[type="number"]');
       const qty = parseInt(inp && inp.value) || 1;
       P[id] = qty * curUnit;
+      O[id] = qty + '支 × ¥' + curUnit.toLocaleString() + ' = ¥' + P[id].toLocaleString();
       upd();
     }
     if (trigger) {
@@ -1832,7 +1873,7 @@ function buildComboGroups(){
   // 核心項目（有數字選項代碼，且不是 unit／buddy 型優惠）
   Object.entries(dealsData).forEach(([key, deal]) => {
     const gid = deal['__group__'];
-    if (!gid) return;
+    if (!gid || isItemCountGroup(gid)) return;
     if (deal['unit'] !== undefined || deal['buddy'] !== undefined || deal['buddy_unit'] !== undefined) return;
     if (!Object.keys(deal).some(k => /^\d+$/.test(k))) return;
     const eid = deal['__id__'] || key;
@@ -1842,7 +1883,7 @@ function buildComboGroups(){
   // extra_items（用「名稱＋類別」對應）
   Object.entries(extraDealsData).forEach(([key, deal]) => {
     const gid = deal['__group__'];
-    if (!gid) return;
+    if (!gid || isItemCountGroup(gid)) return;
     push(gid, deal, () => findExtraEl(key, deal));
   });
 }
@@ -2688,6 +2729,7 @@ function setPD(pid,v){
 }
 
 function upd(){
+  if (!icgBusy) { icgBusy = true; try { refreshItemCountDeals(); } finally { icgBusy = false; } }
   let tot=0;
   for(const id of C)tot+=P[id]||0;
   document.getElementById('jn').textContent=tot.toLocaleString();
@@ -2800,7 +2842,7 @@ function jaluApplyDeal(deal, on){   // 當月優惠開關
   jaluDealOn = on;
   jalu26U();
 }
-function jaluVisit(pill){         // 第1次／第2次以後 切換
+function jaluVisit(pill){           // 第1次／第2次以後 切換
   document.querySelectorAll('#pg-s1t26-visit .pill').forEach(p => p.classList.toggle('active', p === pill));
   jalu26U();
 }
@@ -2835,7 +2877,9 @@ function qtyU(itemId, priceElId, defaultUnit, qtyElId){
   if (dealModeOn) {
     // ① 同一項目有多筆 unit 優惠 → 取最低單價
     const multi = getDealsForElement(itemId).filter(e => e.deal['unit'] !== undefined);
-    if (multi.length > 1) { qtyUMulti(itemId, priceElId, qty, baseUnit, multi); return; }
+    if (multi.length > 1 || multi.some(e => isItemCountGroup(e.deal['__group__']))) {
+      qtyUMulti(itemId, priceElId, qty, baseUnit, multi); return;
+    }
 
     // ② buddy 主項目且已觸發 → 交給 refreshBuddyGroup
     const bGid = findBuddyGroupOf(itemId);
@@ -2865,16 +2909,21 @@ function qtyU(itemId, priceElId, defaultUnit, qtyElId){
   upd();
 }
 
-// 同一項目跨多個優惠群組時，取最優惠單價
+// 同一項目有多筆優惠時（例：單買優惠＋搭配優惠），取目前成立的最低單價
 function qtyUMulti(itemId, priceElId, qty, baseUnit, entries){
-  let bestUnit = baseUnit, discountApplied = false;
+  // 原價：開優惠前存的價格（沒有就用 baseUnit）
+  const normalUnit = Number(document.getElementById(itemId)?.dataset.normalUnit) || baseUnit;
+  let bestUnit = normalUnit, discountApplied = false;
   entries.forEach(({deal}) => {
     const trigger = deal.__trigger__ || 0;
     const groupId = deal.__group__ || '';
-    const effQty  = groupId ? getGroupQty(groupId, itemId) + qty : qty;
+    const itemMode = isItemCountGroup(groupId);
+    // 需搭配群組：算不同項目數；一般群組：算總支數（getGroupQty 已含自己，不要再加 qty）
+    const effQty  = itemMode ? icgItemCount(groupId, itemId, qty)
+                  : groupId  ? getGroupQty(groupId, itemId) : qty;
     const triggered = !trigger || effQty >= trigger;
     if (triggered && deal.unit < bestUnit) { bestUnit = deal.unit; discountApplied = true; }
-    if (trigger) updateQtyDealHint(itemId, effQty, trigger, deal.unit, baseUnit, true, triggered);
+    if (trigger) updateQtyDealHint(itemId, effQty, trigger, deal.unit, normalUnit, true, triggered, itemMode);
   });
   const total = qty * bestUnit;
   P[itemId] = total;
@@ -2883,7 +2932,7 @@ function qtyUMulti(itemId, priceElId, qty, baseUnit, entries){
   upd();
   entries.forEach(({deal}) => {
     const groupId = deal.__group__ || '';
-    if (groupId) refreshGroupOthers(groupId, itemId, getGroupQty(groupId, itemId) + qty);
+    if (groupId && !isItemCountGroup(groupId)) refreshGroupOthers(groupId, itemId, getGroupQty(groupId, itemId));
   });
 }
 
@@ -2904,7 +2953,7 @@ function refreshGroupOthers(groupId, selfId, effQty) {
   });
 }
 
-function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied) {
+function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeActive, discountApplied, itemMode) {
   const el = document.getElementById(itemId);
   if (!el) return;
   let hint = el.querySelector('.qty-deal-hint');
@@ -2925,6 +2974,10 @@ function updateQtyDealHint(itemId, qty, trigger, dealUnit, normalUnit, dealModeA
   if (discountApplied) {
     hint.className = 'qty-deal-hint active';
     hint.innerHTML = '🎉 折扣已套用！每支 <span class="qty-deal-price">¥' + dealUnit.toLocaleString() + '</span>（原價 ¥' + normalUnit.toLocaleString() + '）';
+  } else if (itemMode) {
+    const need = trigger - qty;
+    hint.className = 'qty-deal-hint inactive';
+    hint.innerHTML = '再搭配 <strong>' + need + '</strong> 項指定療程（各至少1支）可享每支 <span style="color:var(--gold)">¥' + dealUnit.toLocaleString() + '</span>';
   } else {
     const need = trigger - qty;
     const entry = getDealsForElement(itemId).find(e => e.deal['unit'] !== undefined);
